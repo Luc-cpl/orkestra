@@ -3,7 +3,7 @@
 namespace Orkestra;
 
 use Orkestra\Facades\HooksFacade;
-use Orkestra\Proxies\Internal\HooksProxy;
+use Orkestra\Proxies\HooksProxy;
 
 class App
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Proxies\Internal;
+namespace Orkestra\Proxies;
 
 use Orkestra\Interfaces\HooksInterface;
 use Orkestra\Services\HooksService;
