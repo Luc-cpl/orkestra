@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  db:
+    image: mariadb:10.6.5
+    restart: always
+    environment:
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
+  app:
+    image: php:8.2-apache
+    restart: always
+    volumes:
+      - .:/var/www/html
+    command: | 
+      sh -c "
+        # Install composer
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+        # run container
+        docker-php-entrypoint apache2-foreground
+      "
+    ports:
+      - 80:80
+      - 443:443
