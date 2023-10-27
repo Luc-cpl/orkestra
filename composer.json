@@ -3,6 +3,10 @@
     "description": "Orchestration for PHP applications",
     "type": "project",
     "license": "MIT",
+    "version": "0.0.1",
+    "keywords": [
+        "orkestra"
+    ],
     "scripts": {
         "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/"
     },
