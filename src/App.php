@@ -18,6 +18,7 @@ use Orkestra\Interfaces\HooksInterface;
 class App
 {
 	protected array $services = [];
+	protected array $providers = [];
 
 	public function __construct() {
 		// Define default services
@@ -32,40 +33,51 @@ class App
 
 	/**
 	 * Run the app
-	 * It will start all services not started yet
+	 * It start the registered providers
 	 *
 	 * @return void
 	 */
 	public function run(): void
 	{
-		foreach ($this->services as $service) {
-			if (!$service[1]) {
-				continue;
+		foreach ($this->providers as $provider) {
+			if (is_string($provider)) {
+				new $provider($this);
+			} else if (is_callable($provider)) {
+				$provider($this);
 			}
-			$this->getService($service);
 		}
 	}
 
-	public function addService(string $name, mixed $service, bool $startOnRun = false): self
+	public function addProvider(string|array $provider): self
 	{
-		$this->services[$name] = [$service, $startOnRun];
+		if (is_array($provider)) {
+			$this->providers = array_merge($this->providers, $provider);
+			return $this;
+		}
+		$this->providers[] = $provider;
+		return $this;
+	}
+
+	public function addService(string $name, mixed $service): self
+	{
+		$this->services[$name] = $service;
 		return $this;
 	}
 
 	public function getService(string $name): object
 	{
-		$service = $this->services[$name][0];
+		$service = $this->services[$name];
 
 		/**
 		 * Allow services lazy loading
 		 */
 		if (is_string($service)) {
-			$this->services[$name][0] = new $service($this);
+			$this->services[$name] = new $service($this);
 		} else if (is_callable($service)) {
-			$this->services[$name][0] = $service($this);
+			$this->services[$name] = $service($this);
 		}
 
-		return $this->services[$name][0];
+		return $this->services[$name];
 	}
 
 	public function hasService(string $name): bool
