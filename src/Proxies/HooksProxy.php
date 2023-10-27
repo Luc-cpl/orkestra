@@ -5,7 +5,7 @@ namespace Orkestra\Proxies;
 use Orkestra\Interfaces\HooksInterface;
 use Orkestra\Services\HooksService;
 
-final class HooksProxy implements HooksInterface
+class HooksProxy implements HooksInterface
 {
 	protected HooksInterface $service;
 
