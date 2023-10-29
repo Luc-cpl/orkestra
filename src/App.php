@@ -2,33 +2,51 @@
 
 namespace Orkestra;
 
-use Orkestra\Facades\ConfigFacade;
-use Orkestra\Facades\HooksFacade;
+use Orkestra\Providers\DefaultServicesProvider;
+use Orkestra\Interfaces\ProviderInterface;
+use Orkestra\Interfaces\ConfigurationInterface;
 
-use Orkestra\Proxies\ConfigProxy;
-use Orkestra\Proxies\HooksProxy;
+use DI\ContainerBuilder;
+use DI\Container;
+use DI;
+use DI\Definition\Helper\CreateDefinitionHelper;
+use Exception;
 
-use Orkestra\Interfaces\ConfigInterface;
-use Orkestra\Interfaces\HooksInterface;
-
-/**
- * @property-read ConfigInterface $config
- * @property-read HooksInterface $hooks
- */
 class App
 {
-	protected array $services = [];
-	protected array $providers = [];
+	public readonly Container $container;
 
-	public function __construct() {
-		// Define default services
-		$this->addService('config', fn() => new ConfigFacade(new ConfigProxy()));
-		$this->addService('hooks', fn() => new HooksFacade(new HooksProxy()));
+	protected array $providers = [];
+	protected array $singletons = [];
+
+	public function __construct(
+		ConfigurationInterface $config,
+	) {
+		// Define default container
+		$containerBuilder = new ContainerBuilder();
+
+		$isProduction = $config->get('env') === 'production';
+		$cacheDir     = $config->get('root');
+
+		if ($isProduction && $cacheDir) {
+			$containerBuilder->enableCompilation($cacheDir);
+			$containerBuilder->enableDefinitionCache('container_' . md5($cacheDir));
+		}
+
+		$this->container = $containerBuilder->build();
+
+		$this->singletone(ConfigurationInterface::class, $config);
+		$this->provider(DefaultServicesProvider::class);
 	}
 
-	public function __get($name): object
+	/**
+	 * Get the configuration
+	 *
+	 * @return ConfigurationInterface
+	 */
+	public function config(): ConfigurationInterface
 	{
-		return $this->getService($name);
+		return $this->get(ConfigurationInterface::class);
 	}
 
 	/**
@@ -39,49 +57,91 @@ class App
 	 */
 	public function run(): void
 	{
+		// Ensure we only run once
+		if ($this->container->has('booted')) {
+			throw new Exception('App already booted');
+		}
+
+		$this->config()->validate();
+
 		foreach ($this->providers as $provider) {
-			if (is_string($provider)) {
-				new $provider($this);
-			} else if (is_callable($provider)) {
-				$provider($this);
-			}
-		}
-	}
-
-	public function addProvider(string|array $provider): self
-	{
-		if (is_array($provider)) {
-			$this->providers = array_merge($this->providers, $provider);
-			return $this;
-		}
-		$this->providers[] = $provider;
-		return $this;
-	}
-
-	public function addService(string $name, mixed $service): self
-	{
-		$this->services[$name] = $service;
-		return $this;
-	}
-
-	public function getService(string $name): object
-	{
-		$service = $this->services[$name];
-
-		/**
-		 * Allow services lazy loading
-		 */
-		if (is_string($service)) {
-			$this->services[$name] = new $service($this);
-		} else if (is_callable($service)) {
-			$this->services[$name] = $service($this);
+			$this->get($provider)->boot($this);
 		}
 
-		return $this->services[$name];
+		$this->container->set('booted', true);
 	}
 
-	public function hasService(string $name): bool
+	/**
+	 * Register a provider
+	 * We should register classes that implement ProviderInterface
+	 * That way we can use the container to resolve and start services
+	 *
+	 * @param string $class
+	 * @return void
+	 */
+	public function provider(string $class): void
 	{
-		return isset($this->services[$name]);
+		$interface = ProviderInterface::class;
+		if (!class_exists($class) || !in_array($interface, class_implements($class), true)) {
+			throw new Exception("Provider \"$class\" must implement \"$interface\"");
+		}
+		$this->providers[] = $class;
+		$this->singletone($class, $class);
+		$instance = $this->get($class);
+		$instance->register($this);
+		return;
+	}
+
+	/**
+	 * Add a service to the container
+	 *
+	 * @param string $name
+	 * @param mixed $service
+	 * @return CreateDefinitionHelper|null
+	 */
+	public function bind(string $name, mixed $service): ?CreateDefinitionHelper
+	{
+		$isClassString = is_string($service);
+		if ($isClassString && !class_exists($service)) {
+			throw new Exception("Class \"$service\" does not exist");
+		}
+		$constructor = $isClassString ? DI\create($service) : $service;
+		$this->container->set($name, $constructor);
+		return $isClassString ? $constructor : null;
+	}
+
+	/**
+	 * Add a service to the container as a singletone
+	 *
+	 * @param string $name
+	 * @param mixed $service
+	 * @return CreateDefinitionHelper|null
+	 */
+	public function singletone(string $name, mixed $service): ?CreateDefinitionHelper
+	{
+		$bind = $this->bind($name, $service);
+		$this->singletons[$name] = true;
+		return $bind;
+	}
+
+	/**
+     * Returns an entry of the container by its name.
+	 * If the entry is a singleton, it will return the same instance
+	 * otherwise it will create a new instance.
+     *
+     * @template T
+     * @param string|class-string<T> $id Entry name or a class name.
+	 * @param array $params Parameters to pass to the constructor.
+     *
+     * @return mixed|T
+     * @throws DependencyException Error while resolving the entry.
+     * @throws NotFoundException No entry found for the given name.
+     */
+	public function get(string $name, array $params = []): mixed
+	{
+		if (isset($this->singletons[$name])) {
+			return $this->container->get($name);
+		}
+		return $this->container->make($name, $params);
 	}
 }

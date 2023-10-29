@@ -11,6 +11,7 @@ class HooksProxy implements HooksInterface
 
 	public function __construct()
 	{
+		// var_dump($config);
 		$this->service = new HooksService();
 	}
 
