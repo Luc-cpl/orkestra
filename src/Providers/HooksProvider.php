@@ -4,10 +4,12 @@ namespace Orkestra\Providers;
 
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
-use Orkestra\Proxies\HooksProxy;
 use Orkestra\Interfaces\HooksInterface;
 
-class DefaultServicesProvider implements ProviderInterface
+use Orkestra\Models\Hook;
+use Orkestra\Services\HooksService;
+
+class HooksProvider implements ProviderInterface
 {
 	/**
 	 * Register services with the container.
@@ -20,7 +22,7 @@ class DefaultServicesProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
-		$app->singletone(HooksInterface::class, HooksProxy::class);
+		$app->singleton(HooksInterface::class, HooksService::class);
 	}
 
 	/**

@@ -9,6 +9,7 @@ use Orkestra\Interfaces\ConfigurationInterface;
 use DI\ContainerBuilder;
 use DI\Container;
 use DI;
+use DI\Definition\Helper\AutowireDefinitionHelper;
 use DI\Definition\Helper\CreateDefinitionHelper;
 use Exception;
 
@@ -33,10 +34,10 @@ class App
 			$containerBuilder->enableDefinitionCache('container_' . md5($cacheDir));
 		}
 
+		$containerBuilder->useAutowiring( true );
 		$this->container = $containerBuilder->build();
-
-		$this->singletone(ConfigurationInterface::class, $config);
-		$this->provider(DefaultServicesProvider::class);
+		$this->singleton(ConfigurationInterface::class, $config);
+		$this->singleton(self::class, $this);
 	}
 
 	/**
@@ -86,7 +87,7 @@ class App
 			throw new Exception("Provider \"$class\" must implement \"$interface\"");
 		}
 		$this->providers[] = $class;
-		$this->singletone($class, $class);
+		$this->singleton($class, $class, false);
 		$instance = $this->get($class);
 		$instance->register($this);
 		return;
@@ -95,31 +96,35 @@ class App
 	/**
 	 * Add a service to the container
 	 *
-	 * @param string $name
-	 * @param mixed $service
-	 * @return CreateDefinitionHelper|null
+	 * @param string $name        Name of the service
+	 * @param mixed  $service     Service to bind to the container
+	 * @param bool   $useAutowire Use autowire or create to bind the service
+	 * @return CreateDefinitionHelper|AutowireDefinitionHelper|null
 	 */
-	public function bind(string $name, mixed $service): ?CreateDefinitionHelper
+	public function bind(string $name, mixed $service, bool $useAutowire = true): CreateDefinitionHelper|AutowireDefinitionHelper|null
 	{
 		$isClassString = is_string($service);
 		if ($isClassString && !class_exists($service)) {
 			throw new Exception("Class \"$service\" does not exist");
 		}
-		$constructor = $isClassString ? DI\create($service) : $service;
+		$constructor = $isClassString
+			? ($useAutowire ? DI\autowire($service) : DI\create($service))
+			: $service;
 		$this->container->set($name, $constructor);
 		return $isClassString ? $constructor : null;
 	}
 
 	/**
-	 * Add a service to the container as a singletone
+	 * Add a service to the container as a singleton
 	 *
 	 * @param string $name
-	 * @param mixed $service
-	 * @return CreateDefinitionHelper|null
+	 * @param mixed  $service
+	 * @param bool   $useAutowire
+	 * @return CreateDefinitionHelper|AutowireDefinitionHelper|null
 	 */
-	public function singletone(string $name, mixed $service): ?CreateDefinitionHelper
+	public function singleton(string $name, mixed $service, bool $useAutowire = true): ?CreateDefinitionHelper
 	{
-		$bind = $this->bind($name, $service);
+		$bind = $this->bind($name, $service, $useAutowire);
 		$this->singletons[$name] = true;
 		return $bind;
 	}
