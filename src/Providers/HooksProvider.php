@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Interfaces\HooksInterface;
 
-use Orkestra\Models\Hook;
 use Orkestra\Services\HooksService;
 
 class HooksProvider implements ProviderInterface
