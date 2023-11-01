@@ -17,7 +17,14 @@ class Configuration implements ConfigurationInterface
 				!in_array($value, ['development', 'production'], true)
 					? 'env must be either "development" or "production"'
 					: true,
-			'root' => fn ($value) => !is_dir($value) ? "root \"$value\" is not a directory" : true,
+			'root' => fn ($value) =>
+				!is_dir($value)
+					? "root \"$value\" is not a directory"
+					: true,
+			'slug' => fn ($value) =>
+				!empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
+					? "slug \"$value\" is not valid"
+					: true,
 		]);
 	}
 
