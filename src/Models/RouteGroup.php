@@ -6,6 +6,7 @@ use Orkestra\App;
 use Orkestra\Models\Route;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
+use League\Route\Strategy\JsonStrategy;
 
 use League\Route\RouteCollectionInterface;
 
