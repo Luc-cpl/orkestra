@@ -199,12 +199,12 @@ class App
 	 *
 	 * @param string $name
 	 * @param mixed  ...$args
-	 * @return void
+	 * @return mixed
 	 */
-	protected function hookCall(string $name, ...$args): void
+	public function hookCall(string $name, ...$args): mixed
     {
-        $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($name, $args) {
-            $hooks->call("{$this->slug()}.$name", ...$args);
+        return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($name, $args) {
+            return $hooks->call("{$this->slug()}.$name", ...$args);
         });
     }
 }
