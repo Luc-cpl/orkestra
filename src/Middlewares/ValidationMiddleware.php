@@ -9,6 +9,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use Laminas\Diactoros\Response\JsonResponse;
 use League\Route\Http\Exception\BadRequestException;
 use Rakit\Validation\Validator;
 
@@ -32,12 +33,32 @@ class ValidationMiddleware implements MiddlewareInterface
 
 		$validation = $validator->make($data, $rules);
 
-		$this->app->hookCall('validation.before', $validation, $data, $rules);
-
+		$this->app->hookCall('validation.before', $validation);
+		
 		$validation->validate();
 
-		if ($validation->fails()) {;
-			throw new BadRequestException('Invalid JSON data in request body.');
+		$this->app->hookCall('validation.after', $validation);
+		
+		if ($validation->fails()) {
+			$this->app->hookCall('validation.fail', $validation);
+
+			$contentType = $request->getHeaderLine('Content-Type');
+
+        	if (strpos($contentType, 'application/json') === 0) {
+				$response = $this->app->get(JsonResponse::class, [
+					'data' => [
+						'status'  => 'error',
+						'error'   => 'validation_failed',
+						'message' => 'Validation failed',
+						'description' => 'Theres one or more errors in your request data',
+						'errors'  => $validation->errors()->toArray(),
+					],
+					'status' => 400,
+				]);
+				return $response;
+			}
+
+			throw new BadRequestException('Invalid data: ' . implode(', ', $validation->errors()->firstOfAll()));
 		}
 
 		return $handler->handle($request);

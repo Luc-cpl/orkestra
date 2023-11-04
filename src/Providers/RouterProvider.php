@@ -12,6 +12,7 @@ use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
 
 use League\Route\Strategy\ApplicationStrategy;
+use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
@@ -51,6 +52,13 @@ class RouterProvider implements ProviderInterface
 			$jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
 			$strategy     = new JsonStrategy($app->get(ResponseFactory::class), $jsonMode);
 			return ($strategy)->setContainer($app);
+		});
+
+		$app->bind(JsonResponse::class, function ($data, int $status = 200, $headers = []) use ($app) {
+			$isProduction = $app->config()->get('env') === 'production';
+			$jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
+			$response     = new JsonResponse($data, $status, $headers, $jsonMode);
+			return $response;
 		});
 
 		// Set the required config so we can validate it
