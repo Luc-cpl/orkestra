@@ -6,6 +6,7 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
 use Orkestra\Services\RouterService as Router;
+use Orkestra\Middlewares\JsonMiddleware;
 
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
@@ -46,7 +47,10 @@ class RouterProvider implements ProviderInterface
 		$app->bind(ApplicationStrategy::class, fn() => (new ApplicationStrategy)->setContainer($app->container));
 
 		$app->bind(JsonStrategy::class, function () use ($app) {
-			return (new JsonStrategy($app->get(ResponseFactory::class)))->setContainer($app->container);
+			$isProduction = $app->config()->get('env') === 'production';
+			$jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
+			$strategy     = new JsonStrategy($app->get(ResponseFactory::class), $jsonMode);
+			return ($strategy)->setContainer($app->container);
 		});
 
 		// Set the required config so we can validate it
@@ -70,6 +74,8 @@ class RouterProvider implements ProviderInterface
 
 		$strategy = (new ApplicationStrategy)->setContainer($app->container);
 		$router->setStrategy($strategy);
+
+		$router->middleware($app->get(JsonMiddleware::class));
 
 		$configFile = $app->config()->get('routes');
 
