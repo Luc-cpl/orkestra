@@ -2,13 +2,13 @@
 
 namespace Orkestra\Services;
 
-use FastRoute\RouteCollector;
+use Orkestra\App;
 use Orkestra\Models\Route;
 use Orkestra\Models\RouteGroup;
+use Orkestra\Traits\RouteCollectionTrait;
 
 use League\Route\Router;
-use Orkestra\App;
-use Rakit\Validation\Validator;
+use FastRoute\RouteCollector;
 
 /**
  * Extends the League Router class.
@@ -23,9 +23,10 @@ use Rakit\Validation\Validator;
  */
 class RouterService extends Router
 {
+	use RouteCollectionTrait;
+
     public function __construct(
         protected App $app,
-        protected Validator $validator,
         ?RouteCollector $routeCollector = null
     ) {
         parent::__construct($routeCollector);
@@ -39,7 +40,6 @@ class RouterService extends Router
             'path'    => $path,
             'handler' => $handler
         ]);
-        $route = $route->setValidator($this->validator);
 
         $this->routes[] = $route;
 

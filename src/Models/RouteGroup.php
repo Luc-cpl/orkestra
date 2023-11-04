@@ -4,24 +4,18 @@ namespace Orkestra\Models;
 
 use Orkestra\App;
 use Orkestra\Models\Route;
+use Orkestra\Traits\RouteCollectionTrait;
+use Orkestra\Traits\RouteStrategyTrait;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
-use League\Route\Strategy\JsonStrategy;
 
 use League\Route\RouteCollectionInterface;
 
-/**
- * Map the methods to the Route class and bind the container to json controllers.
- * 
- * @method Route map(string $method, string $path, $handler)
- * @method Route get(string $path, $handler)
- * @method Route put(string $path, $handler)
- * @method Route post(string $path, $handler)
- * @method Route patch(string $path, $handler)
- * @method Route delete(string $path, $handler)
- */
 class RouteGroup extends LeagueRouteGroup
 {
+	use RouteCollectionTrait;
+	use RouteStrategyTrait;
+
 	public function __construct(
 		protected App $app,
 		string $prefix, callable $callback, RouteCollectionInterface $collection)
@@ -29,9 +23,32 @@ class RouteGroup extends LeagueRouteGroup
 		parent::__construct($prefix, $callback, $collection);
 	}
 
-	public function json(): self
-	{
-		$this->setStrategy($this->app->get(JsonStrategy::class));
-		return $this;
-	}
+	/**
+	 * {@inheritdoc}
+	 */
+	public function map(string $method, string $path, $handler): Route
+    {
+        $path  = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $route = $this->collection->map($method, $path, $handler);
+
+        $route->setParentGroup($this);
+
+        if ($host = $this->getHost()) {
+            $route->setHost($host);
+        }
+
+        if ($scheme = $this->getScheme()) {
+            $route->setScheme($scheme);
+        }
+
+        if ($port = $this->getPort()) {
+            $route->setPort($port);
+        }
+
+        if ($route->getStrategy() === null && $this->getStrategy() !== null) {
+            $route->setStrategy($this->getStrategy());
+        }
+
+        return $route;
+    }
 }

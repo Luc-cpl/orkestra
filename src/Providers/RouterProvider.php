@@ -44,13 +44,13 @@ class RouterProvider implements ProviderInterface
 
 		$app->bind(ResponseInterface::class, Response::class);
 
-		$app->bind(ApplicationStrategy::class, fn() => (new ApplicationStrategy)->setContainer($app->container));
+		$app->bind(ApplicationStrategy::class, fn() => (new ApplicationStrategy)->setContainer($app));
 
 		$app->bind(JsonStrategy::class, function () use ($app) {
 			$isProduction = $app->config()->get('env') === 'production';
 			$jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
 			$strategy     = new JsonStrategy($app->get(ResponseFactory::class), $jsonMode);
-			return ($strategy)->setContainer($app->container);
+			return ($strategy)->setContainer($app);
 		});
 
 		// Set the required config so we can validate it
@@ -72,7 +72,7 @@ class RouterProvider implements ProviderInterface
 		$router  = $app->get(Router::class);
 		$request = $app->get(ServerRequestInterface::class);
 
-		$strategy = (new ApplicationStrategy)->setContainer($app->container);
+		$strategy = (new ApplicationStrategy)->setContainer($app);
 		$router->setStrategy($strategy);
 
 		$router->middleware($app->get(JsonMiddleware::class));

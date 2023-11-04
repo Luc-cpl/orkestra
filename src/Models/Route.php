@@ -4,22 +4,20 @@ namespace Orkestra\Models;
 
 use Orkestra\App;
 
-use League\Route\Route as LeagueRoute;
-use League\Route\Strategy\JsonStrategy;
-use Rakit\Validation\Validator;
+use Orkestra\Middlewares\ValidationMiddleware;
+use Orkestra\Traits\RouteStrategyTrait;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use League\Route\Route as LeagueRoute;
 
 use Exception;
 
 class Route extends LeagueRoute
 {
-	protected array     $validation = [];
-	protected array     $metaData   = [];
-	protected array     $errors     = [];
-	protected Validator $validator;
+	use RouteStrategyTrait;
+
+	protected array $validation = [];
+	protected array $meta       = [];
+	protected array $errors     = [];
 
 	public function __construct(
 		protected App $app,
@@ -28,26 +26,15 @@ class Route extends LeagueRoute
 		parent::__construct($method, $path, $handler);
 	}
 
-	protected function validate(ServerRequestInterface $request): bool
-	{
-		$data       = (array) $request->getQueryParams() + (array) $request->getParsedBody();
-		$validator  = $this->validator;
-		$validation = $validator->make($data, $this->validation);
-		$validation->validate();
-
-		$this->errors = $validation->errors()->all();
-		return !$validation->fails();
-	}
-
 	public function setValidation(array $validation): self
 	{
+		if (!empty($this->validation)) {
+			throw new Exception('Validation rules already set');
+		}
 		$this->validation = $validation;
-		return $this;
-	}
-
-	public function setValidator(Validator $validator): self
-	{
-		$this->validator = $validator;
+		$this->middleware($this->app->get(ValidationMiddleware::class, [
+			'rules' => $validation,
+		]));
 		return $this;
 	}
 
@@ -56,36 +43,19 @@ class Route extends LeagueRoute
 		return $this->validation;
 	}
 
-	public function setMetaData(array $metaData): self
+	public function setMeta(array $meta): self
 	{
-		$this->metaData = $metaData;
+		$this->meta = $meta;
 		return $this;
 	}
 
-	public function getMetaData(): array
+	public function getAllMeta(): array
 	{
-		return $this->metaData;
+		return $this->meta;
 	}
 
-	public function getMeta(string $key)
+	public function getMeta(string $key, mixed $default = false): mixed
 	{
-		return $this->metaData[$key] ?? null;
-	}
-
-	public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
-		// Validate the request
-		if (!$this->validate($request)) {
-			throw new Exception($this->errors[0]);
-		}
-        return parent::process($request, $handler);
-    }
-
-	public function json(): self
-	{
-		$this->setStrategy($this->app->get(JsonStrategy::class));
-		return $this;
+		return $this->meta[$key] ?? $default;
 	}
 }
