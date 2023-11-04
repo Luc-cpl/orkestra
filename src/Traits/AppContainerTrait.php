@@ -41,6 +41,7 @@ trait AppContainerTrait
         }
 
         $containerBuilder->useAutowiring(true);
+		$containerBuilder->useAttributes(true);
         $this->container = $containerBuilder->build();
 	}
 

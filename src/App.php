@@ -57,17 +57,15 @@ class App implements ContainerInterface
             throw new Exception('App already booted');
         }
 
-        $this->hookCall('validate.before', $this);
+        $this->hookCall('config.validate.before', $this);
 
         $this->config()->validate();
 
-        $this->hookCall('validate.after', $this);
+        $this->hookCall('config.validate.after', $this);
         $this->hookCall('boot.before', $this);
 
         foreach ($this->getProviders() as $provider) {
-            $this->hookCall("boot.provider.$provider.before", $this);
             $this->get($provider)->boot($this);
-            $this->hookCall("boot.provider.$provider.after", $this);
         }
 
         $this->hookCall('boot.after', $this);
