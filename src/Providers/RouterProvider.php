@@ -49,7 +49,7 @@ class RouterProvider implements ProviderInterface
 
 		$app->bind(ResponseInterface::class, Response::class);
 
-		$app->bind(ApplicationStrategy::class, fn () => (new ApplicationStrategy)->setContainer($app));
+		$app->bind(ApplicationStrategy::class, fn (App $app) => (new ApplicationStrategy($app))->setContainer($app));
 
 		$app->bind(JsonStrategy::class, function () use ($app) {
 			$isProduction = $app->config()->get('env') === 'production';
@@ -84,7 +84,7 @@ class RouterProvider implements ProviderInterface
 		$router  = $app->get(Router::class);
 		$request = $app->get(ServerRequestInterface::class);
 
-		$strategy = (new ApplicationStrategy)->setContainer($app);
+		$strategy = $app->get(ApplicationStrategy::class);
 		$router->setStrategy($strategy);
 
 		$router->middleware($app->get(JsonMiddleware::class));

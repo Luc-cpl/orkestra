@@ -9,9 +9,6 @@ use Orkestra\Router\Traits\RouteCollectionTrait;
 
 use League\Route\Router;
 use FastRoute\RouteCollector;
-use League\Route\Http\Exception\NotFoundException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Extends the League Router class.
@@ -27,8 +24,6 @@ use Psr\Http\Message\ServerRequestInterface;
 class RouterService extends Router
 {
     use RouteCollectionTrait;
-
-    protected mixed $notFoundHandler;
 
     public function __construct(
         protected App $app,
@@ -60,25 +55,5 @@ class RouterService extends Router
         ]);
         $this->groups[] = $group;
         return $group;
-    }
-
-    public function notFoundHandler($handler): self
-    {
-        $this->notFoundHandler = $handler;
-        return $this;
-    }
-
-    public function dispatch(ServerRequestInterface $request): ResponseInterface
-    {
-        try {
-            return parent::dispatch($request);
-        } catch (NotFoundException $th) {
-            // Send to 404 page if exists
-            $notFOundRoute = $this->getNamedRoute('404');
-            return $this->app->get(ResponseInterface::class, [
-                'status' => 404,
-                'body'   => 'Not Found'
-            ]);
-        }
     }
 }

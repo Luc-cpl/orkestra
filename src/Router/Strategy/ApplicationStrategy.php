@@ -2,6 +2,7 @@
 
 namespace Orkestra\Router\Strategy;
 
+use Orkestra\App;
 use League\Route\Http\Exception\{MethodNotAllowedException, NotFoundException};
 use League\Route\Route;
 use League\Route\{ContainerAwareInterface, ContainerAwareTrait};
@@ -13,6 +14,11 @@ use Throwable;
 class ApplicationStrategy extends AbstractStrategy implements ContainerAwareInterface
 {
 	use ContainerAwareTrait;
+
+	public function __construct(
+		protected App $app
+	) {
+	}
 
 	public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception): MiddlewareInterface
 	{
