@@ -24,15 +24,15 @@ class App implements ContainerInterface
         $this->singleton(self::class, $this);
     }
 
-	/**
-	 * Get the app slug
-	 *
-	 * @return string
-	 */
-	public function slug(): string
-	{
-		return $this->config()->get('slug') ?? 'app';
-	}
+    /**
+     * Get the app slug
+     *
+     * @return string
+     */
+    public function slug(): string
+    {
+        return $this->config()->get('slug') ?? 'app';
+    }
 
     /**
      * Get the configuration

@@ -1,11 +1,11 @@
 <?php
 
-namespace Orkestra\Models;
+namespace Orkestra\Router;
 
 use Orkestra\App;
 
-use Orkestra\Middlewares\ValidationMiddleware;
-use Orkestra\Traits\RouteStrategyTrait;
+use Orkestra\Router\Middlewares\ValidationMiddleware;
+use Orkestra\Router\Traits\RouteStrategyTrait;
 
 use League\Route\Route as LeagueRoute;
 
@@ -21,7 +21,9 @@ class Route extends LeagueRoute
 
 	public function __construct(
 		protected App $app,
-		string $method, string $path, $handler,
+		string $method,
+		string $path,
+		$handler,
 	) {
 		parent::__construct($method, $path, $handler);
 	}

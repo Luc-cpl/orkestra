@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Traits;
+namespace Orkestra\Router\Traits;
 
 use League\Route\Strategy\JsonStrategy;
 

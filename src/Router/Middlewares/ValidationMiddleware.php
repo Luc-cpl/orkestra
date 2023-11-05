@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Middlewares;
+namespace Orkestra\Router\Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -28,11 +28,11 @@ class ValidationMiddleware extends BaseMiddleware
 		$validation = $validator->make($data, $rules);
 
 		$this->app->hookCall('middleware.validation.before', $validation);
-		
+
 		$validation->validate();
 
 		$this->app->hookCall('middleware.validation.after', $validation);
-		
+
 		if ($validation->fails()) {
 			$this->app->hookCall('middleware.validation.fail', $validation);
 
@@ -44,7 +44,7 @@ class ValidationMiddleware extends BaseMiddleware
 				$validation->errors()->toArray(),
 			);
 		}
-		
+
 		$this->app->hookCall('middleware.validation.success', $validation);
 
 		return $handler->handle($request);

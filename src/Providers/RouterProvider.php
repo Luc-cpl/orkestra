@@ -6,12 +6,12 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
 use Orkestra\Services\RouterService as Router;
-use Orkestra\Middlewares\JsonMiddleware;
+use Orkestra\Router\Middlewares\JsonMiddleware;
 
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
 
-use League\Route\Strategy\ApplicationStrategy;
+use Orkestra\Router\Strategy\ApplicationStrategy;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
@@ -37,15 +37,19 @@ class RouterProvider implements ProviderInterface
 		$app->singleton(Router::class, Router::class);
 		$app->singleton(Validator::class, Validator::class);
 
-		$app->bind(ServerRequestInterface::class, function() {
+		$app->bind(ServerRequestInterface::class, function () {
 			return ServerRequestFactory::fromGlobals(
-				$_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
+				$_SERVER,
+				$_GET,
+				$_POST,
+				$_COOKIE,
+				$_FILES
 			);
 		});
 
 		$app->bind(ResponseInterface::class, Response::class);
 
-		$app->bind(ApplicationStrategy::class, fn() => (new ApplicationStrategy)->setContainer($app));
+		$app->bind(ApplicationStrategy::class, fn () => (new ApplicationStrategy)->setContainer($app));
 
 		$app->bind(JsonStrategy::class, function () use ($app) {
 			$isProduction = $app->config()->get('env') === 'production';
@@ -63,7 +67,7 @@ class RouterProvider implements ProviderInterface
 
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
-			'routes' => function($value) {
+			'routes' => function ($value) {
 				return is_string($value) ?? 'The routes config must be a string path to a file';
 			},
 		]);

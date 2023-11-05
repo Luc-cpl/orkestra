@@ -8,6 +8,8 @@ use DI\Definition\Helper\CreateDefinitionHelper;
 use DI\Definition\Helper\AutowireDefinitionHelper;
 use DI\Container;
 use DI;
+use DI\DependencyException;
+use DI\NotFoundException;
 use DI\ContainerBuilder;
 use Exception;
 use Orkestra\Interfaces\ConfigurationInterface;
@@ -18,19 +20,19 @@ use Orkestra\Interfaces\ConfigurationInterface;
  */
 trait AppContainerTrait
 {
-	private readonly Container $container;
+    private Container $container;
     private array $singletons = [];
     private array $providers = [];
 
-	/**
-	 * Initialize the container
-	 *
-	 * @param ConfigurationInterface $config
-	 * @return void
-	 */
-	protected function initContainer(ConfigurationInterface $config): void
-	{
-		$containerBuilder = new ContainerBuilder();
+    /**
+     * Initialize the container
+     *
+     * @param ConfigurationInterface $config
+     * @return void
+     */
+    protected function initContainer(ConfigurationInterface $config): void
+    {
+        $containerBuilder = new ContainerBuilder();
 
         $isProduction = $config->get('env') === 'production';
         $cacheDir     = $config->get('root');
@@ -41,11 +43,11 @@ trait AppContainerTrait
         }
 
         $containerBuilder->useAutowiring(true);
-		$containerBuilder->useAttributes(true);
+        $containerBuilder->useAttributes(true);
         $this->container = $containerBuilder->build();
-	}
+    }
 
-	/**
+    /**
      * Register a provider
      * We should register classes that implement ProviderInterface
      * That way we can use the container to resolve and start services
@@ -67,15 +69,15 @@ trait AppContainerTrait
         return;
     }
 
-	/**
-	 * Get the providers
-	 * 
-	 * @return array
-	 */
-	protected function getProviders(): array
-	{
-		return $this->providers;
-	}
+    /**
+     * Get the providers
+     * 
+     * @return array
+     */
+    protected function getProviders(): array
+    {
+        return $this->providers;
+    }
 
     /**
      * Add a service to the container
@@ -120,7 +122,7 @@ trait AppContainerTrait
      * otherwise, it will create a new instance.
      *
      * @template T
-     * @param string|class-string<T> $id Entry name or a class name.
+     * @param string|class-string<T> $name Entry name or a class name.
      * @param array $params Parameters to pass to the constructor.
      * @return mixed|T
      * @throws DependencyException Error while resolving the entry.

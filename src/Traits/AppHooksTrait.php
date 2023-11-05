@@ -26,13 +26,13 @@ trait AppHooksTrait
 	 * @return void
 	 */
 	public function hookCall(string $tag, ...$args): void
-    {
-        $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $args) {
-            $hooks->call("{$this->slug()}.$tag", ...$args);
-        });
-    }
+	{
+		$this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $args) {
+			$hooks->call("{$this->slug()}.$tag", ...$args);
+		});
+	}
 
-    /**
+	/**
 	 * Query a hook if the service is available
 	 * Return the first argument if the hook is not available
 	 *
@@ -41,17 +41,17 @@ trait AppHooksTrait
 	 * @return mixed
 	 */
 	public function hookQuery(string $tag, ...$args): mixed
-    {
+	{
 		if (!$this->has(HooksInterface::class)) {
 			return $args[0];
 		}
 
-        return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $args) {
-            return $hooks->query("{$this->slug()}.$tag", ...$args);
-        });
-    }
+		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $args) {
+			return $hooks->query("{$this->slug()}.$tag", ...$args);
+		});
+	}
 
-    /**
+	/**
 	 * Add a hook if the service is available
 	 *
 	 * @param string $tag
@@ -59,9 +59,9 @@ trait AppHooksTrait
 	 * @return mixed
 	 */
 	public function hookRegister(string $tag, callable $callback, int $priority = 10): bool
-    {
-        return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $callback, $priority) {
-            return $hooks->register("{$this->slug()}.$tag", $callback, $priority);
-        });
-    }
+	{
+		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $callback, $priority) {
+			return $hooks->register("{$this->slug()}.$tag", $callback, $priority);
+		});
+	}
 }

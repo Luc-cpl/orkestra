@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Middlewares;
+namespace Orkestra\Router\Middlewares;
 
 use Orkestra\App;
 
@@ -13,7 +13,7 @@ use League\Route\Http\Exception\BadRequestException;
 
 use DI\Attribute\Inject;
 
-abstract class BaseMiddleware implements MiddlewareInterface 
+abstract class BaseMiddleware implements MiddlewareInterface
 {
 	#[Inject]
 	protected App $app;
@@ -38,7 +38,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
 		string  $description,
 		array   $errors = [],
 		int     $code   = 400,
-	): ResponseInterface	{
+	): ResponseInterface {
 
 		$this->app->hookCall('middlewares.error', $request, $error, $message, $description, $errors, $code);
 
