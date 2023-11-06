@@ -6,24 +6,35 @@ use Orkestra\App;
 use Orkestra\Router\Route;
 use Orkestra\Router\RouteGroup;
 use Orkestra\Router\Traits\RouteCollectionTrait;
+use Orkestra\Interfaces\RouterInterface;
 
 use League\Route\Router;
 use FastRoute\RouteCollector;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Extends the League Router class.
  * This way we can add custom functionality as custom validation and meta data.
- * 
- * @method Route map(string $method, string $path, $handler)
- * @method Route get(string $path, $handler)
- * @method Route put(string $path, $handler)
- * @method Route post(string $path, $handler)
- * @method Route patch(string $path, $handler)
- * @method Route delete(string $path, $handler)
  */
-class RouterService extends Router
+class RouterService extends Router implements RouterInterface
 {
     use RouteCollectionTrait;
+
+    /**
+     * @var RouteGroup[]
+     */
+    protected $groups = [];
+
+    /**
+     * @var Route[]
+     */
+    protected $namedRoutes = [];
+
+    /**
+     * @var Route[]
+     */
+    protected $routes = [];
 
     public function __construct(
         protected App $app,
@@ -55,5 +66,16 @@ class RouterService extends Router
         ]);
         $this->groups[] = $group;
         return $group;
+    }
+
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
+    {
+        $request = $this->app->hookQuery('router.dispatch', $request, $this);
+        return parent::dispatch($request);
+    }
+
+    public function getRoutes(): array
+    {
+        return $this->routes;
     }
 }

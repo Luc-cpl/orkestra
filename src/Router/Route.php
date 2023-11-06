@@ -16,7 +16,7 @@ class Route extends LeagueRoute
 	use RouteStrategyTrait;
 
 	protected array $validation = [];
-	protected array $meta       = [];
+	protected array $config     = [];
 	protected array $errors     = [];
 
 	public function __construct(
@@ -45,19 +45,19 @@ class Route extends LeagueRoute
 		return $this->validation;
 	}
 
-	public function setMeta(array $meta): self
+	public function setConfig(array $config): self
 	{
-		$this->meta = $meta;
+		$this->config = $config;
 		return $this;
 	}
 
-	public function getAllMeta(): array
+	public function getAllConfig(): array
 	{
-		return $this->meta;
+		return $this->config;
 	}
 
-	public function getMeta(string $key, mixed $default = false): mixed
+	public function getConfig(string $key, mixed $default = false): mixed
 	{
-		return $this->meta[$key] ?? $default;
+		return $this->config[$key] ?? $default;
 	}
 }
