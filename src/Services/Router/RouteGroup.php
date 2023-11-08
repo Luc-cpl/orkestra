@@ -1,11 +1,11 @@
 <?php
 
-namespace Orkestra\Router;
+namespace Orkestra\Services\Router;
 
 use Orkestra\App;
-use Orkestra\Router\Route;
-use Orkestra\Router\Traits\RouteCollectionTrait;
-use Orkestra\Router\Traits\RouteStrategyTrait;
+use Orkestra\Services\Router\Route;
+use Orkestra\Services\Router\Traits\RouteCollectionTrait;
+use Orkestra\Services\Router\Traits\RouteStrategyTrait;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
 

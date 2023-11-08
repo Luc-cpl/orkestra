@@ -1,11 +1,11 @@
 <?php
 
-namespace Orkestra\Router;
+namespace Orkestra\Services\Router;
 
 use Orkestra\App;
 
-use Orkestra\Router\Middlewares\ValidationMiddleware;
-use Orkestra\Router\Traits\RouteStrategyTrait;
+use Orkestra\Services\Router\Middlewares\ValidationMiddleware;
+use Orkestra\Services\Router\Traits\RouteStrategyTrait;
 
 use League\Route\Route as LeagueRoute;
 

@@ -28,14 +28,7 @@ abstract class BaseHtmlController
 	protected array $scripts = [];
 	protected array $styles  = [];
 
-	protected string $contentWrapper = '%s';
-
 	abstract protected function content(ServerRequestInterface $request, array $args): string;
-
-	protected function setContentWrapper(string $wrapper): void
-	{
-		$this->contentWrapper = $wrapper;
-	}
 
 	protected function language(string $lang): void
 	{
@@ -130,11 +123,10 @@ abstract class BaseHtmlController
 	public function __get(string $name)
 	{
 		return match ($name) {
-			'lang'           => $this->lang,
-			'headers'        => $this->headers,
-			'scripts'        => $this->scripts,
-			'styles'         => $this->styles,
-			'contentWrapper' => $this->contentWrapper,
+			'lang'    => $this->lang,
+			'headers' => $this->headers,
+			'scripts' => $this->scripts,
+			'styles'  => $this->styles,
 			default => null,
 		};
 	}
@@ -156,8 +148,6 @@ abstract class BaseHtmlController
 			return $response->withStatus(200);
 		}
 
-		$fullContent = sprintf($this->contentWrapper, $content);
-
 		$response->getBody()->write(<<<HTML
 			<!DOCTYPE html>
 			<html lang="{$this->lang}">
@@ -167,7 +157,7 @@ abstract class BaseHtmlController
 					{$this->generateStyles()}
 				</head>
 				<body>
-					{$fullContent}
+					{$content}
 					{$this->generateScripts('footer')}
 				</body>
 			</html>

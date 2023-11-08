@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Router\Middlewares;
+namespace Orkestra\Services\Router\Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

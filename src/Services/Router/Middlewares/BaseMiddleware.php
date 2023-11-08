@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Router\Middlewares;
+namespace Orkestra\Services\Router\Middlewares;
 
 use Orkestra\App;
 

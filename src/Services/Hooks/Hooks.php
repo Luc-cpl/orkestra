@@ -1,13 +1,11 @@
 <?php
 
-namespace Orkestra\Services;
+namespace Orkestra\Services\Hooks;
 
 use Orkestra\Interfaces\HooksInterface;
-use Orkestra\Models\Hook;
-use Closure;
-use ReflectionFunction;
+use Orkestra\Services\Hooks\Hook;
 
-final class HooksService implements HooksInterface
+final class Hooks implements HooksInterface
 {
 	protected array $hooks = [];
 	protected string $current = '';
@@ -55,7 +53,7 @@ final class HooksService implements HooksInterface
 		$this->hooks[$tag] ??= [];
 
 		foreach ($this->hooks[$tag] as $index => $hook) {
-			if ($hook->priority === $priority && $this->isSameCallback($hook, $callback)) {
+			if ($hook->priority === $priority && $hook->isSameCallback($callback)) {
 				unset($this->hooks[$tag][$index]);
 			}
 		}
@@ -90,7 +88,7 @@ final class HooksService implements HooksInterface
 		$this->hooks[$tag] ??= [];
 
 		foreach ($this->hooks[$tag] as $hook) {
-			if ($this->isSameCallback($hook, $callable)) {
+			if ($hook->isSameCallback($callable)) {
 				return true;
 			}
 		}
@@ -125,13 +123,5 @@ final class HooksService implements HooksInterface
 	public function current(): string
 	{
 		return $this->current;
-	}
-
-	protected function isSameCallback(Hook $hook, callable $callback): bool
-	{
-
-		$callback = Closure::fromCallable($callback);
-		$cbString = (string) new ReflectionFunction($callback);
-		return $cbString === (string) new ReflectionFunction($hook->callback);
 	}
 }

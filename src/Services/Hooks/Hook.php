@@ -1,12 +1,13 @@
 <?php
 
-namespace Orkestra\Models;
+namespace Orkestra\Services\Hooks;
 
 use Closure;
+use ReflectionFunction;
 
 class Hook
 {
-	public readonly Closure $callback;
+	protected Closure $callback;
 
 	public int $count = 0;
 
@@ -17,6 +18,14 @@ class Hook
 	) {
 		$this->count = 0;
 		$this->callback = Closure::fromCallable($callback);
+	}
+
+	public function isSameCallback(callable $callback): bool
+	{
+
+		$callback = Closure::fromCallable($callback);
+		$cbString = (string) new ReflectionFunction($callback);
+		return $cbString === (string) new ReflectionFunction($this->callback);
 	}
 
 	public function __invoke(...$args): mixed

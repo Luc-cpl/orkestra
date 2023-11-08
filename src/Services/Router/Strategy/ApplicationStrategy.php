@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Router\Strategy;
+namespace Orkestra\Services\Router\Strategy;
 
 use Orkestra\App;
 use League\Route\Http\Exception\{MethodNotAllowedException, NotFoundException};

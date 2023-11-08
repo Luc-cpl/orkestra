@@ -1,14 +1,14 @@
 <?php
 
-namespace Orkestra\Services;
+namespace Orkestra\Services\Router;
 
 use Orkestra\App;
-use Orkestra\Router\Route;
-use Orkestra\Router\RouteGroup;
-use Orkestra\Router\Traits\RouteCollectionTrait;
+use Orkestra\Services\Router\Route;
+use Orkestra\Services\Router\RouteGroup;
+use Orkestra\Services\Router\Traits\RouteCollectionTrait;
 use Orkestra\Interfaces\RouterInterface;
 
-use League\Route\Router;
+use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
  * Extends the League Router class.
  * This way we can add custom functionality as custom validation and meta data.
  */
-class RouterService extends Router implements RouterInterface
+class Router extends LeagueRouter implements RouterInterface
 {
     use RouteCollectionTrait;
 

@@ -5,13 +5,13 @@ namespace Orkestra\Providers;
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
-use Orkestra\Services\RouterService as Router;
-use Orkestra\Router\Middlewares\JsonMiddleware;
+use Orkestra\Services\Router\Router;
+use Orkestra\Services\Router\Middlewares\JsonMiddleware;
 
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
 
-use Orkestra\Router\Strategy\ApplicationStrategy;
+use Orkestra\Services\Router\Strategy\ApplicationStrategy;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;

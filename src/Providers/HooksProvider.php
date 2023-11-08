@@ -6,7 +6,7 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Interfaces\HooksInterface;
 
-use Orkestra\Services\HooksService;
+use Orkestra\Services\Hooks\Hooks;
 
 class HooksProvider implements ProviderInterface
 {
@@ -21,7 +21,7 @@ class HooksProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
-		$app->singleton(HooksInterface::class, HooksService::class);
+		$app->singleton(HooksInterface::class, Hooks::class);
 	}
 
 	/**
@@ -32,6 +32,5 @@ class HooksProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-
 	}
 }
