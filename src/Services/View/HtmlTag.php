@@ -13,6 +13,11 @@ class HtmlTag implements Stringable
 	) {
 	}
 
+	public function getAttribute(string $string): mixed
+	{
+		return isset($this->attributes[$string]) ? $this->attributes[$string] : null;
+	}
+
 	public function setAttributes(array $attributes): self
 	{
 		return new self($this->tag, $attributes, $this->content);
@@ -27,10 +32,6 @@ class HtmlTag implements Stringable
 	{
 		$attributes = '';
 		foreach ($this->attributes as $key => $value) {
-			if (is_numeric($key)) {
-				$attributes .= " $value";
-				continue;
-			}
 			$attributes .= match ($value) {
 				false => '',
 				true  => " $key",
