@@ -59,7 +59,10 @@ trait AppContainerTrait
     public function provider(string $class): void
     {
         $interface = ProviderInterface::class;
-        if (!class_exists($class) || !in_array($interface, class_implements($class), true)) {
+        if (!class_exists($class)) {
+            throw new Exception("Provider \"$class\" does not exist");
+        }
+        if (!in_array($interface, class_implements($class), true)) {
             throw new Exception("Provider \"$class\" must implement \"$interface\"");
         }
         $this->providers[] = $class;
