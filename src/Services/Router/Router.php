@@ -3,10 +3,10 @@
 namespace Orkestra\Services\Router;
 
 use Orkestra\App;
+use Orkestra\Services\Router\Interfaces\RouterInterface;
 use Orkestra\Services\Router\Route;
 use Orkestra\Services\Router\RouteGroup;
 use Orkestra\Services\Router\Traits\RouteCollectionTrait;
-use Orkestra\Interfaces\RouterInterface;
 
 use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;

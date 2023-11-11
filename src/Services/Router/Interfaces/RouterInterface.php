@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Interfaces;
+namespace Orkestra\Services\Router\Interfaces;
 
 use League\Route\Middleware\MiddlewareAwareInterface;
 use League\Route\RouteCollectionInterface;

@@ -5,6 +5,7 @@ namespace Orkestra\Services\View\Twig;
 use Orkestra\Services\View\HtmlTag;
 
 use InvalidArgumentException;
+use Orkestra\Interfaces\ConfigurationInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -25,11 +26,18 @@ class OrkestraExtension extends AbstractExtension
 	 */
 	protected HtmlTag $htmlBlock;
 
+
+	public function __construct(
+		protected ConfigurationInterface $config,
+	) {
+	}
+
 	public function getFunctions()
 	{
 		return [
 			new TwigFunction('header_tag', $this->enqueueHeaderTag(...)),
 			new TwigFunction('script', $this->enqueueScript(...)),
+			new TwigFunction('style', $this->enqueueStyle(...)),
 			new TwigFunction('const', $this->enqueueConst(...)),
 			new TwigFunction('language', $this->setLanguage(...)),
 		];
@@ -80,6 +88,11 @@ class OrkestraExtension extends AbstractExtension
 		if (!in_array($strategy, $expectedStrategies, true)) {
 			throw new InvalidArgumentException('Invalid script strategy');
 		}
+		// If is relative we sould get our settings url
+		if (strpos($src, 'http') === false) {
+			$assetsUrl = $this->config->get('assets_url');
+			$src = $assetsUrl . ltrim($src, '/');
+		}
 
 		$tag = new HtmlTag('script', [
 			'src'   => $src,
@@ -93,6 +106,20 @@ class OrkestraExtension extends AbstractExtension
 		}
 
 		$this->footerTags[] = $tag;
+	}
+
+	public function enqueueStyle(string $href): void
+	{
+		// If is relative we sould get our settings url
+		if (strpos($href, 'http') === false) {
+			$assetsUrl = $this->config->get('assets_url');
+			$href = $assetsUrl . ltrim($href, '/');
+		}
+
+		$this->headTags[] = new HtmlTag('link', [
+			'rel'  => 'stylesheet',
+			'href' => $href,
+		]);
 	}
 
 	protected function enqueueConst(string $name = '', array $value, string $placement = 'head'): void
