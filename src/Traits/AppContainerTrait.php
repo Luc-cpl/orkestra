@@ -2,17 +2,15 @@
 
 namespace Orkestra\Traits;
 
-use Orkestra\Interfaces\ProviderInterface;
+use Orkestra\AppBind;
 
-use DI\Definition\Helper\CreateDefinitionHelper;
-use DI\Definition\Helper\AutowireDefinitionHelper;
+use Orkestra\Interfaces\ProviderInterface;
+use Orkestra\Interfaces\ConfigurationInterface;
 use DI\Container;
-use DI;
 use DI\DependencyException;
 use DI\NotFoundException;
 use DI\ContainerBuilder;
 use Exception;
-use Orkestra\Interfaces\ConfigurationInterface;
 
 /**
  * Implement dependency injection functionality for the application.
@@ -88,20 +86,12 @@ trait AppContainerTrait
      * @param string $name        Name of the service
      * @param mixed  $service     Service to bind to the container
      * @param bool   $useAutowire Use autowire or create to bind the service
-     * @return CreateDefinitionHelper|AutowireDefinitionHelper|null The definition helper if the service is a class, or null if the service is not a class
+     * @return AppBind A bind instance that allows manage the service constructor and properties
      * @throws Exception If the class specified in $service does not exist
      */
-    public function bind(string $name, mixed $service, bool $useAutowire = true): CreateDefinitionHelper|AutowireDefinitionHelper|null
+    public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind
     {
-        $isClassString = is_string($service);
-        if ($isClassString && !class_exists($service)) {
-            throw new Exception("Class \"$service\" does not exist");
-        }
-        $constructor = $isClassString
-            ? ($useAutowire ? DI\autowire($service) : DI\create($service))
-            : $service;
-        $this->container->set($name, $constructor);
-        return $isClassString ? $constructor : null;
+        return new AppBind($this->container, $name, $service, $useAutowire);
     }
 
     /**
@@ -110,9 +100,10 @@ trait AppContainerTrait
      * @param string $name
      * @param mixed  $service
      * @param bool   $useAutowire
-     * @return CreateDefinitionHelper|null The definition helper if the service is a class, or null if the service is not a class
+     * @return AppBind A bind instance that allows manage the service constructor and properties
+     * @throws Exception If the class specified in $service does not exist
      */
-    public function singleton(string $name, mixed $service, bool $useAutowire = true): ?CreateDefinitionHelper
+    public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
     {
         $bind = $this->bind($name, $service, $useAutowire);
         $this->singletons[$name] = true;

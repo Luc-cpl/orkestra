@@ -10,9 +10,7 @@ class View implements ViewInterface
 {
 	public function __construct(
 		protected Environment $twig,
-		OrkestraExtension $extension,
 	) {
-		$twig->addExtension($extension);
 	}
 
 	public function render($name, array $context = []): string
