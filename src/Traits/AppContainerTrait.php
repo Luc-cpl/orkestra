@@ -116,9 +116,12 @@ trait AppContainerTrait
      * otherwise, it will create a new instance.
      *
      * @template T
-     * @param string|class-string<T> $name Entry name or a class name.
-     * @param array $params Parameters to pass to the constructor.
-     * @return mixed|T
+     * @param class-string<T> $name   Entry name or a class name.
+     * @param array           $params Optional parameters to use to build the entry. Use this to force
+     *                                specific parameters to specific values. Parameters not defined in this
+     *                                array will be resolved using the container.
+     * @return T
+     * @throws InvalidArgumentException The name parameter must be of type string.
      * @throws DependencyException Error while resolving the entry.
      * @throws NotFoundException No entry found for the given name.
      */

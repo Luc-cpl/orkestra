@@ -27,7 +27,7 @@ class CommandsProvider implements ProviderInterface
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
 			// 'app_name' => fn ($value) => is_string($value) ? true : 'App name must be a string',
-			'commands' => function($value) {
+			'commands' => function ($value) {
 				$extendedClass = Command::class;
 				if (!is_array($value)) {
 					return "Commands must be an array with command classes extending \"$extendedClass\"";

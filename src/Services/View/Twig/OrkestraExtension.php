@@ -122,7 +122,7 @@ class OrkestraExtension extends AbstractExtension
 		]);
 	}
 
-	protected function enqueueConst(string $name = '', array $value, string $placement = 'head'): void
+	protected function enqueueConst(string $name, array $value, string $placement = 'head'): void
 	{
 		$expectedPlacements = ['head', 'footer'];
 		if (!in_array($placement, $expectedPlacements, true)) {
