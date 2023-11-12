@@ -3,6 +3,7 @@
 namespace Orkestra;
 
 use Orkestra\Interfaces\ConfigurationInterface;
+use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Traits\AppContainerTrait;
 use Orkestra\Traits\AppHooksTrait;
 
@@ -31,6 +32,9 @@ class App implements ContainerInterface
      */
     public function slug(): string
     {
+        /**
+         * @var string
+         */
         return $this->config()->get('slug') ?? 'app';
     }
 
@@ -65,6 +69,9 @@ class App implements ContainerInterface
         $this->hookCall('boot.before', $this);
 
         foreach ($this->getProviders() as $provider) {
+            /**
+             * @var class-string<ProviderInterface> $provider
+             */
             $this->get($provider)->boot($this);
         }
 

@@ -29,6 +29,13 @@ abstract class BaseHtmlController
 		return $this;
 	}
 
+	/**
+	 * Render a view
+	 *
+	 * @param string $name
+	 * @param mixed[] $context
+	 * @return ResponseInterface
+	 */
 	protected function render(string $name, array $context = []): ResponseInterface
 	{
 		$content = $this->view->render($name, $context);

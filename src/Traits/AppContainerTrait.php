@@ -11,6 +11,7 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use DI\ContainerBuilder;
 use Exception;
+use InvalidArgumentException;
 
 /**
  * Implement dependency injection functionality for the application.
@@ -18,8 +19,17 @@ use Exception;
  */
 trait AppContainerTrait
 {
+
     private Container $container;
+
+    /**
+     * @var array<string, bool>
+     */
     private array $singletons = [];
+
+    /**
+     * @var string[]
+     */
     private array $providers = [];
 
     /**
@@ -34,6 +44,10 @@ trait AppContainerTrait
 
         $isProduction = $config->get('env') === 'production';
         $cacheDir     = $config->get('root');
+
+        if (!is_string($cacheDir)) {
+            throw new Exception('The root directory must be a string');
+        }
 
         if ($isProduction && $cacheDir) {
             $containerBuilder->enableCompilation($cacheDir);
@@ -65,6 +79,8 @@ trait AppContainerTrait
         }
         $this->providers[] = $class;
         $this->singleton($class, $class, false);
+
+        /** @var ProviderInterface $instance */
         $instance = $this->get($class);
         $instance->register($this);
         return;
@@ -73,7 +89,7 @@ trait AppContainerTrait
     /**
      * Get the providers
      * 
-     * @return array
+     * @return string[]
      */
     protected function getProviders(): array
     {
@@ -117,7 +133,7 @@ trait AppContainerTrait
      *
      * @template T
      * @param class-string<T> $name   Entry name or a class name.
-     * @param array           $params Optional parameters to use to build the entry. Use this to force
+     * @param mixed[]         $params Optional parameters to use to build the entry. Use this to force
      *                                specific parameters to specific values. Parameters not defined in this
      *                                array will be resolved using the container.
      * @return T
@@ -147,8 +163,8 @@ trait AppContainerTrait
     /**
      * Run a callback if the service is available
      *
-     * @param string   $name
-     * @param callable $callback
+     * @param class-string $name
+     * @param callable     $callback
      * @return mixed
      */
     public function runIfAvailable(string $name, callable $callback): mixed

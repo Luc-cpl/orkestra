@@ -13,7 +13,14 @@ class View implements ViewInterface
 	) {
 	}
 
-	public function render($name, array $context = []): string
+	/**
+	 * Render the view
+	 *
+	 * @param string  $name
+	 * @param mixed[] $context
+	 * @return string
+	 */
+	public function render(string $name, array $context = []): string
 	{
 		$name = rtrim($name, '.twig') . '.twig';
 

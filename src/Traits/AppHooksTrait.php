@@ -54,13 +54,14 @@ trait AppHooksTrait
 	/**
 	 * Add a hook if the service is available
 	 *
-	 * @param string $tag
-	 * @param mixed  ...$args
-	 * @return mixed
+	 * @param string   $tag
+	 * @param callable $callback
+	 * @param int      $priority
+	 * @return bool
 	 */
 	public function hookRegister(string $tag, callable $callback, int $priority = 10): bool
 	{
-		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $callback, $priority) {
+		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $callback, $priority): bool {
 			return $hooks->register("{$this->slug()}.$tag", $callback, $priority);
 		});
 	}

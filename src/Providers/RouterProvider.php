@@ -68,7 +68,7 @@ class RouterProvider implements ProviderInterface
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
 			'routes' => function ($value) {
-				return is_string($value) ?? 'The routes config must be a string path to a file';
+				return is_string($value) ? true : 'The routes config must be a string path to a file';
 			},
 		]);
 	}

@@ -37,7 +37,7 @@ class AppBind
 	 *
 	 * @param mixed ...$parameters Parameters to use for calling the constructor of the class.
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function constructor(mixed ...$parameters): self
 	{
@@ -54,7 +54,7 @@ class AppBind
 	 * @param string $property Entry in which to inject the value.
 	 * @param mixed  $value    Value to inject in the property.
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function property(string $property, mixed $value): self
 	{
@@ -77,7 +77,7 @@ class AppBind
 	 * @param string $method       Name of the method to call.
 	 * @param mixed ...$parameters Parameters to use for calling the method.
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function method(string $method, mixed ...$parameters): self
 	{

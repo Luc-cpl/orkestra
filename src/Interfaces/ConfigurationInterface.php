@@ -2,6 +2,8 @@
 
 namespace Orkestra\Interfaces;
 
+use Exception;
+
 interface ConfigurationInterface
 {
 	/**

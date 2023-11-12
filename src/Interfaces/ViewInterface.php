@@ -7,9 +7,9 @@ interface ViewInterface
 	/**
 	 * Render the view
 	 *
-	 * @param string $name
-	 * @param array $context
+	 * @param string  $name
+	 * @param mixed[] $context
 	 * @return string
 	 */
-	public function render($name, array $context = []): string;
+	public function render(string $name, array $context = []): string;
 }

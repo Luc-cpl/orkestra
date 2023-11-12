@@ -8,23 +8,26 @@ use Exception;
 
 class Configuration implements ConfigurationInterface
 {
+	/**
+	 * @param array<string, mixed> $config
+	 */
 	public function __construct(
 		protected array $config = []
 	) {
 		// Add the default validation
 		$this->set('validation', [
-			'env'  => fn ($value) => 
-				!in_array($value, ['development', 'production'], true)
-					? 'env must be either "development" or "production"'
-					: true,
+			'env'  => fn ($value) =>
+			!in_array($value, ['development', 'production'], true)
+				? 'env must be either "development" or "production"'
+				: true,
 			'root' => fn ($value) =>
-				!is_dir($value)
-					? "root \"$value\" is not a directory"
-					: true,
+			!is_dir($value)
+				? "root \"$value\" is not a directory"
+				: true,
 			'slug' => fn ($value) =>
-				!empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
-					? "slug \"$value\" is not valid"
-					: true,
+			!empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
+				? "slug \"$value\" is not valid"
+				: true,
 		]);
 	}
 
@@ -36,16 +39,19 @@ class Configuration implements ConfigurationInterface
 	 */
 	public function validate(): bool
 	{
+		/**
+		 * @var array<string, callable> $validation
+		 */
 		$validation = $this->get('validation');
 		if (!$validation) {
 			return true;
 		}
 		foreach ($validation as $key => $validator) {
-			$value = isset($this->config[$key]) ? $this->config[$key] : null;
+			$value = $this->get($key);
 			$valid = call_user_func($validator, $value);
 			if (!$valid || is_string($valid)) {
 				$message = "Invalid configuration for \"$key\": ";
-				$message .= is_string($valid) ? $valid : "value \"$value\" is not valid";
+				$message .= is_string($valid) ? $valid : "The value does not pass the validation";
 				throw new Exception($message);
 			}
 		}
@@ -64,7 +70,8 @@ class Configuration implements ConfigurationInterface
 					throw new Exception($errorMessage);
 				}
 			}
-			$this->config[$key] = isset($this->config[$key]) ? array_merge($this->config[$key], $value) : $value;
+			$current = (array) $this->config[$key];
+			$this->config[$key] = array_filter(array_merge($current, $value));
 			return $this;
 		}
 		$this->config[$key] = $value;

@@ -5,7 +5,6 @@ namespace Orkestra\Providers;
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
-use Symfony\Contracts\Service\ResetInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
@@ -22,7 +21,7 @@ class CommandsProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
-		$app->singleton(ResetInterface::class, Application::class);
+		$app->bind(Application::class, Application::class);
 
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
@@ -55,7 +54,7 @@ class CommandsProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		$console = $app->get(ResetInterface::class);
+		$console = $app->get(Application::class);
 
 		// Register commands
 		$commands = $app->config()->get('commands');

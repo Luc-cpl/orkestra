@@ -22,7 +22,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
 	 * Return a JSON response or throw an exception with the given error
 	 *
 	 * @param Request $request
-	 * @param string  $title
+	 * @param string  $error
 	 * @param string  $message
 	 * @param string  $description
 	 * @param array   $errors

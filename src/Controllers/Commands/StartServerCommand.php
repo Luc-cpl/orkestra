@@ -22,6 +22,9 @@ class StartServerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /**
+         * @var string $port
+         */
         $port = $input->getOption('port');
 
         $output->writeln("Starting the test server on port $port...");
