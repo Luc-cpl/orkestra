@@ -71,8 +71,7 @@ class Configuration implements ConfigurationInterface
 				}
 			}
 			$current = (array) $this->get($key);
-			$this->config[$key] = array_filter(array_merge($current, $value));
-			return $this;
+			$value   = array_filter(array_merge($current, $value));
 		}
 		$this->config[$key] = $value;
 		return $this;
