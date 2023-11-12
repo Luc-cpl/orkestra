@@ -70,7 +70,7 @@ class Configuration implements ConfigurationInterface
 					throw new Exception($errorMessage);
 				}
 			}
-			$current = (array) $this->config[$key];
+			$current = (array) $this->get($key);
 			$this->config[$key] = array_filter(array_merge($current, $value));
 			return $this;
 		}
