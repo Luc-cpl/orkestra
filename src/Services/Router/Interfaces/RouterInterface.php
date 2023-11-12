@@ -2,6 +2,8 @@
 
 namespace Orkestra\Services\Router\Interfaces;
 
+use Orkestra\Services\Router\Route;
+
 use League\Route\Middleware\MiddlewareAwareInterface;
 use League\Route\RouteCollectionInterface;
 use League\Route\RouteConditionHandlerInterface;
@@ -18,7 +20,7 @@ interface RouterInterface extends
 	/**
 	 * Get all registered routes.
 	 * 
-	 * @return array
+	 * @return Route[]
 	 */
 	public function getRoutes(): array;
 }

@@ -6,6 +6,9 @@ use Stringable;
 
 class HtmlTag implements Stringable
 {
+	/**
+	 * @param array<string, bool|string|int> $attributes
+	 */
 	public function __construct(
 		public readonly string $tag,
 		public readonly array  $attributes = [],
@@ -18,6 +21,9 @@ class HtmlTag implements Stringable
 		return isset($this->attributes[$string]) ? $this->attributes[$string] : null;
 	}
 
+	/**
+	 * @param array<string, bool|string|int> $attributes
+	 */
 	public function setAttributes(array $attributes): self
 	{
 		return new self($this->tag, $attributes, $this->content);

@@ -16,14 +16,21 @@ use Twig\Extra\Markdown\MarkdownInterface;
 use Twig\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
 use Twig\RuntimeLoader\RuntimeLoaderInterface;
+use Twig\Extension\AbstractExtension;
 
 class ViewProvider implements ProviderInterface
 {
+	/**
+	 * @var array<class-string<AbstractExtension>>
+	 */
 	protected array $defaultExtensions = [
 		MarkdownExtension::class,
 		OrkestraExtension::class,
 	];
 
+	/**
+	 * @var array<class-string, class-string>
+	 */
 	protected array $runtimeInterfaces = [
 		MarkdownInterface::class => DefaultMarkdown::class,
 	];

@@ -21,11 +21,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
 	/**
 	 * Return a JSON response or throw an exception with the given error
 	 *
-	 * @param Request $request
-	 * @param string  $error
-	 * @param string  $message
-	 * @param string  $description
-	 * @param array   $errors
+	 * @param Request                              $request
+	 * @param string                               $error
+	 * @param string                               $message
+	 * @param string                               $description
+	 * @param array<string, array<string, string>> $errors
 	 * @param int     $code
 	 *
 	 * @return ResponseInterface
@@ -40,7 +40,15 @@ abstract class BaseMiddleware implements MiddlewareInterface
 		int     $code   = 400,
 	): ResponseInterface {
 
-		$this->app->hookCall('middlewares.error', $request, $error, $message, $description, $errors, $code);
+		$this->app->hookCall(
+			'middlewares.error',
+			$request,
+			$error,
+			$message,
+			$description,
+			$errors,
+			$code
+		);
 
 		$contentType = $request->getHeaderLine('Content-Type');
 

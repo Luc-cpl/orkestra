@@ -72,6 +72,11 @@ class OrkestraExtension extends AbstractExtension
 		$this->htmlBlock = $this->getHtmlBlock()->setAttributes(['lang' => $lang]);
 	}
 
+	/**
+	 * @param string               $tag
+	 * @param array<string, mixed> $attributes
+	 * @param string               $content
+	 */
 	protected function enqueueHeaderTag(string $tag, array $attributes, string $content = ''): void
 	{
 		$this->headTags[] = new HtmlTag($tag, $attributes, $content);
@@ -110,7 +115,7 @@ class OrkestraExtension extends AbstractExtension
 
 	public function enqueueStyle(string $href): void
 	{
-		// If is relative we sould get our settings url
+		// If is relative we should get our settings url
 		if (strpos($href, 'http') === false) {
 			$assetsUrl = $this->config->get('assets_url');
 			$href = $assetsUrl . ltrim($href, '/');
@@ -122,6 +127,11 @@ class OrkestraExtension extends AbstractExtension
 		]);
 	}
 
+	/**
+	 * @param string               $name
+	 * @param array<string, mixed> $value
+	 * @param string               $placement
+	 */
 	protected function enqueueConst(string $name, array $value, string $placement = 'head'): void
 	{
 		$expectedPlacements = ['head', 'footer'];

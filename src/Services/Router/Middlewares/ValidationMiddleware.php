@@ -10,6 +10,10 @@ use Rakit\Validation\Validator;
 
 class ValidationMiddleware extends BaseMiddleware
 {
+	/**
+	 * @param Validator             $validator
+	 * @param array<string, string> $rules
+	 */
 	public function __construct(
 		protected Validator $validator,
 		protected array     $rules,

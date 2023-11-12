@@ -43,6 +43,10 @@ class Router extends LeagueRouter implements RouterInterface
         parent::__construct($routeCollector);
     }
 
+    /**
+     * {@inheritdoc}
+     * @param callable $handler
+     */
     public function map(string $method, string $path, $handler): Route
     {
         $path  = sprintf('/%s', ltrim($path, '/'));

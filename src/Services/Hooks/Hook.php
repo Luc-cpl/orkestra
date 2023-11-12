@@ -13,8 +13,8 @@ class Hook
 
 	public function __construct(
 		public readonly string $name,
-		public readonly int    $priority = 10,
-		callable $callback = null,
+		callable $callback,
+		public readonly int $priority = 10,
 	) {
 		$this->count = 0;
 		$this->callback = Closure::fromCallable($callback);
@@ -28,7 +28,7 @@ class Hook
 		return $cbString === (string) new ReflectionFunction($this->callback);
 	}
 
-	public function __invoke(...$args): mixed
+	public function __invoke(mixed ...$args): mixed
 	{
 		$this->count++;
 		return call_user_func_array($this->callback, $args);

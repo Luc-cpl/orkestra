@@ -56,7 +56,9 @@ class CommandsProvider implements ProviderInterface
 	{
 		$console = $app->get(Application::class);
 
-		// Register commands
+		/**
+		 * @var array<class-string<Command>> $commands
+		 */
 		$commands = $app->config()->get('commands');
 
 		foreach ($commands as $command) {

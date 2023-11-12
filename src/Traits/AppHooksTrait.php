@@ -36,18 +36,20 @@ trait AppHooksTrait
 	 * Query a hook if the service is available
 	 * Return the first argument if the hook is not available
 	 *
+	 * @template T
 	 * @param string $tag
+	 * @param T  $value
 	 * @param mixed  ...$args
-	 * @return mixed
+	 * @return T
 	 */
-	public function hookQuery(string $tag, ...$args): mixed
+	public function hookQuery(string $tag, mixed $value, mixed ...$args): mixed
 	{
 		if (!$this->has(HooksInterface::class)) {
 			return $args[0];
 		}
 
-		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $args) {
-			return $hooks->query("{$this->slug()}.$tag", ...$args);
+		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $value, $args) {
+			return $hooks->query("{$this->slug()}.$tag", $value, ...$args);
 		});
 	}
 

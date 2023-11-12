@@ -27,10 +27,13 @@ class RouteGroup extends LeagueRouteGroup
 
     /**
      * {@inheritdoc}
+     * @param callable $handler
      */
     public function map(string $method, string $path, $handler): Route
     {
-        $path  = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $path = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+
+        /** @var Route $route */
         $route = $this->collection->map($method, $path, $handler);
 
         $route->setParentGroup($this);

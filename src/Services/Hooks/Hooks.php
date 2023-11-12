@@ -7,10 +7,14 @@ use Orkestra\Services\Hooks\Hook;
 
 final class Hooks implements HooksInterface
 {
+	/**
+	 * @var array<string, array<Hook>>
+	 */
 	protected array $hooks = [];
+
 	protected string $current = '';
 
-	public function call(string $tag, ...$args): void
+	public function call(string $tag, mixed ...$args): void
 	{
 		$this->hooks[$tag] ??= [];
 		$this->current = $tag;
@@ -22,18 +26,18 @@ final class Hooks implements HooksInterface
 		$this->current = '';
 	}
 
-	public function query(string $tag, ...$args): mixed
+	public function query(string $tag, mixed $value, mixed ...$args): mixed
 	{
 		$this->hooks[$tag] ??= [];
 		$this->current = $tag;
 
 		foreach ($this->hooks[$tag] as $hook) {
-			$args[0] = $hook(...$args);
+			$value = $hook($value, ...$args);
 		}
 
 		$this->current = '';
 
-		return $args[0];
+		return $value;
 	}
 
 	public function register(string $tag, callable $callback, int $priority = 10): bool
@@ -41,7 +45,7 @@ final class Hooks implements HooksInterface
 		// If the hook already exists, remove it first.
 		$this->remove($tag, $callback, $priority);
 
-		$this->hooks[$tag][] = new Hook($tag, $priority, $callback);
+		$this->hooks[$tag][] = new Hook($tag, $callback, $priority);
 
 		return usort($this->hooks[$tag], function ($a, $b) {
 			return $a->priority <=> $b->priority;
@@ -79,7 +83,7 @@ final class Hooks implements HooksInterface
 		return true;
 	}
 
-	public function has(string $tag, callable|bool $callable = false): bool
+	public function has(string $tag, callable|false $callable = false): bool
 	{
 		if ($callable === false) {
 			return isset($this->hooks[$tag]);

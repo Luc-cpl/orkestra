@@ -22,9 +22,9 @@ class Route extends LeagueRoute implements
 
 	public function __construct(
 		protected App $app,
-		string $method,
-		string $path,
-		$handler,
+		string          $method,
+		string          $path,
+		string|callable $handler,
 	) {
 		parent::__construct($method, $path, $handler);
 	}
