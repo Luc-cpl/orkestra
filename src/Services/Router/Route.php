@@ -28,4 +28,9 @@ class Route extends LeagueRoute implements
 	) {
 		parent::__construct($method, $path, $handler);
 	}
+
+	public function getParentGroup(): ?RouteGroup
+	{
+		return $this->group;
+	}
 }

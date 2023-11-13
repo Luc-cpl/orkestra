@@ -6,19 +6,23 @@ use Orkestra\App;
 use Orkestra\Services\Router\Route;
 use Orkestra\Services\Router\Traits\RouteCollectionTrait;
 use Orkestra\Services\Router\Traits\RouteStrategyTrait;
+use Orkestra\Services\Router\Traits\RouteConfigTrait;
+use Orkestra\Services\Router\Interfaces\RouteConfigInterface;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
 
 use League\Route\RouteCollectionInterface;
 
-class RouteGroup extends LeagueRouteGroup
+class RouteGroup extends LeagueRouteGroup implements
+    RouteConfigInterface
 {
     use RouteCollectionTrait;
     use RouteStrategyTrait;
+    use RouteConfigTrait;
 
     public function __construct(
         protected App $app,
-        string $prefix,
+        string   $prefix,
         callable $callback,
         RouteCollectionInterface $collection
     ) {
