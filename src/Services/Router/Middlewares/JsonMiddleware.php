@@ -16,6 +16,7 @@ class JsonMiddleware implements MiddlewareInterface
 
         if (strpos($contentType, 'application/json') === 0) {
             $body = $request->getBody()->getContents();
+            /** @var ?object $jsonData */
             $jsonData = json_decode($body, true);
 
             if ($jsonData === null) {

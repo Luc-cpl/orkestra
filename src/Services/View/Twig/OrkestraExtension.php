@@ -73,9 +73,9 @@ class OrkestraExtension extends AbstractExtension
 	}
 
 	/**
-	 * @param string               $tag
-	 * @param array<string, mixed> $attributes
-	 * @param string               $content
+	 * @param string                         $tag
+	 * @param array<string, bool|string|int> $attributes
+	 * @param string                         $content
 	 */
 	protected function enqueueHeaderTag(string $tag, array $attributes, string $content = ''): void
 	{
@@ -93,10 +93,10 @@ class OrkestraExtension extends AbstractExtension
 		if (!in_array($strategy, $expectedStrategies, true)) {
 			throw new InvalidArgumentException('Invalid script strategy');
 		}
-		// If is relative we sould get our settings url
+		// If is relative we should get our settings url
 		if (strpos($src, 'http') === false) {
-			$assetsUrl = $this->config->get('assets_url');
-			$src = $assetsUrl . ltrim($src, '/');
+			$publicUrl = $this->config->get('public_url');
+			$src = $publicUrl . ltrim($src, '/');
 		}
 
 		$tag = new HtmlTag('script', [
@@ -117,8 +117,8 @@ class OrkestraExtension extends AbstractExtension
 	{
 		// If is relative we should get our settings url
 		if (strpos($href, 'http') === false) {
-			$assetsUrl = $this->config->get('assets_url');
-			$href = $assetsUrl . ltrim($href, '/');
+			$publicUrl = $this->config->get('public_url');
+			$href = $publicUrl . ltrim($href, '/');
 		}
 
 		$this->headTags[] = new HtmlTag('link', [

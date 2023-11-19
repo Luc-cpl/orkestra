@@ -60,8 +60,9 @@ class ViewProvider implements ProviderInterface
 			RuntimeLoaderInterface $runtimeLoader,
 			LoaderInterface        $loader,
 		) use ($app) {
-			$isProduction = $app->config()->get('env') === 'production';
+			/** @var string $root */
 			$root         = $app->config()->get('root');
+			$isProduction = $app->config()->get('env') === 'production';
 
 			$app->hookCall('twig.loader', $loader);
 

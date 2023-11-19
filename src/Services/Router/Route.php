@@ -31,6 +31,7 @@ class Route extends LeagueRoute implements
 
 	public function getParentGroup(): ?RouteGroup
 	{
+		/** @var ?RouteGroup */
 		return $this->group;
 	}
 }

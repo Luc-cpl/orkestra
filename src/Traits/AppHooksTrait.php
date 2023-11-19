@@ -38,14 +38,14 @@ trait AppHooksTrait
 	 *
 	 * @template T
 	 * @param string $tag
-	 * @param T  $value
+	 * @param T      $value
 	 * @param mixed  ...$args
 	 * @return T
 	 */
 	public function hookQuery(string $tag, mixed $value, mixed ...$args): mixed
 	{
 		if (!$this->has(HooksInterface::class)) {
-			return $args[0];
+			return $value;
 		}
 
 		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $value, $args) {
@@ -63,6 +63,7 @@ trait AppHooksTrait
 	 */
 	public function hookRegister(string $tag, callable $callback, int $priority = 10): bool
 	{
+		/** @var bool */
 		return $this->runIfAvailable(HooksInterface::class, function (HooksInterface $hooks) use ($tag, $callback, $priority): bool {
 			return $hooks->register("{$this->slug()}.$tag", $callback, $priority);
 		});
