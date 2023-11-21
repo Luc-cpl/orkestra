@@ -1,14 +1,14 @@
 <?php
 
-namespace Orkestra\Services\Router;
+namespace Orkestra\Services\Http;
 
 use Orkestra\App;
 
-use Orkestra\Services\Router\Interfaces\RouteValidationInterface;
-use Orkestra\Services\Router\Interfaces\RouteConfigInterface;
-use Orkestra\Services\Router\Traits\RouteValidationTrait;
-use Orkestra\Services\Router\Traits\RouteStrategyTrait;
-use Orkestra\Services\Router\Traits\RouteConfigTrait;
+use Orkestra\Services\Http\Interfaces\RouteValidationInterface;
+use Orkestra\Services\Http\Interfaces\RouteConfigInterface;
+use Orkestra\Services\Http\Traits\RouteValidationTrait;
+use Orkestra\Services\Http\Traits\RouteStrategyTrait;
+use Orkestra\Services\Http\Traits\RouteConfigTrait;
 
 use League\Route\Route as LeagueRoute;
 

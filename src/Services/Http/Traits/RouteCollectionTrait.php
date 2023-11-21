@@ -1,8 +1,8 @@
 <?php
 
-namespace Orkestra\Services\Router\Traits;
+namespace Orkestra\Services\Http\Traits;
 
-use Orkestra\Services\Router\Route;
+use Orkestra\Services\Http\Route;
 
 trait RouteCollectionTrait
 {

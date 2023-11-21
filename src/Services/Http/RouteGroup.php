@@ -1,13 +1,13 @@
 <?php
 
-namespace Orkestra\Services\Router;
+namespace Orkestra\Services\Http;
 
 use Orkestra\App;
-use Orkestra\Services\Router\Route;
-use Orkestra\Services\Router\Traits\RouteCollectionTrait;
-use Orkestra\Services\Router\Traits\RouteStrategyTrait;
-use Orkestra\Services\Router\Traits\RouteConfigTrait;
-use Orkestra\Services\Router\Interfaces\RouteConfigInterface;
+use Orkestra\Services\Http\Route;
+use Orkestra\Services\Http\Traits\RouteCollectionTrait;
+use Orkestra\Services\Http\Traits\RouteStrategyTrait;
+use Orkestra\Services\Http\Traits\RouteConfigTrait;
+use Orkestra\Services\Http\Interfaces\RouteConfigInterface;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
 

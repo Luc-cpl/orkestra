@@ -1,9 +1,9 @@
 <?php
 
-namespace Orkestra\Services\Router\Traits;
+namespace Orkestra\Services\Http\Traits;
 
 use Orkestra\App;
-use Orkestra\Services\Router\Middlewares\ValidationMiddleware;
+use Orkestra\Services\Http\Middlewares\ValidationMiddleware;
 use League\Route\Middleware\MiddlewareAwareInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Exception;

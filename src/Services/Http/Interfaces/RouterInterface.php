@@ -1,8 +1,8 @@
 <?php
 
-namespace Orkestra\Services\Router\Interfaces;
+namespace Orkestra\Services\Http\Interfaces;
 
-use Orkestra\Services\Router\Route;
+use Orkestra\Services\Http\Route;
 
 use League\Route\Middleware\MiddlewareAwareInterface;
 use League\Route\RouteCollectionInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Services\Router\Interfaces;
+namespace Orkestra\Services\Http\Interfaces;
 
 interface RouteConfigInterface
 {

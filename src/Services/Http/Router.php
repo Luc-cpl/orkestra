@@ -1,12 +1,12 @@
 <?php
 
-namespace Orkestra\Services\Router;
+namespace Orkestra\Services\Http;
 
 use Orkestra\App;
-use Orkestra\Services\Router\Interfaces\RouterInterface;
-use Orkestra\Services\Router\Route;
-use Orkestra\Services\Router\RouteGroup;
-use Orkestra\Services\Router\Traits\RouteCollectionTrait;
+use Orkestra\Services\Http\Interfaces\RouterInterface;
+use Orkestra\Services\Http\Route;
+use Orkestra\Services\Http\RouteGroup;
+use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 
 use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;

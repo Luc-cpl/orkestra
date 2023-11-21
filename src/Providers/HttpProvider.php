@@ -5,13 +5,13 @@ namespace Orkestra\Providers;
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
-use Orkestra\Services\Router\Router;
-use Orkestra\Services\Router\Middlewares\JsonMiddleware;
+use Orkestra\Services\Http\Router;
+use Orkestra\Services\Http\Middlewares\JsonMiddleware;
 
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
 
-use Orkestra\Services\Router\Strategy\ApplicationStrategy;
+use Orkestra\Services\Http\Strategy\ApplicationStrategy;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
@@ -21,7 +21,7 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Strategy\JsonStrategy;
 use Rakit\Validation\Validator;
 
-class RouterProvider implements ProviderInterface
+class HttpProvider implements ProviderInterface
 {
 	/**
 	 * Register services with the container.
