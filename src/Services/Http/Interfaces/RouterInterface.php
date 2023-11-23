@@ -23,4 +23,12 @@ interface RouterInterface extends
 	 * @return Route[]
 	 */
 	public function getRoutes(): array;
+
+	/**
+	 * Get all routes by definition type.
+	 * 
+	 * @param string $type
+	 * @return Route[]
+	 */
+	public function getRoutesByDefinitionType(string $type): array;
 }

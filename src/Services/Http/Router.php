@@ -74,6 +74,7 @@ class Router extends LeagueRouter implements RouterInterface
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
+        /** @var ServerRequestInterface */
         $request = $this->app->hookQuery('router.dispatch', $request, $this);
         return parent::dispatch($request);
     }
@@ -81,5 +82,26 @@ class Router extends LeagueRouter implements RouterInterface
     public function getRoutes(): array
     {
         return $this->routes;
+    }
+
+    public function getRoutesByDefinitionType(string $type): array
+    {
+        return array_filter($this->routes, function (Route $route) use ($type) {
+            $definition = $route->getDefinition();
+
+            if ($definition->type() === $type) {
+                return true;
+            }
+
+            $group = $route->getParentGroup();
+
+            if ($group === null) {
+                return false;
+            }
+
+            $definition = $group->getDefinition();
+
+            return $definition->type() === $type;
+        });
     }
 }
