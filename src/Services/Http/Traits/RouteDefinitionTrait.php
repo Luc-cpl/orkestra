@@ -2,15 +2,33 @@
 
 namespace Orkestra\Services\Http\Traits;
 
+use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
+use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
+use Orkestra\Services\Http\Factories\ResponseDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\RouteDefinition;
+use DI\Attribute\Inject;
+use InvalidArgumentException;
+use Orkestra\App;
 
 trait RouteDefinitionTrait
 {
-	protected DefinitionInterface $definition;
+	#[Inject]
+	protected App $app;
+
+	#[Inject]
+	private ParamDefinitionFactory $paramDefinitionFactory;
+
+	#[Inject]
+	private ResponseDefinitionFactory $responseDefinitionFactory;
 
 	/**
-	 * @param DefinitionInterface|array{
+	 * @var RouteDefinitionFacade|class-string|array<array-key, mixed>
+	 */
+	private RouteDefinitionFacade|string|array $definition = [];
+
+	/**
+	 * @param class-string|array{
 	 * 	'name': ?string,
 	 * 	'description': ?string,
 	 * 	'type': ?string,
@@ -38,16 +56,44 @@ trait RouteDefinitionTrait
 	 * 	}>
 	 * } $definition
 	 */
-	public function setDefinition(DefinitionInterface|array $definition): self
+	public function setDefinition(string|array $definition): self
 	{
-		$this->definition = is_array($definition)
-			? new RouteDefinition(...$definition)
-			: $definition;
+		if (!is_string($definition)) {
+			$this->definition = $definition;
+			return $this;
+		}
+
+		if (!class_exists($definition)) {
+			throw new InvalidArgumentException(
+				"Route definition class '{$definition}' does not exist."
+			);
+		}
+
+		if (!is_subclass_of($definition, DefinitionInterface::class)) {
+			throw new InvalidArgumentException(
+				"Route definition class '{$definition}' must implement " . DefinitionInterface::class
+			);
+		}
+
+		$this->definition = $definition;
+
 		return $this;
 	}
 
-	public function getDefinition(): DefinitionInterface
+	public function getDefinition(): RouteDefinitionFacade
 	{
-		return $this->definition ?? new RouteDefinition();
+		if (is_string($this->definition)) {
+			$this->definition = $this->app->get(RouteDefinitionFacade::class, [
+				'definition' => $this->app->get($this->definition)
+			]);
+		}
+
+		if (is_array($this->definition)) {
+			$this->definition = $this->app->get(RouteDefinitionFacade::class, [
+				'definition' => $this->app->get(RouteDefinition::class, $this->definition)
+			]);
+		}
+
+		return $this->definition;
 	}
 }

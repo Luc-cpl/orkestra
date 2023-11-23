@@ -82,13 +82,16 @@ class RouteDefinition implements DefinitionInterface
 		$responses = [];
 
 		foreach ($this->responses ?? [] as $key => $value) {
-			$type = ResponseStatus::from($key)->value;
+			$type = ResponseStatus::from($key)->name;
+
+			/** @var callable $callable */
+			$callable = [$response, $type];
 
 			/** @var ResponseDefinition $definition */
-			$definition = $response->$type(
+			$definition = call_user_func_array($callable, [
 				$value['description'] ?? null,
 				isset($value['schema']) ? $this->generateParams($value['schema'], $param) : []
-			);
+			]);
 
 			$responses[] = $definition;
 		}

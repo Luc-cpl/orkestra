@@ -2,10 +2,12 @@
 
 namespace Orkestra\Services\Http\Interfaces;
 
+use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
+
 interface RouteDefinitionInterface
 {
 	/**
-	 * @param DefinitionInterface|array{
+	 * @param class-string|array{
 	 * 	'name': ?string,
 	 * 	'description': ?string,
 	 * 	'type': ?string,
@@ -33,7 +35,7 @@ interface RouteDefinitionInterface
 	 * 	}>
 	 * } $definition
 	 */
-	public function setDefinition(DefinitionInterface|array $definition): self;
+	public function setDefinition(string|array $definition): self;
 
-	public function getDefinition(): DefinitionInterface;
+	public function getDefinition(): RouteDefinitionFacade;
 }
