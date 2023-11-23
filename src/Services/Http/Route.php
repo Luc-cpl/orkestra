@@ -4,21 +4,16 @@ namespace Orkestra\Services\Http;
 
 use Orkestra\App;
 
-use Orkestra\Services\Http\Interfaces\RouteValidationInterface;
 use Orkestra\Services\Http\Interfaces\RouteDefinitionInterface;
-use Orkestra\Services\Http\Traits\RouteValidationTrait;
 use Orkestra\Services\Http\Traits\RouteStrategyTrait;
 use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
 
 use League\Route\Route as LeagueRoute;
 
-class Route extends LeagueRoute implements
-	RouteDefinitionInterface,
-	RouteValidationInterface
+class Route extends LeagueRoute implements RouteDefinitionInterface
 {
 	use RouteStrategyTrait;
 	use RouteDefinitionTrait;
-	use RouteValidationTrait;
 
 	public function __construct(
 		protected App $app,

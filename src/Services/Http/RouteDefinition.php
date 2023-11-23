@@ -113,15 +113,21 @@ class RouteDefinition implements DefinitionInterface
 		$definitions = [];
 
 		foreach ($params as $key => $value) {
+			// Set a default type to string
+			$value = ['type' => 'string'] + $value;
+
+			/** @var callable $callable */
+			$callable = [$factory, $value['type']];
+
 			/** @var ParamDefinition $definition */
-			$definition = $factory->$value['type'](
+			$definition = call_user_func_array($callable, [
 				$value['title'] ?? $key,
 				$key,
 				$value['validation'] ?? '',
 				$value['sanitization'] ?? '',
 				$value['default'] ?? null,
 				$value['description'] ?? null
-			);
+			]);
 
 			if (isset($value['inner'])) {
 				/**
