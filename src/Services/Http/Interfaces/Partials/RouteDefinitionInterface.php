@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Services\Http\Interfaces;
+namespace Orkestra\Services\Http\Interfaces\Partials;
 
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
 
@@ -21,21 +21,11 @@ interface RouteDefinitionInterface
 	 * 		'default': mixed,
 	 * 		'inner': mixed
 	 * 	}>,
-	 * 	'responses': array<int, array{
-	 * 		'description': ?string,
-	 * 		'schema': ?array<string, array{
-	 * 			'type': string,
-	 * 			'title': ?string,
-	 * 			'description': ?string,
-	 * 			'validation': ?string,
-	 * 			'sanitization': ?string,
-	 * 			'default': mixed,
-	 * 			'inner': mixed
-	 * 		}>
-	 * 	}>
 	 * } $definition
+	 * @param array<string, mixed> $constructorParams
+	 * @return $this
 	 */
-	public function setDefinition(string|array $definition): self;
+	public function setDefinition(string|array $definition, array $constructorParams = []): self;
 
 	public function getDefinition(): RouteDefinitionFacade;
 }

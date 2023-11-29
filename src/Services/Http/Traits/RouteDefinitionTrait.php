@@ -4,7 +4,6 @@ namespace Orkestra\Services\Http\Traits;
 
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
-use Orkestra\Services\Http\Factories\ResponseDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\RouteDefinition;
 use DI\Attribute\Inject;
@@ -19,13 +18,15 @@ trait RouteDefinitionTrait
 	#[Inject]
 	private ParamDefinitionFactory $paramDefinitionFactory;
 
-	#[Inject]
-	private ResponseDefinitionFactory $responseDefinitionFactory;
-
 	/**
 	 * @var RouteDefinitionFacade|class-string|array<array-key, mixed>
 	 */
 	private RouteDefinitionFacade|string|array $definition = [];
+
+	/**
+	 * @var array<string, mixed>
+	 */
+	private array $definitionParams = [];
 
 	/**
 	 * @param class-string|array{
@@ -39,24 +40,14 @@ trait RouteDefinitionTrait
 	 * 		'description': ?string,
 	 * 		'validation': ?string,
 	 * 		'sanitization': ?string,
+	 * 		'enum': ?mixed[],
 	 * 		'default': mixed,
 	 * 		'inner': mixed
 	 * 	}>,
-	 * 	'responses': array<int, array{
-	 * 		'description': ?string,
-	 * 		'schema': ?array<string, array{
-	 * 			'type': string,
-	 * 			'title': ?string,
-	 * 			'description': ?string,
-	 * 			'validation': ?string,
-	 * 			'sanitization': ?string,
-	 * 			'default': mixed,
-	 * 			'inner': mixed
-	 * 		}>
-	 * 	}>
 	 * } $definition
+	 * @param array<string, mixed> $constructorParams
 	 */
-	public function setDefinition(string|array $definition): self
+	public function setDefinition(string|array $definition, array $constructorParams = []): self
 	{
 		if (!is_string($definition)) {
 			$this->definition = $definition;
@@ -76,6 +67,7 @@ trait RouteDefinitionTrait
 		}
 
 		$this->definition = $definition;
+		$this->definitionParams = $constructorParams;
 
 		return $this;
 	}
@@ -84,7 +76,7 @@ trait RouteDefinitionTrait
 	{
 		if (is_string($this->definition)) {
 			$this->definition = $this->app->get(RouteDefinitionFacade::class, [
-				'definition' => $this->app->get($this->definition)
+				'definition' => $this->app->get($this->definition, $this->definitionParams)
 			]);
 		}
 

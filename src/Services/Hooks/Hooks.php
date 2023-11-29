@@ -65,7 +65,7 @@ final class Hooks implements HooksInterface
 		return true;
 	}
 
-	public function removeAll(string $tag, int|bool $priority = false): bool
+	public function removeAll(string $tag, int|false $priority = false): bool
 	{
 		if ($priority === false) {
 			unset($this->hooks[$tag]);

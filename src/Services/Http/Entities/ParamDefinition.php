@@ -13,6 +13,7 @@ class ParamDefinition
 	 * @param string|string[]   $validation
 	 * @param string|string[]   $sanitization
 	 * @param ParamDefinition[] $inner
+	 * @param mixed[]           $enum
 	 */
 	public function __construct(
 		public readonly ParamType    $type,
@@ -22,7 +23,8 @@ class ParamDefinition
 		public readonly string|array $sanitization = '',
 		public readonly mixed        $default      = null,
 		public readonly ?string      $description  = null,
-		public readonly array        $inner = [],
+		public readonly array        $inner        = [],
+		public readonly array        $enum         = [],
 	) {
 		$validation = is_string($validation) ? explode('|', $validation) : $validation;
 		$this->required = in_array('required', $validation);

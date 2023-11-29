@@ -3,11 +3,8 @@
 namespace Orkestra\Services\Http;
 
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
-use Orkestra\Services\Http\Factories\ResponseDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Entities\ParamDefinition;
-use Orkestra\Services\Http\Entities\ResponseDefinition;
-use Orkestra\Services\Http\Enum\ResponseStatus;
 
 class RouteDefinition implements DefinitionInterface
 {
@@ -20,20 +17,9 @@ class RouteDefinition implements DefinitionInterface
 	 * 	'validation': ?string,
 	 * 	'sanitization': ?string,
 	 * 	'default': mixed,
-	 *	'inner': mixed
+	 *	'inner': mixed,
+	 *  'enum': ?mixed[],
 	 * }> $params
-	 * @param array<int, array{
-	 * 	'description': ?string,
-	 * 	'schema': ?array<string, array{
-	 * 		'type': string,
-	 * 		'title': ?string,
-	 * 		'description': ?string,
-	 * 		'validation': ?string,
-	 * 		'sanitization': ?string,
-	 * 		'default': mixed,
-	 *		'inner': mixed
-	 * 	}>
-	 * }> $responses
 	 */
 	public function __construct(
 		protected ?string $name        = null,
@@ -41,7 +27,6 @@ class RouteDefinition implements DefinitionInterface
 		protected ?string $type        = null,
 		protected ?array  $meta        = [],
 		protected array   $params      = [],
-		protected array   $responses   = [],
 	) {
 	}
 
@@ -75,31 +60,6 @@ class RouteDefinition implements DefinitionInterface
 	}
 
 	/**
-	 * @return ResponseDefinition[]
-	 */
-	public function responses(ResponseDefinitionFactory $response, ParamDefinitionFactory $param): array
-	{
-		$responses = [];
-
-		foreach ($this->responses ?? [] as $key => $value) {
-			$type = ResponseStatus::from($key)->name;
-
-			/** @var callable $callable */
-			$callable = [$response, $type];
-
-			/** @var ResponseDefinition $definition */
-			$definition = call_user_func_array($callable, [
-				$value['description'] ?? null,
-				isset($value['schema']) ? $this->generateParams($value['schema'], $param) : []
-			]);
-
-			$responses[] = $definition;
-		}
-
-		return $responses;
-	}
-
-	/**
 	 * @param array<string, array{
 	 * 	'type': string,
 	 * 	'title': ?string,
@@ -107,7 +67,8 @@ class RouteDefinition implements DefinitionInterface
 	 * 	'validation': ?string,
 	 * 	'sanitization': ?string,
 	 * 	'default': mixed,
-	 *	'inner': mixed
+	 *	'inner': mixed,
+	 *  'enum': ?mixed[],
 	 * }> $params
 	 * @return ParamDefinition[]
 	 */
@@ -129,7 +90,9 @@ class RouteDefinition implements DefinitionInterface
 				$value['validation'] ?? '',
 				$value['sanitization'] ?? '',
 				$value['default'] ?? null,
-				$value['description'] ?? null
+				$value['description'] ?? null,
+				[],
+				$value['enum'] ?? [],
 			]);
 
 			if (isset($value['inner'])) {
@@ -141,7 +104,8 @@ class RouteDefinition implements DefinitionInterface
 				 * 	'validation': ?string,
 				 * 	'sanitization': ?string,
 				 * 	'default': mixed,
-				 *	'inner': mixed
+				 *	'inner': mixed,
+				 *  'enum': ?mixed[],
 				 * }> $inner
 				 */
 				$inner = $value['inner'];

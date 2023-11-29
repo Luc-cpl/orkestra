@@ -3,9 +3,7 @@
 namespace Orkestra\Services\Http\Interfaces;
 
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
-use Orkestra\Services\Http\Factories\ResponseDefinitionFactory;
 use Orkestra\Services\Http\Entities\ParamDefinition;
-use Orkestra\Services\Http\Entities\ResponseDefinition;
 
 interface DefinitionInterface
 {
@@ -18,12 +16,4 @@ interface DefinitionInterface
 	 * @return ParamDefinition[]
 	 */
 	public function params(ParamDefinitionFactory $param): array;
-
-	/**
-	 * @return ResponseDefinition[]
-	 */
-	public function responses(
-		ResponseDefinitionFactory $response,
-		ParamDefinitionFactory $param
-	): array;
 }

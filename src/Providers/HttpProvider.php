@@ -7,6 +7,7 @@ use Orkestra\Interfaces\ProviderInterface;
 
 use Orkestra\Services\Http\Router;
 use Orkestra\Services\Http\Middlewares\JsonMiddleware;
+use Orkestra\Services\Http\Interfaces\RouterInterface;
 
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,6 +35,13 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
+		// Set the required config so we can validate it
+		$app->config()->set('validation', [
+			'routes' => function ($value) {
+				return is_string($value) ? true : 'The routes config must be a string path to a file';
+			},
+		]);
+
 		$app->singleton(Router::class, Router::class);
 		$app->singleton(Validator::class, Validator::class);
 
@@ -47,10 +55,9 @@ class HttpProvider implements ProviderInterface
 			);
 		});
 
+		$app->bind(RouterInterface::class, Router::class);
 		$app->bind(ResponseInterface::class, Response::class);
-
 		$app->bind(ApplicationStrategy::class, fn (App $app) => (new ApplicationStrategy($app))->setContainer($app));
-
 		$app->bind(JsonStrategy::class, function () use ($app) {
 			$isProduction = $app->config()->get('env') === 'production';
 			$jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
@@ -64,13 +71,6 @@ class HttpProvider implements ProviderInterface
 			$response     = new JsonResponse($data, $status, $headers, $jsonMode);
 			return $response;
 		});
-
-		// Set the required config so we can validate it
-		$app->config()->set('validation', [
-			'routes' => function ($value) {
-				return is_string($value) ? true : 'The routes config must be a string path to a file';
-			},
-		]);
 	}
 
 	/**
@@ -81,7 +81,7 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		$router  = $app->get(Router::class);
+		$router  = $app->get(RouterInterface::class);
 		$request = $app->get(ServerRequestInterface::class);
 
 		$strategy = $app->get(ApplicationStrategy::class);
@@ -92,6 +92,11 @@ class HttpProvider implements ProviderInterface
 		$configFile = $app->config()->get('routes');
 
 		(require $configFile)($router);
+
+		$app->hookCall('http.router.config', $router);
+
+		/** @var ServerRequestInterface */
+		$request = $app->hookQuery('http.router.dispatch', $request, $router);
 
 		$response = $router->dispatch($request);
 

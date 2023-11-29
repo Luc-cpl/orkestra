@@ -6,15 +6,15 @@ use Orkestra\App;
 use Orkestra\Services\Http\Route;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 use Orkestra\Services\Http\Traits\RouteStrategyTrait;
-use Orkestra\Services\Http\Interfaces\RouteDefinitionInterface;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
 
 use League\Route\RouteCollectionInterface;
+use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
 use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
 
 class RouteGroup extends LeagueRouteGroup implements
-    RouteDefinitionInterface
+    RouteGroupInterface
 {
     use RouteCollectionTrait;
     use RouteStrategyTrait;

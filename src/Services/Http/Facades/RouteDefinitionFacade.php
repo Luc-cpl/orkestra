@@ -3,16 +3,13 @@
 namespace Orkestra\Services\Http\Facades;
 
 use Orkestra\Services\Http\Entities\ParamDefinition;
-use Orkestra\Services\Http\Entities\ResponseDefinition;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
-use Orkestra\Services\Http\Factories\ResponseDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 
 class RouteDefinitionFacade
 {
 	public function __construct(
 		protected ParamDefinitionFactory    $paramDefinitionFactory,
-		protected ResponseDefinitionFactory $routeDefinitionFactory,
 		protected DefinitionInterface       $definition
 	) {
 	}
@@ -31,6 +28,7 @@ class RouteDefinitionFacade
 	{
 		return $this->definition->type();
 	}
+
 	public function meta(string $key, mixed $default = null): mixed
 	{
 		return $this->definition->meta($key, $default);
@@ -42,13 +40,5 @@ class RouteDefinitionFacade
 	public function params(): array
 	{
 		return $this->definition->params($this->paramDefinitionFactory);
-	}
-
-	/**
-	 * @return ResponseDefinition[]
-	 */
-	public function responses(): array
-	{
-		return $this->definition->responses($this->routeDefinitionFactory, $this->paramDefinitionFactory);
 	}
 }

@@ -10,6 +10,7 @@ use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 
 use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;
+use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -45,6 +46,21 @@ class Router extends LeagueRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
+     */
+    public function removeRoute(RouteInterface $route): self
+    {
+        foreach ($this->routes as $key => $r) {
+            if ($r === $route) {
+                unset($this->routes[$key]);
+                return $this;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      * @param callable $handler
      */
     public function map(string $method, string $path, $handler): Route
@@ -70,13 +86,6 @@ class Router extends LeagueRouter implements RouterInterface
         ]);
         $this->groups[] = $group;
         return $group;
-    }
-
-    public function dispatch(ServerRequestInterface $request): ResponseInterface
-    {
-        /** @var ServerRequestInterface */
-        $request = $this->app->hookQuery('router.dispatch', $request, $this);
-        return parent::dispatch($request);
     }
 
     public function getRoutes(): array

@@ -38,10 +38,10 @@ interface HooksInterface
 
     /**
      * @param string $hook
-     * @param int|bool $priority
+     * @param int|false $priority
      * @return bool
      */
-    public function removeAll(string $hook, int|bool $priority = false): bool;
+    public function removeAll(string $hook, int|false $priority = false): bool;
 
     /**
      * @param string $hook

@@ -16,7 +16,7 @@ use Orkestra\Services\Http\Enum\ParamType;
 class ParamDefinitionFactory
 {
 	/**
-	 * @param array{string,string,string[]|string|null,string[]|string|null,mixed,?string} $args
+	 * @param array{string,string,string[]|string|null,string[]|string|null,mixed,?string,?ParamDefinition[],?mixed[]} $args
 	 */
 	public function __call(string $method, array $args): ParamDefinition
 	{
@@ -36,12 +36,14 @@ class ParamDefinitionFactory
 
 		return new ParamDefinition(
 			$type,
-			$args[0],
-			$args[1],
+			$args[0],         // title
+			$args[1],         // name
 			$args[2] ?? '',   // validation
 			$args[3] ?? '',   // sanitization
 			$args[4] ?? null, // default
-			$args[5] ?? null  // description
+			$args[5] ?? null, // description
+			$args[6] ?? [],   // inner
+			$args[7] ?? [],   // enum
 		);
 	}
 }
