@@ -46,21 +46,6 @@ class Router extends LeagueRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
-     */
-    public function removeRoute(RouteInterface $route): self
-    {
-        foreach ($this->routes as $key => $r) {
-            if ($r === $route) {
-                unset($this->routes[$key]);
-                return $this;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
      * @param callable $handler
      */
     public function map(string $method, string $path, $handler): Route

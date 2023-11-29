@@ -64,12 +64,4 @@ interface RouterInterface extends
 	 * @return void
 	 */
 	public function prepareRoutes(ServerRequestInterface $request): void;
-
-	/**
-	 * Remove a registered route.
-	 * 
-	 * @param RouteInterface $route
-	 * @return self
-	 */
-	public function removeRoute(RouteInterface $route): self;
 }
