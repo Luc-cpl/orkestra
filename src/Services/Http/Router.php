@@ -6,13 +6,13 @@ use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\Route;
 use Orkestra\Services\Http\RouteGroup;
+use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 
 use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;
-use Orkestra\Services\Http\Interfaces\RouteInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Extends the League Router class.
@@ -20,6 +20,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Router extends LeagueRouter implements RouterInterface
 {
+    use MiddlewareAwareTrait;
     use RouteCollectionTrait;
 
     /**
@@ -97,5 +98,30 @@ class Router extends LeagueRouter implements RouterInterface
 
             return $definition->type() === $type;
         });
+    }
+
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
+    {
+        if (false === $this->routesPrepared) {
+            $this->prepareRoutes($request);
+        }
+
+        $strategy = $this->getStrategy();
+
+        /** @var Dispatcher $dispatcher */
+        $dispatcher = $strategy
+            ? (new Dispatcher($this->routesData))->setStrategy($strategy)
+            : (new Dispatcher($this->routesData));
+
+        foreach ($this->getMiddlewareStack() as $middleware) {
+            if (is_string($middleware)) {
+                $dispatcher->lazyMiddleware($middleware);
+                continue;
+            }
+
+            $dispatcher->middleware($middleware);
+        }
+
+        return $dispatcher->dispatchRequest($request);
     }
 }

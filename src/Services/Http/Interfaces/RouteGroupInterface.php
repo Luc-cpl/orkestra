@@ -4,7 +4,8 @@ namespace Orkestra\Services\Http\Interfaces;
 
 use Orkestra\Services\Http\Interfaces\Partials\RouteDefinitionInterface;
 use Orkestra\Services\Http\Interfaces\Partials\RouteCollectionInterface;
-use League\Route\Middleware\MiddlewareAwareInterface;
+use Orkestra\Services\Http\Interfaces\Partials\RouteStrategyInterface;
+use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use League\Route\RouteConditionHandlerInterface;
 use League\Route\Strategy\StrategyAwareInterface;
 
@@ -13,7 +14,8 @@ interface RouteGroupInterface extends
 	RouteCollectionInterface,
 	RouteConditionHandlerInterface,
 	StrategyAwareInterface,
-	RouteDefinitionInterface
+	RouteDefinitionInterface,
+	RouteStrategyInterface
 {
 	public function getPrefix(): string;
 }

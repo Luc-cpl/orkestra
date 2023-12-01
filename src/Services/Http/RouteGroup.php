@@ -4,18 +4,19 @@ namespace Orkestra\Services\Http;
 
 use Orkestra\App;
 use Orkestra\Services\Http\Route;
+use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 use Orkestra\Services\Http\Traits\RouteStrategyTrait;
+use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
+use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
 
 use League\Route\RouteGroup as LeagueRouteGroup;
 
 use League\Route\RouteCollectionInterface;
-use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
-use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
 
-class RouteGroup extends LeagueRouteGroup implements
-    RouteGroupInterface
+class RouteGroup extends LeagueRouteGroup implements RouteGroupInterface
 {
+    use MiddlewareAwareTrait;
     use RouteCollectionTrait;
     use RouteStrategyTrait;
     use RouteDefinitionTrait;

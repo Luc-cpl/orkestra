@@ -4,7 +4,7 @@ namespace Orkestra\Services\Http\Interfaces;
 
 use Orkestra\Services\Http\Interfaces\Partials\RouteDefinitionInterface;
 use Orkestra\Services\Http\Interfaces\Partials\RouteStrategyInterface;
-use League\Route\Middleware\MiddlewareAwareInterface;
+use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use League\Route\RouteConditionHandlerInterface;
 use League\Route\Strategy\StrategyAwareInterface;
 use Psr\Http\Server\MiddlewareInterface;
