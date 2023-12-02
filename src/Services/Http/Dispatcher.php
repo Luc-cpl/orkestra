@@ -4,20 +4,15 @@ namespace Orkestra\Services\Http;
 
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
-use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\Http\Middlewares\ValidationMiddleware;
 use League\Route\Dispatcher as LeagueDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use FastRoute\Dispatcher as FastRoute;
-use DI\Attribute\Inject;
 
 class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 {
 	use MiddlewareAwareTrait;
-
-	#[Inject]
-	private ParamDefinitionFactory $paramDefinitionFactory;
 
 	public function dispatchRequest(ServerRequestInterface $request): ResponseInterface
 	{
@@ -34,6 +29,7 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 				$this->setMethodNotAllowedDecoratorMiddleware($allowed);
 				break;
 			case FastRoute::FOUND:
+				/** @var Route $route */
 				$route = $this->ensureHandlerIsRoute($match[1], $method, $uri)->setVars($match[2]);
 
 				if ($this->isExtraConditionMatch($route, $request)) {
@@ -52,7 +48,7 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 
 	protected function addValidationMiddleware(Route $route): void
 	{
-		$params = $route->getDefinition()->params($this->paramDefinitionFactory);
+		$params = $route->getDefinition()->params();
 		$rules = [];
 
 		foreach ($params as $param) {

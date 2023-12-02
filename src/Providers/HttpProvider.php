@@ -84,6 +84,7 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
+		/** @var mixed[] */
 		$middlewares = $app->config()->get('middlewares', []);
 		foreach ($middlewares as $key => $middleware) {
 			$app->bind("middlewares.$key", $middleware);
