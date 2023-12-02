@@ -109,9 +109,11 @@ class Router extends LeagueRouter implements RouterInterface
         $strategy = $this->getStrategy();
 
         /** @var Dispatcher $dispatcher */
-        $dispatcher = $strategy
-            ? (new Dispatcher($this->routesData))->setStrategy($strategy)
-            : (new Dispatcher($this->routesData));
+        $dispatcher = $this->app->get(Dispatcher::class, ['data' => $this->routesData]);
+
+        if ($strategy) {
+            $dispatcher->setStrategy($strategy);
+        }
 
         foreach ($this->getMiddlewareStack() as $middleware) {
             if (is_string($middleware)) {

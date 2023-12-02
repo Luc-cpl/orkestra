@@ -6,12 +6,12 @@ use Orkestra\Services\Http\Entities\ParamDefinition;
 use Orkestra\Services\Http\Enum\ParamType;
 
 /**
- * @method ParamDefinition string(string $title, string $name, string|array|null $validation = '', string|array|null $sanitization = '', mixed $default = null, ?string $description = null)
- * @method ParamDefinition int(string $title, string $name, string|array|null $validation = '', string|array|null $sanitization = '', mixed $default = null, ?string $description = null)
- * @method ParamDefinition number(string $title, string $name, string|array|null $validation = '', string|array|null $sanitization = '', mixed $default = null, ?string $description = null)
- * @method ParamDefinition boolean(string $title, string $name, string|array|null $validation = '', string|array|null $sanitization = '', mixed $default = null, ?string $description = null)
- * @method ParamDefinition array(string $title, string $name, string|array|null $validation = '', string|array|null $sanitization = '', mixed $default = null, ?string $description = null)
- * @method ParamDefinition object(string $title, string $name, string|array|null $validation = '', string|array|null $sanitization = '', mixed $default = null, ?string $description = null)
+ * @method ParamDefinition string(string $title, string $name, mixed $default = null, string|array|null $validation = '', string|array|null $sanitization = '', ?string $description = null)
+ * @method ParamDefinition int(string $title, string $name, mixed $default = null, string|array|null $validation = '', string|array|null $sanitization = '', ?string $description = null)
+ * @method ParamDefinition number(string $title, string $name, mixed $default = null, string|array|null $validation = '', string|array|null $sanitization = '', ?string $description = null)
+ * @method ParamDefinition boolean(string $title, string $name, mixed $default = null, string|array|null $validation = '', string|array|null $sanitization = '', ?string $description = null)
+ * @method ParamDefinition array(string $title, string $name, mixed $default = null, string|array|null $validation = '', string|array|null $sanitization = '', ?string $description = null)
+ * @method ParamDefinition object(string $title, string $name, mixed $default = null, string|array|null $validation = '', string|array|null $sanitization = '', ?string $description = null)
  */
 class ParamDefinitionFactory
 {
@@ -38,9 +38,9 @@ class ParamDefinitionFactory
 			$type,
 			$args[0],         // title
 			$args[1],         // name
-			$args[2] ?? '',   // validation
-			$args[3] ?? '',   // sanitization
-			$args[4] ?? null, // default
+			$args[2] ?? null, // default
+			$args[3] ?? '',   // validation
+			$args[4] ?? '',   // sanitization
 			$args[5] ?? null, // description
 			$args[6] ?? [],   // inner
 			$args[7] ?? [],   // enum
