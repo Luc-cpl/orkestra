@@ -31,9 +31,10 @@ interface ConfigurationInterface
 	 * Get a configuration value
 	 *
 	 * @param string $key
+	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function get(string $key): mixed;
+	public function get(string $key, mixed $default = null): mixed;
 
 	/**
 	 * Check if a configuration value exists

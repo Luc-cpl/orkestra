@@ -77,12 +77,12 @@ class Configuration implements ConfigurationInterface
 		return $this;
 	}
 
-	public function get(string $key): mixed
+	public function get(string $key, mixed $default = null): mixed
 	{
 		return match ($key) {
 			'url'    => $this->getURL(),
 			'assets' => $this->getURL() . '/assets',
-			default  => isset($this->config[$key]) ? $this->config[$key] : false,
+			default  => isset($this->config[$key]) ? $this->config[$key] : $default,
 		};
 	}
 

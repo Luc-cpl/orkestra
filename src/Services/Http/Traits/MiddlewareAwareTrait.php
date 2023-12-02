@@ -82,6 +82,13 @@ trait MiddlewareAwareTrait
 	 */
 	protected function resolveMiddleware($middleware, ?ContainerInterface $container = null): MiddlewareInterface
 	{
+		$handler = is_array($middleware) ? $middleware[0] : $middleware;
+
+		if (is_string($handler) && !class_exists($handler)) {
+			$handler = "middlewares.$handler";
+			$middleware = is_array($middleware) ? [$handler, ...array_slice($middleware, 1)] : $handler;
+		}
+
 		if ($container === null && is_string($middleware) && class_exists($middleware)) {
 			$middleware = new $middleware();
 		}
@@ -97,6 +104,8 @@ trait MiddlewareAwareTrait
 		if ($middleware instanceof MiddlewareInterface) {
 			return $middleware;
 		}
+
+		$middleware = is_array($middleware) ? $middleware[0] : $middleware;
 
 		/** @var string $middleware */
 		throw new InvalidArgumentException(sprintf('Could not resolve middleware class: %s', $middleware));

@@ -40,6 +40,9 @@ class HttpProvider implements ProviderInterface
 			'routes' => function ($value) {
 				return is_string($value) ? true : 'The routes config must be a string path to a file';
 			},
+			'middlewares' => function ($value) {
+				return is_array($value ?? []) ? true : 'The middlewares config must be an array';
+			},
 		]);
 
 		$app->singleton(Router::class, Router::class);
@@ -81,6 +84,11 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
+		$middlewares = $app->config()->get('middlewares', []);
+		foreach ($middlewares as $key => $middleware) {
+			$app->bind("middlewares.$key", $middleware);
+		}
+
 		$router  = $app->get(RouterInterface::class);
 		$request = $app->get(ServerRequestInterface::class);
 
