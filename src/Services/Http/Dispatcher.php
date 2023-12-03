@@ -2,6 +2,8 @@
 
 namespace Orkestra\Services\Http;
 
+use Orkestra\App;
+use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use Orkestra\Services\Http\Middlewares\ValidationMiddleware;
@@ -13,6 +15,13 @@ use FastRoute\Dispatcher as FastRoute;
 class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 {
 	use MiddlewareAwareTrait;
+
+	public function __construct(
+		protected App $app,
+		mixed $data
+	) {
+		parent::__construct($data);
+	}
 
 	public function dispatchRequest(ServerRequestInterface $request): ResponseInterface
 	{
@@ -33,6 +42,7 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 				$route = $this->ensureHandlerIsRoute($match[1], $method, $uri)->setVars($match[2]);
 
 				if ($this->isExtraConditionMatch($route, $request)) {
+					$this->bindRouteToRequest($route);
 					$this->addValidationMiddleware($route);
 					$this->setFoundMiddleware($route);
 					$request = $this->requestWithRouteAttributes($request, $route);
@@ -44,6 +54,11 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 		}
 
 		return $this->handle($request);
+	}
+
+	protected function bindRouteToRequest(RouteInterface $route): void
+	{
+		$this->app->bind(RouteInterface::class, $route);
 	}
 
 	protected function addValidationMiddleware(Route $route): void

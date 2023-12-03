@@ -109,7 +109,11 @@ class HttpProvider implements ProviderInterface
 
 		$response = $router->dispatch($request);
 
+		$app->hookCall('http.router.response.before', $response);
+
 		// send the response to the browser
 		(new SapiEmitter)->emit($response);
+
+		$app->hookCall('http.router.response.after', $response);
 	}
 }
