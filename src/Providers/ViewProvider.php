@@ -73,16 +73,19 @@ class ViewProvider implements ProviderInterface
 
 			$twig->addRuntimeLoader($runtimeLoader);
 
-			/** @var string[] */
+			/** @var class-string[] */
 			$extensions = $app->hookQuery('twig.extensions', $this->defaultExtensions);
+
+			/** @var AbstractExtension[] */
+			$mappedExtensions = array_map(
+				fn (string $extension) => $app->get($extension),
+				$extensions
+			);
 
 			/**
 			 * Allow the app to register Twig extensions with hook event
 			 */
-			$twig->setExtensions(array_map(
-				fn ($extension) => $app->get($extension),
-				$extensions
-			));
+			$twig->setExtensions($mappedExtensions);
 
 			$app->hookCall('twig.init', $twig);
 

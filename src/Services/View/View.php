@@ -22,7 +22,7 @@ class View implements ViewInterface
 	 */
 	public function render(string $name, array $context = []): string
 	{
-		$name = rtrim($name, '.twig') . '.twig';
+		$name = explode('.', $name, 1)[0] . '.twig';
 
 		$content    = $this->twig->render($name, $context);
 		$htmlBlock  = $this->twig->getExtension(OrkestraExtension::class)->getHtmlBlock();
