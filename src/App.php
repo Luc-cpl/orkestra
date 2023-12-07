@@ -49,12 +49,12 @@ class App implements ContainerInterface
     }
 
     /**
-     * Run the app
+     * Boot the app
      * It starts the registered providers
      *
      * @return void
      */
-    public function run(): void
+    public function boot(): void
     {
         // Ensure we only run once
         if ($this->has('booted')) {

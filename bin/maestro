@@ -10,7 +10,7 @@ use Orkestra\Providers;
 use Orkestra\Controllers\Commands;
 
 if (php_sapi_name() !== 'cli') {
-    die("Maestro app must be run from the command line.");
+	die("Maestro app must be run from the command line.");
 }
 
 if (version_compare(phpversion(), '7.4.0', '<')) {
@@ -31,4 +31,4 @@ $app = new App($config);
 
 $app->provider(Providers\CommandsProvider::class);
 
-$app->run();
+$app->boot();

@@ -21,7 +21,7 @@ class CommandsProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
-		$app->bind(Application::class, Application::class);
+		$app->singleton(Application::class, Application::class);
 
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
@@ -54,17 +54,18 @@ class CommandsProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		$console = $app->get(Application::class);
+		$console  = $app->get(Application::class);
+		$commands = $app->config()->get('commands');
 
 		/**
+		 * Allow other packages to add commands
+		 *
 		 * @var array<class-string<Command>> $commands
 		 */
-		$commands = $app->config()->get('commands');
+		$commands = $app->hookQuery('commands.config', $commands);
 
 		foreach ($commands as $command) {
 			$console->add($app->get($command));
 		}
-
-		$console->run();
 	}
 }

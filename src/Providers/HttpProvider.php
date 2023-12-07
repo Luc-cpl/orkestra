@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
 use Orkestra\Services\Http\Router;
-use Orkestra\Services\Http\Middlewares\JsonMiddleware;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 
 use Laminas\Diactoros\ServerRequestFactory;
@@ -18,7 +17,6 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Strategy\JsonStrategy;
 use Rakit\Validation\Validator;
 
@@ -47,6 +45,7 @@ class HttpProvider implements ProviderInterface
 
 		$app->singleton(Router::class, Router::class);
 		$app->singleton(Validator::class, Validator::class);
+		$app->singleton(RouterInterface::class, Router::class);
 
 		$app->bind(ServerRequestInterface::class, function () {
 			return ServerRequestFactory::fromGlobals(
@@ -58,7 +57,6 @@ class HttpProvider implements ProviderInterface
 			);
 		});
 
-		$app->bind(RouterInterface::class, Router::class);
 		$app->bind(ResponseInterface::class, Response::class);
 		$app->bind(ApplicationStrategy::class, fn (App $app) => (new ApplicationStrategy($app))->setContainer($app));
 		$app->bind(JsonStrategy::class, function () use ($app) {
@@ -93,30 +91,11 @@ class HttpProvider implements ProviderInterface
 			$app->bind("middlewares.$key", $middleware);
 		}
 
-		$router  = $app->get(RouterInterface::class);
-		$request = $app->get(ServerRequestInterface::class);
+		$router = $app->get(RouterInterface::class);
 
-		$strategy = $app->get(ApplicationStrategy::class);
-		$router->setStrategy($strategy);
-
-		$router->middleware($app->get(JsonMiddleware::class));
-
+		/** @var string */
 		$configFile = $app->config()->get('routes');
-
 		(require $configFile)($router);
-
 		$app->hookCall('http.router.config', $router);
-
-		/** @var ServerRequestInterface */
-		$request = $app->hookQuery('http.router.dispatch', $request, $router);
-
-		$response = $router->dispatch($request);
-
-		$app->hookCall('http.router.response.before', $response);
-
-		// send the response to the browser
-		(new SapiEmitter)->emit($response);
-
-		$app->hookCall('http.router.response.after', $response);
 	}
 }
