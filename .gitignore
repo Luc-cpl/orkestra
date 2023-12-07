@@ -1,2 +1,5 @@
 vendor/
 .env
+.phpunit.cache/
+coverage/
+.DS_Store

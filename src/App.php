@@ -75,6 +75,8 @@ class App implements ContainerInterface
             $this->get($provider)->boot($this);
         }
 
+        $this->bind('booted', fn() => true, false);
+
         $this->hookCall('boot.after', $this);
     }
 }
