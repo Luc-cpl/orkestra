@@ -82,8 +82,17 @@ class OrkestraExtension extends AbstractExtension
 		$this->headTags[] = new HtmlTag($tag, $attributes, $content);
 	}
 
-	protected function enqueueScript(string $src, string $placement = 'head', string $strategy = ''): void
+	/**
+	 * @param array<string, mixed[]|bool|int|float|string> $attributes
+	 */
+	protected function enqueueScript(string $src, array $attributes = []): void
 	{
+		$placement = $attributes['placement'] ?? 'head';
+		$strategy  = $attributes['strategy'] ?? '';
+		$type      = $attributes['type'] ?? '';
+
+		unset($attributes['placement'], $attributes['strategy'], $attributes['type']);
+
 		$expectedPlacements = ['head', 'footer'];
 		if (!in_array($placement, $expectedPlacements, true)) {
 			throw new InvalidArgumentException('Invalid script placement');
@@ -103,6 +112,8 @@ class OrkestraExtension extends AbstractExtension
 			'src'   => $src,
 			'defer' => $strategy === 'defer',
 			'async' => $strategy === 'async',
+			'type'  => $type,
+			...$attributes,
 		]);
 
 		if ($placement === 'head') {

@@ -7,7 +7,7 @@ use Stringable;
 class HtmlTag implements Stringable
 {
 	/**
-	 * @param array<string, bool|string|int> $attributes
+	 * @param array<string, bool|string|int|float|mixed[]> $attributes
 	 */
 	public function __construct(
 		public readonly string $tag,
@@ -22,7 +22,7 @@ class HtmlTag implements Stringable
 	}
 
 	/**
-	 * @param array<string, bool|string|int> $attributes
+	 * @param array<string, bool|string|int|float|mixed[]> $attributes
 	 */
 	public function setAttributes(array $attributes): self
 	{
@@ -38,6 +38,9 @@ class HtmlTag implements Stringable
 	{
 		$attributes = '';
 		foreach ($this->attributes as $key => $value) {
+			if (is_array($value)) {
+				$value = json_encode($value);
+			}
 			$attributes .= match ($value) {
 				false => '',
 				true  => " $key",
