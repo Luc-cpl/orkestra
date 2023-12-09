@@ -30,9 +30,9 @@ trait MiddlewareAwareTrait
 		return $this;
 	}
 
-	public function lazyMiddlewares(array $middlewares): self
+	public function lazyMiddlewareStack(array $middlewareStack): self
 	{
-		foreach ($middlewares as $middleware) {
+		foreach ($middlewareStack as $middleware) {
 			$this->lazyMiddleware($middleware);
 		}
 
@@ -51,9 +51,9 @@ trait MiddlewareAwareTrait
 		return $this;
 	}
 
-	public function middlewares(array $middlewares): self
+	public function middlewareStack(array $middlewareStack): self
 	{
-		foreach ($middlewares as $middleware) {
+		foreach ($middlewareStack as $middleware) {
 			$this->middleware($middleware);
 		}
 
@@ -85,7 +85,7 @@ trait MiddlewareAwareTrait
 		$handler = is_array($middleware) ? $middleware[0] : $middleware;
 
 		if (is_string($handler) && !class_exists($handler)) {
-			$handler = "middlewares.$handler";
+			$handler = "middleware.$handler";
 			$middleware = is_array($middleware) ? [$handler, ...array_slice($middleware, 1)] : $handler;
 		}
 

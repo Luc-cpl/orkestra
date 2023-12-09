@@ -7,7 +7,7 @@ use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
-use Orkestra\Services\Http\Middlewares\ValidationMiddleware;
+use Orkestra\Services\Http\Middleware\ValidationMiddleware;
 use League\Route\Dispatcher as LeagueDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

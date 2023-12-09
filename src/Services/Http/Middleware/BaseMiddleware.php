@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Services\Http\Middlewares;
+namespace Orkestra\Services\Http\Middleware;
 
 use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
@@ -56,7 +56,7 @@ abstract class BaseMiddleware implements
 	): ResponseInterface {
 
 		$this->app->hookCall(
-			'middlewares.error',
+			'middleware.error',
 			$request,
 			$error,
 			$message,

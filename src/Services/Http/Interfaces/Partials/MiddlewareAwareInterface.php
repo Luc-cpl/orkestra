@@ -22,19 +22,19 @@ interface MiddlewareAwareInterface
 	public function lazyMiddleware(string|array $middleware): self;
 
 	/**
-	 * @param array<string|array{string,mixed}> $middlewares
+	 * @param array<string|array{string,mixed}> $middleware
 	 * @return $this
 	 */
-	public function lazyMiddlewares(array $middlewares): self;
+	public function lazyMiddlewareStack(array $middlewareStack): self;
 
 	/** @return $this */
 	public function lazyPrependMiddleware(string $middleware): self;
 
 	/**
-	 * @param MiddlewareInterface[] $middlewares
+	 * @param MiddlewareInterface[] $middleware
 	 * @return $this
 	 */
-	public function middlewares(array $middlewares): self;
+	public function middlewareStack(array $middlewareStack): self;
 
 	/** @return $this */
 	public function prependMiddleware(MiddlewareInterface $middleware): self;
