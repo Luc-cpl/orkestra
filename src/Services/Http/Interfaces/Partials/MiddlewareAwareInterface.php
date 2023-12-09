@@ -16,28 +16,16 @@ interface MiddlewareAwareInterface
 	public function getMiddlewareStack(): iterable;
 
 	/**
-	 * @param string|array{string,mixed} $middleware
-	 * @return $this
-	 */
-	public function lazyMiddleware(string|array $middleware): self;
-
-	/**
-	 * @param array<string|array{string,mixed}> $middleware
-	 * @return $this
-	 */
-	public function lazyMiddlewareStack(array $middlewareStack): self;
-
-	/** @return $this */
-	public function lazyPrependMiddleware(string $middleware): self;
-
-	/**
-	 * @param MiddlewareInterface[] $middleware
+	 * @param array<MiddlewareInterface|string|array{string,mixed}> $middlewareStack
 	 * @return $this
 	 */
 	public function middlewareStack(array $middlewareStack): self;
 
-	/** @return $this */
-	public function prependMiddleware(MiddlewareInterface $middleware): self;
+	/**
+	 * @param MiddlewareInterface|string|array{string,mixed} $middleware
+	 * @return $this
+	 */
+	public function prependMiddleware(MiddlewareInterface|string|array $middleware): self;
 
 	public function shiftMiddleware(): MiddlewareInterface;
 }

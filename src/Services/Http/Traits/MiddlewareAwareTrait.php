@@ -2,13 +2,18 @@
 
 namespace Orkestra\Services\Http\Traits;
 
-use InvalidArgumentException;
-use OutOfBoundsException;
+use Orkestra\App;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use DI\Attribute\Inject;
+use InvalidArgumentException;
+use OutOfBoundsException;
 
 trait MiddlewareAwareTrait
 {
+	#[Inject]
+	protected App $app;
+
 	/**
 	 * An array with MiddlewareInterface, class-string
 	 * or an array with a string as first element and
@@ -22,27 +27,6 @@ trait MiddlewareAwareTrait
 	public function getMiddlewareStack(): iterable
 	{
 		return $this->middleware;
-	}
-
-	public function lazyMiddleware(string|array $middleware): self
-	{
-		$this->middleware[] = $middleware;
-		return $this;
-	}
-
-	public function lazyMiddlewareStack(array $middlewareStack): self
-	{
-		foreach ($middlewareStack as $middleware) {
-			$this->lazyMiddleware($middleware);
-		}
-
-		return $this;
-	}
-
-	public function lazyPrependMiddleware(string $middleware): self
-	{
-		array_unshift($this->middleware, $middleware);
-		return $this;
 	}
 
 	public function middleware(MiddlewareInterface|string|array $middleware): self
@@ -60,7 +44,7 @@ trait MiddlewareAwareTrait
 		return $this;
 	}
 
-	public function prependMiddleware(MiddlewareInterface $middleware): self
+	public function prependMiddleware(MiddlewareInterface|string|array $middleware): self
 	{
 		array_unshift($this->middleware, $middleware);
 		return $this;
@@ -97,8 +81,10 @@ trait MiddlewareAwareTrait
 			$middleware = $container->get($middleware);
 		}
 
-		if ($container !== null && is_array($middleware) && $container->has($middleware[0])) {
-			$middleware = $container->get(...$middleware);
+		// If the middleware is an array we should resolve from App instance
+		if (is_array($middleware) && $this->app->has($middleware[0])) {
+			// @phpstan-ignore-next-line
+			$middleware = $this->app->get(...$middleware);
 		}
 
 		if ($middleware instanceof MiddlewareInterface) {

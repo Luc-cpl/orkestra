@@ -34,7 +34,7 @@ class Route extends LeagueRoute implements RouteInterface
 		return $this->group;
 	}
 
-	protected function resolve(string $class, ?ContainerInterface $container = null)
+	protected function resolve(string $class, ?ContainerInterface $container = null): mixed
 	{
 		$instance = parent::resolve($class, $container);
 		if ($instance instanceof RouteAwareInterface) {
