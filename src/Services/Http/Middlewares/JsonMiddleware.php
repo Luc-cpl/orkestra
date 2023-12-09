@@ -4,11 +4,9 @@ namespace Orkestra\Services\Http\Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
-use League\Route\Http\Exception\BadRequestException;
 
-class JsonMiddleware implements MiddlewareInterface
+class JsonMiddleware extends BaseMiddleware
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -20,7 +18,12 @@ class JsonMiddleware implements MiddlewareInterface
             $jsonData = json_decode($body, true);
 
             if ($jsonData === null) {
-                throw new BadRequestException('Invalid JSON data in request body.');
+                return $this->errorResponse(
+                    $request,
+                    'invalid_json',
+                    'Invalid JSON',
+                    'The JSON data in the request body is invalid.',
+                );
             }
 
             // Replace the request body with the JSON data

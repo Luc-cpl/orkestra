@@ -3,6 +3,8 @@
 namespace Orkestra\Services\Http\Middlewares;
 
 use Orkestra\App;
+use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
+use Orkestra\Services\Http\Interfaces\RouteInterface;
 
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -13,10 +15,23 @@ use League\Route\Http\Exception\BadRequestException;
 
 use DI\Attribute\Inject;
 
-abstract class BaseMiddleware implements MiddlewareInterface
+abstract class BaseMiddleware implements
+	MiddlewareInterface,
+	RouteAwareInterface
 {
 	#[Inject]
 	protected App $app;
+
+	protected ?RouteInterface $route = null;
+
+	/**
+	 * @return $this
+	 */
+	public function setRoute(RouteInterface $route): self
+	{
+		$this->route = $route;
+		return $this;
+	}
 
 	/**
 	 * Return a JSON response or throw an exception with the given error

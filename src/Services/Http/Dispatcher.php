@@ -3,9 +3,10 @@
 namespace Orkestra\Services\Http;
 
 use Orkestra\App;
+use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
+use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
-use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use Orkestra\Services\Http\Middlewares\ValidationMiddleware;
 use League\Route\Dispatcher as LeagueDispatcher;
 use Psr\Http\Message\ResponseInterface;
@@ -28,6 +29,7 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 		$method = $request->getMethod();
 		$uri    = $request->getUri()->getPath();
 		$match  = $this->dispatch($method, $uri);
+		$route  = null;
 
 		switch ($match[0]) {
 			case FastRoute::NOT_FOUND:
@@ -42,7 +44,6 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 				$route = $this->ensureHandlerIsRoute($match[1], $method, $uri)->setVars($match[2]);
 
 				if ($this->isExtraConditionMatch($route, $request)) {
-					$this->bindRouteToRequest($route);
 					$this->addValidationMiddleware($route);
 					$this->setFoundMiddleware($route);
 					$request = $this->requestWithRouteAttributes($request, $route);
@@ -53,12 +54,16 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 				break;
 		}
 
-		return $this->handle($request);
+		return $this->handle($request, $route);
 	}
 
-	protected function bindRouteToRequest(RouteInterface $route): void
+	public function handle(ServerRequestInterface $request, ?RouteInterface $route = null): ResponseInterface
 	{
-		$this->app->bind(RouteInterface::class, $route);
+		$middleware = $this->shiftMiddleware();
+		if ($route && $middleware instanceof RouteAwareInterface) {
+			$middleware->setRoute($route);
+		}
+		return $middleware->process($request, $this);
 	}
 
 	protected function addValidationMiddleware(Route $route): void

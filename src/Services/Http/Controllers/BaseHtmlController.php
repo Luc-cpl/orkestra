@@ -1,16 +1,18 @@
 <?php
 
-namespace Orkestra\Controllers;
+namespace Orkestra\Services\Http\Controllers;
 
 use Orkestra\App;
 use Orkestra\Interfaces\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use DI\Attribute\Inject;
+use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
+use Orkestra\Services\Http\Interfaces\RouteInterface;
 
 /**
  * BaseHtmlController
  */
-abstract class BaseHtmlController
+abstract class BaseHtmlController implements RouteAwareInterface
 {
 	#[Inject]
 	protected App $app;
@@ -21,7 +23,21 @@ abstract class BaseHtmlController
 	#[Inject]
 	protected ResponseInterface $response;
 
+	protected ?RouteInterface $route = null;
+
 	protected int $status = 200;
+
+	/**
+	 * @return $this
+	 */
+	public function setRoute(RouteInterface $route): self
+	{
+		$this->route = $route;
+		if ($this->view instanceof RouteAwareInterface) {
+			$this->view->setRoute($route);
+		}
+		return $this;
+	}
 
 	protected function setStatus(int $status): self
 	{
