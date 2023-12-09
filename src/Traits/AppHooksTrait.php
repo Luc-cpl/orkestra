@@ -2,7 +2,7 @@
 
 namespace Orkestra\Traits;
 
-use Orkestra\Interfaces\HooksInterface;
+use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 
 /**
  * Implement hooks functionality for the application.
@@ -10,7 +10,7 @@ use Orkestra\Interfaces\HooksInterface;
  * This allow call and query internal application hooks without
  * the need to check if the service is available and without a specific app slug.
  * 
- * @see \Orkestra\Interfaces\HooksInterface
+ * @see \Orkestra\Services\Hooks\Interfaces\HooksInterface
  */
 trait AppHooksTrait
 {

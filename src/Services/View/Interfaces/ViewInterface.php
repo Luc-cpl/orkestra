@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Interfaces;
+namespace Orkestra\Services\View\Interfaces;
 
 interface ViewInterface
 {

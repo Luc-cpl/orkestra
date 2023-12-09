@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Controllers\Commands;
+namespace Orkestra\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

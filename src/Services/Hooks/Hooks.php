@@ -2,7 +2,7 @@
 
 namespace Orkestra\Services\Hooks;
 
-use Orkestra\Interfaces\HooksInterface;
+use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Orkestra\Services\Hooks\Hook;
 
 final class Hooks implements HooksInterface

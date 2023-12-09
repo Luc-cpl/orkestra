@@ -4,7 +4,7 @@ namespace Orkestra\Providers;
 
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
-use Orkestra\Interfaces\ViewInterface;
+use Orkestra\Services\View\Interfaces\ViewInterface;
 use Orkestra\Services\View\Twig\OrkestraExtension;
 use Orkestra\Services\View\Twig\RuntimeLoader;
 use Orkestra\Services\View\View;

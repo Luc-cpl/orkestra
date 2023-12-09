@@ -4,7 +4,7 @@ namespace Orkestra\Providers;
 
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
-use Orkestra\Interfaces\HooksInterface;
+use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 
 use Orkestra\Services\Hooks\Hooks;
 

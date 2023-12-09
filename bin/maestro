@@ -7,7 +7,7 @@ use Orkestra\Configuration;
 
 use Orkestra\Providers;
 
-use Orkestra\Controllers\Commands;
+use Orkestra\Commands;
 
 if (php_sapi_name() !== 'cli') {
 	die("Maestro app must be run from the command line.");

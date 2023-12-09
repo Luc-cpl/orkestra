@@ -3,11 +3,11 @@
 namespace Orkestra\Services\Http\Controllers;
 
 use Orkestra\App;
-use Orkestra\Interfaces\ViewInterface;
-use Psr\Http\Message\ResponseInterface;
-use DI\Attribute\Inject;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
+use Orkestra\Services\View\Interfaces\ViewInterface;
+use Psr\Http\Message\ResponseInterface;
+use DI\Attribute\Inject;
 
 /**
  * BaseHtmlController

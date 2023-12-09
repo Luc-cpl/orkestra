@@ -1,6 +1,6 @@
 <?php
 
-namespace Orkestra\Interfaces;
+namespace Orkestra\Services\Hooks\Interfaces;
 
 interface HooksInterface
 {
