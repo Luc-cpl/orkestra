@@ -4,12 +4,20 @@ namespace Orkestra\Providers;
 
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
+use Orkestra\Commands\StartServerCommand;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
 class CommandsProvider implements ProviderInterface
 {
+	/**
+	 * @var array<class-string<Command>>
+	 */
+	protected array $commands = [
+		StartServerCommand::class,
+	];
+
 	/**
 	 * Register services with the container.
 	 * We can use the container to bind services to the app.
@@ -62,9 +70,10 @@ class CommandsProvider implements ProviderInterface
 		 *
 		 * @var array<class-string<Command>> $commands
 		 */
-		$commands = $app->hookQuery('commands.config', $commands);
+		$commands = $app->hookQuery('commands.register', $commands);
+		$commands = array_merge($this->commands, $commands);
 
-		foreach ($commands as $command) {
+		foreach (array_unique($commands) as $command) {
 			$console->add($app->get($command));
 		}
 	}

@@ -4,10 +4,7 @@ namespace Orkestra\CLI;
 
 use Orkestra\App;
 use Orkestra\Configuration;
-
 use Orkestra\Providers;
-
-use Orkestra\Commands;
 
 if (php_sapi_name() !== 'cli') {
 	die("Maestro app must be run from the command line.");
@@ -20,11 +17,8 @@ if (version_compare(phpversion(), '7.4.0', '<')) {
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $config = new Configuration([
-	'env'      => 'development', // Do not cache CLI requests
-	'root'     => getcwd(),
-	'commands' => [
-		Commands\StartServerCommand::class,
-	]
+	'env'  => 'development', // Do not cache CLI requests
+	'root' => getcwd(),
 ]);
 
 $app = new App($config);

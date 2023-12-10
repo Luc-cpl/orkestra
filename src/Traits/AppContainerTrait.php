@@ -28,7 +28,7 @@ trait AppContainerTrait
     private array $singletons = [];
 
     /**
-     * @var string[]
+     * @var class-string[]
      */
     private array $providers = [];
 
@@ -89,9 +89,9 @@ trait AppContainerTrait
     /**
      * Get the providers
      * 
-     * @return string[]
+     * @return class-string[]
      */
-    protected function getProviders(): array
+    public function getProviders(): array
     {
         return $this->providers;
     }
