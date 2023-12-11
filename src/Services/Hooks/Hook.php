@@ -5,9 +5,6 @@ namespace Orkestra\Services\Hooks;
 use Closure;
 use ReflectionFunction;
 
-/**
- * @todo Create a request class containing the request data to pass to the hook callback
- */
 class Hook
 {
 	protected Closure $callback;
@@ -25,7 +22,6 @@ class Hook
 
 	public function isSameCallback(callable $callback): bool
 	{
-
 		$callback = Closure::fromCallable($callback);
 		$cbString = (string) new ReflectionFunction($callback);
 		return $cbString === (string) new ReflectionFunction($this->callback);
