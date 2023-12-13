@@ -1,18 +1,17 @@
 <?php
 
-namespace Orkestra\Services\Http\Middleware;
+namespace Orkestra\Services\Http\Controllers;
 
 use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
+use DI\Attribute\Inject;
 use Orkestra\Services\Http\Traits\ErrorResponseTrait;
 
-use Psr\Http\Server\MiddlewareInterface;
-use DI\Attribute\Inject;
-
-abstract class BaseMiddleware implements
-	MiddlewareInterface,
-	RouteAwareInterface
+/**
+ * BaseApiController
+ */
+abstract class BaseApiController implements RouteAwareInterface
 {
 	use ErrorResponseTrait;
 
@@ -21,12 +20,20 @@ abstract class BaseMiddleware implements
 
 	protected ?RouteInterface $route = null;
 
+	protected int $status = 200;
+
 	/**
 	 * @return $this
 	 */
 	public function setRoute(RouteInterface $route): self
 	{
 		$this->route = $route;
+		return $this;
+	}
+
+	protected function setStatus(int $status): self
+	{
+		$this->status = $status;
 		return $this;
 	}
 }
