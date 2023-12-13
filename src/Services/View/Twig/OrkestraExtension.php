@@ -139,11 +139,11 @@ class OrkestraExtension extends AbstractExtension
 	}
 
 	/**
-	 * @param string               $name
-	 * @param array<string, mixed> $value
-	 * @param string               $placement
+	 * @param string $name
+	 * @param mixed  $value
+	 * @param string $placement
 	 */
-	protected function enqueueConst(string $name, array $value, string $placement = 'head'): void
+	protected function enqueueConst(string $name, mixed $value, string $placement = 'head'): void
 	{
 		$expectedPlacements = ['head', 'footer'];
 		if (!in_array($placement, $expectedPlacements, true)) {
