@@ -29,7 +29,24 @@ class CommandsProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
-		$app->singleton(Application::class, Application::class);
+		$app->singleton(Application::class, function () use ($app) {
+			$console   = new Application($app->slug());
+			$commands  = $app->config()->get('commands', []);
+			$providers = $app->getProviders();
+
+			foreach ($providers as $provider) {
+				$provider = $app->get($provider);
+				if (property_exists($provider, 'commands')) {
+					$commands = array_merge($provider->commands, $commands);
+				}
+			}
+
+			foreach (array_unique($commands) as $command) {
+				$console->add($app->get($command));
+			}
+
+			return $console;
+		});
 
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
@@ -62,19 +79,5 @@ class CommandsProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		$console  = $app->get(Application::class);
-		$commands = $app->config()->get('commands');
-
-		/**
-		 * Allow other packages to add commands
-		 *
-		 * @var array<class-string<Command>> $commands
-		 */
-		$commands = $app->hookQuery('commands.register', $commands);
-		$commands = array_merge($this->commands, $commands);
-
-		foreach (array_unique($commands) as $command) {
-			$console->add($app->get($command));
-		}
 	}
 }
