@@ -75,11 +75,45 @@ class ValidationMiddleware extends BaseMiddleware
 		return $flattened;
 	}
 
+	/**
+	 * @param array<string, mixed> $params
+	 * @param array<string, string[]|string> $rules
+	 * @return array<string, mixed>
+	 */
+	protected function removeUndefinedParams(array $params, array $rules, string $prefix = ''): array
+	{
+		$filtered = [];
+
+		foreach ($params as $key => $value) {
+			$param = $rules[$prefix . $key] ?? null;
+
+			if ($param) {
+				$filtered[$key] = $value;
+			}
+
+			if (is_array($value)) {
+				$inner = $this->removeUndefinedParams($value, $rules, $prefix . $key . '.');
+				$filtered[$key] = $inner;
+			}
+		}
+
+		return $filtered;
+	}
+
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
 		$validator = $this->validator;
 		$rules     = $this->rules;
-		$data      = (array) $request->getQueryParams() + (array) $request->getParsedBody();
+
+		// remove undefined rules params from query, taking care of nested params as value.key
+		$query = (array) $request->getQueryParams();
+		$body  = (array) $request->getParsedBody();
+		$query = $this->removeUndefinedParams($query, $rules);
+		$body  = $this->removeUndefinedParams($body, $rules);
+		$query = array_diff_key($query, $body);
+		$data  = $query + $body;
+
+		$request = $request->withQueryParams($query)->withParsedBody($body);
 
 		// Allow the addition of custom validation rules
 		$this->app->hookCall('middleware.validation.rules', $validator);
