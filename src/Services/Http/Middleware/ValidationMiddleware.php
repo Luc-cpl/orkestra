@@ -76,23 +76,46 @@ class ValidationMiddleware extends BaseMiddleware
 	}
 
 	/**
+	 * @param mixed[] $params
+	 * @return mixed[]
+	 */
+	protected function adjustRequestParamsTypes(array $params): array
+	{
+		foreach ($params as $key => $value) {
+			if (is_numeric($value) && is_string($value)) {
+				$params[$key] = strpos($value, '.') !== false ? (float) $value : (int) $value;
+			} elseif (is_array($value)) {
+				$params[$key] = $this->adjustRequestParamsTypes($value);
+			} else {
+				$params[$key] = match ($value) {
+					'null'   => null,
+					'true'   => true,
+					'false'  => false,
+					default  => $value,
+				};
+			}
+		}
+
+		return $params;
+	}
+
+	/**
 	 * @param array<string, mixed> $params
-	 * @param array<string, string[]|string> $rules
 	 * @return array<string, mixed>
 	 */
-	protected function removeUndefinedParams(array $params, array $rules, string $prefix = ''): array
+	protected function removeUndefinedRules(array $params, string $prefix = ''): array
 	{
 		$filtered = [];
 
 		foreach ($params as $key => $value) {
-			$param = $rules[$prefix . $key] ?? null;
+			$param = $this->rules[$prefix . $key] ?? null;
 
 			if ($param) {
 				$filtered[$key] = $value;
 			}
 
 			if (is_array($value)) {
-				$inner = $this->removeUndefinedParams($value, $rules, $prefix . $key . '.');
+				$inner = $this->removeUndefinedRules($value, $prefix . $key . '.');
 				$filtered[$key] = $inner;
 			}
 		}
@@ -108,8 +131,10 @@ class ValidationMiddleware extends BaseMiddleware
 		// remove undefined rules params from query, taking care of nested params as value.key
 		$query = (array) $request->getQueryParams();
 		$body  = (array) $request->getParsedBody();
-		$query = $this->removeUndefinedParams($query, $rules);
-		$body  = $this->removeUndefinedParams($body, $rules);
+		$query = $this->removeUndefinedRules($query);
+		$query = $this->adjustRequestParamsTypes($query);
+		$body  = $this->removeUndefinedRules($body);
+		$body  = $this->adjustRequestParamsTypes($body);
 		$query = array_diff_key($query, $body);
 		$data  = $query + $body;
 
