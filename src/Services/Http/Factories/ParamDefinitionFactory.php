@@ -34,6 +34,20 @@ class ParamDefinitionFactory
 			throw new \BadMethodCallException("Invalid method: $method");
 		}
 
+		// If we pass named arguments, we need to re-order them to match the order of the constructor.
+		if (isset($args['title'])) {
+			$args = [
+				$args['title'],
+				$args['name'],
+				$args['default'] ?? null,
+				$args['validation'] ?? null,
+				$args['sanitization'] ?? null,
+				$args['description'] ?? null,
+				$args['inner'] ?? null,
+				$args['enum'] ?? null,
+			];
+		}
+
 		return new ParamDefinition(
 			$type,
 			$args[0],         // title
