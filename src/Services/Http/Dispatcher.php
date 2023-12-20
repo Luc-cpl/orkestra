@@ -69,16 +69,11 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 	protected function addValidationMiddleware(Route $route): void
 	{
 		$params = $route->getDefinition()->params();
-		$rules = [];
 
-		foreach ($params as $param) {
-			$rules[$param->name] = $param->validation;
-		}
-
-		if (empty($rules)) {
+		if (empty($params)) {
 			return;
 		}
 
-		$this->middleware([ValidationMiddleware::class, ['rules' => $rules]]);
+		$this->middleware([ValidationMiddleware::class, ['params' => $params]]);
 	}
 }

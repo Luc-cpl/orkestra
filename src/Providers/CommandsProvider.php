@@ -30,19 +30,23 @@ class CommandsProvider implements ProviderInterface
 	public function register(App $app): void
 	{
 		$app->singleton(Application::class, function () use ($app) {
-			$console   = new Application($app->slug());
+			/** @var class-string[] */
 			$commands  = $app->config()->get('commands', []);
 			$providers = $app->getProviders();
+			$console   = new Application($app->slug());
 
 			foreach ($providers as $provider) {
 				$provider = $app->get($provider);
 				if (property_exists($provider, 'commands')) {
+					/** @var class-string[] */
 					$commands = array_merge($provider->commands, $commands);
 				}
 			}
 
 			foreach (array_unique($commands) as $command) {
-				$console->add($app->get($command));
+				/** @var Command */
+				$command = $app->get($command);
+				$console->add($command);
 			}
 
 			return $console;

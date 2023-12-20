@@ -16,7 +16,7 @@ use Orkestra\Services\Http\Enum\ParamType;
 class ParamDefinitionFactory
 {
 	/**
-	 * @param array{string,string,mixed,string[]|string|null,string[]|string|null,?string,?ParamDefinition[],?mixed[]} $args
+	 * @param mixed[] $args
 	 */
 	public function __call(string $method, array $args): ParamDefinition
 	{
@@ -34,6 +34,21 @@ class ParamDefinitionFactory
 			throw new \BadMethodCallException("Invalid method: $method");
 		}
 
+		// If we pass named arguments, we need to re-order them to match the order of the constructor.
+		if (isset($args['title'])) {
+			$args = [
+				$args['title'],
+				$args['name'],
+				$args['default'] ?? null,
+				$args['validation'] ?? null,
+				$args['sanitization'] ?? null,
+				$args['description'] ?? null,
+				$args['inner'] ?? null,
+				$args['enum'] ?? null,
+			];
+		}
+
+		/** @var array{string,string,mixed,string[]|string|null,string[]|string|null,?string,?ParamDefinition[],?mixed[]} $args*/
 		return new ParamDefinition(
 			$type,
 			$args[0],         // title
