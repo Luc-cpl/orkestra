@@ -110,7 +110,7 @@ class ValidationMiddleware extends BaseMiddleware
 		foreach ($params as $key => $value) {
 			$param = $this->rules[$prefix . $key] ?? null;
 
-			if ($param) {
+			if ($param !== null) {
 				$filtered[$key] = $value;
 			}
 
