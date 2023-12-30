@@ -10,7 +10,6 @@ use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
 use DI\ContainerBuilder;
-use Exception;
 use InvalidArgumentException;
 
 /**
@@ -45,10 +44,11 @@ trait AppContainerTrait
         $isProduction = $config->get('env') === 'production';
         $cacheDir     = $config->get('root');
 
-        if (!is_string($cacheDir)) {
-            throw new Exception('The root directory must be a string');
+        if ($isProduction && !is_string($cacheDir)) {
+            throw new InvalidArgumentException('The root directory must be a string');
         }
 
+        /** @var string $cacheDir */
         if ($isProduction && $cacheDir) {
             $containerBuilder->enableCompilation($cacheDir);
             $containerBuilder->enableDefinitionCache('container_' . md5($cacheDir));
@@ -66,16 +66,16 @@ trait AppContainerTrait
      *
      * @param string $class
      * @return void
-     * @throws Exception If the provider class does not exist or does not implement ProviderInterface
+     * @throws InvalidArgumentException If the provider class does not exist or does not implement ProviderInterface
      */
     public function provider(string $class): void
     {
         $interface = ProviderInterface::class;
         if (!class_exists($class)) {
-            throw new Exception("Provider \"$class\" does not exist");
+            throw new InvalidArgumentException("Provider \"$class\" does not exist");
         }
         if (!in_array($interface, class_implements($class), true)) {
-            throw new Exception("Provider \"$class\" must implement \"$interface\"");
+            throw new InvalidArgumentException("Provider \"$class\" must implement \"$interface\"");
         }
         $this->providers[] = $class;
         $this->singleton($class, $class, false);
@@ -103,7 +103,7 @@ trait AppContainerTrait
      * @param mixed  $service     Service to bind to the container
      * @param bool   $useAutowire Use autowire or create to bind the service
      * @return AppBind A bind instance that allows manage the service constructor and properties
-     * @throws Exception If the class specified in $service does not exist
+     * @throws InvalidArgumentException If the class specified in $service does not exist
      */
     public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind
     {
@@ -117,7 +117,7 @@ trait AppContainerTrait
      * @param mixed  $service
      * @param bool   $useAutowire
      * @return AppBind A bind instance that allows manage the service constructor and properties
-     * @throws Exception If the class specified in $service does not exist
+     * @throws InvalidArgumentException If the class specified in $service does not exist
      */
     public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
     {
@@ -169,6 +169,6 @@ trait AppContainerTrait
      */
     public function runIfAvailable(string $name, callable $callback): mixed
     {
-        return $this->has($name) ? $callback($this->get($name)) : false;
+        return $this->has($name) ? $callback($this->get($name)) : null;
     }
 }
