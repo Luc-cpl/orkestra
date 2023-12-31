@@ -6,7 +6,7 @@ use DI\Container;
 use DI\Definition\Helper\CreateDefinitionHelper;
 use DI;
 
-use Exception;
+use InvalidArgumentException;
 
 class AppBind
 {
@@ -19,7 +19,7 @@ class AppBind
 		$isClassString = is_string($service);
 
 		if ($isClassString && !class_exists($service)) {
-			throw new Exception("Class \"$service\" does not exist");
+			throw new InvalidArgumentException("Class \"$service\" does not exist");
 		}
 
 		$this->service = $isClassString
