@@ -22,6 +22,13 @@ Orkestra is a lightweight and highly extensible PHP framework designed to provid
 - Composer
 
 ### Installation
+To kickstart a new project using Orkestra Skeleton, use the following Composer command. Replace {project_name} with the desired name for your project.
+```bash
+composer create-project webei/orkestra-skeleton {project_name}
+cd {project_name}
+php maestro app:serve
+```
+Congratulations! Your Orkestra project is now up and running. Access it by navigating to the specified address in your web browser.
 
 ### Documentation
 For more detailed information on using Orkestra, refer to the official documentation.
