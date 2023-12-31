@@ -14,9 +14,9 @@ class RouteDefinitionFacade
 	) {
 	}
 
-	public function name(): string
+	public function title(): string
 	{
-		return $this->definition->name();
+		return $this->definition->title();
 	}
 
 	public function description(): string

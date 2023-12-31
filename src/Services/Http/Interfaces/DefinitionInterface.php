@@ -7,7 +7,7 @@ use Orkestra\Services\Http\Entities\ParamDefinition;
 
 interface DefinitionInterface
 {
-	public function name(): string;
+	public function title(): string;
 	public function description(): string;
 	public function type(): string;
 	public function meta(string $key, mixed $default = null): mixed;

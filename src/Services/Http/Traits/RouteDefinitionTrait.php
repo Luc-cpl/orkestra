@@ -30,7 +30,7 @@ trait RouteDefinitionTrait
 
 	/**
 	 * @param class-string|array{
-	 * 	'name': ?string,
+	 * 	'title': ?string,
 	 * 	'description': ?string,
 	 * 	'type': ?string,
 	 * 	'meta': ?array<string, mixed>,

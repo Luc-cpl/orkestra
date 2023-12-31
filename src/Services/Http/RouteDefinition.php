@@ -22,7 +22,7 @@ class RouteDefinition implements DefinitionInterface
 	 * }> $params
 	 */
 	public function __construct(
-		protected ?string $name        = null,
+		protected ?string $title       = null,
 		protected ?string $description = null,
 		protected ?string $type        = null,
 		protected ?array  $meta        = [],
@@ -30,9 +30,9 @@ class RouteDefinition implements DefinitionInterface
 	) {
 	}
 
-	public function name(): string
+	public function title(): string
 	{
-		return $this->name ?? '';
+		return $this->title ?? '';
 	}
 
 	public function description(): string
