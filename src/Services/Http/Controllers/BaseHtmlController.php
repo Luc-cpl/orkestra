@@ -54,6 +54,9 @@ abstract class BaseHtmlController implements RouteAwareInterface
 	 */
 	protected function render(string $name, array $context = []): ResponseInterface
 	{
+		$context = array_merge($context, [
+			'route' => $this->route->getDefinition(),
+		]);
 		$content = $this->view->render($name, $context);
 		$this->response->getBody()->write($content);
 		return $this->response->withStatus($this->status);
