@@ -42,7 +42,7 @@ class AppBind
 	public function constructor(mixed ...$parameters): self
 	{
 		if (!($this->service instanceof CreateDefinitionHelper)) {
-			return $this;
+			throw new InvalidArgumentException('Cannot define constructor parameters for a non-class services');
 		}
 		$this->service->constructor(...$parameters);
 		return $this->set();
@@ -59,7 +59,7 @@ class AppBind
 	public function property(string $property, mixed $value): self
 	{
 		if (!($this->service instanceof CreateDefinitionHelper)) {
-			return $this;
+			throw new InvalidArgumentException('Cannot define property injection for a non-class services');
 		}
 		$this->service->property($property, $value);
 		return $this->set();
@@ -82,7 +82,7 @@ class AppBind
 	public function method(string $method, mixed ...$parameters): self
 	{
 		if (!($this->service instanceof CreateDefinitionHelper)) {
-			return $this;
+			throw new InvalidArgumentException('Cannot define method calls for a non-class services');
 		}
 		$this->service->method($method, ...$parameters);
 		return $this->set();
