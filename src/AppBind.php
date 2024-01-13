@@ -44,7 +44,7 @@ class AppBind
 		if (!($this->service instanceof CreateDefinitionHelper)) {
 			return $this;
 		}
-		$this->service->constructor($parameters);
+		$this->service->constructor(...$parameters);
 		return $this->set();
 	}
 
