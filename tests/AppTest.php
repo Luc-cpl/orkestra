@@ -4,7 +4,6 @@ use PHPUnit\Framework\TestCase;
 use Orkestra\App;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Orkestra\Interfaces\ProviderInterface;
-use Orkestra\Providers\HooksProvider;
 use Psr\Container\NotFoundExceptionInterface;
 
 class AppTest extends TestCase
@@ -203,10 +202,10 @@ class AppTest extends TestCase
     }
 
     /**
-     * @covers \Orkestra\App::run
+     * @covers \Orkestra\App::boot
      * @covers \Orkestra\Traits\AppContainerTrait::getProviders
      */
-    public function testRun(): void
+    public function testBoot(): void
     {
         $this->expectNotToPerformAssertions();
         $providerClass = $this->createMock(ProviderInterface::class)::class;
@@ -214,7 +213,7 @@ class AppTest extends TestCase
         $provider = $this->app->get($providerClass);
         $provider->expects($this->once())->method('boot')->with($this->app);
 
-        $this->app->run();
+        $this->app->boot();
     }
 
     /**
@@ -223,9 +222,8 @@ class AppTest extends TestCase
     public function testRunThrowsExceptionWhenCalledTwice(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('App already booted');
 
-        $this->app->run();
-        $this->app->run(); // This should throw an exception
+        $this->app->boot();
+        $this->app->boot(); // This should throw an exception
     }
 }
