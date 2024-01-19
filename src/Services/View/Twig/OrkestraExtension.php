@@ -79,7 +79,7 @@ class OrkestraExtension extends AbstractExtension
 	 */
 	protected function enqueueHeaderTag(string $tag, array $attributes = [], ?string $content = ''): void
 	{
-		$this->headTags[] = new HtmlTag($tag, $attributes, $content);
+		$this->headTags[] = new HtmlTag($tag, $attributes, $content ?? '');
 	}
 
 	/**

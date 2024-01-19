@@ -9,9 +9,9 @@ use DI\Attribute\Inject;
 use Orkestra\Services\Http\Traits\ErrorResponseTrait;
 
 /**
- * BaseApiController
+ * AbstractApiController
  */
-abstract class BaseApiController implements RouteAwareInterface
+abstract class AbstractApiController implements RouteAwareInterface
 {
 	use ErrorResponseTrait;
 

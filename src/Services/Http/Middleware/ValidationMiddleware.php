@@ -8,7 +8,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Rakit\Validation\Validator;
 
-class ValidationMiddleware extends BaseMiddleware
+class ValidationMiddleware extends AbstractMiddleware
 {
 	/**
 	 * @param Validator $validator
