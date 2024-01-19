@@ -10,9 +10,9 @@ use Psr\Http\Message\ResponseInterface;
 use DI\Attribute\Inject;
 
 /**
- * BaseHtmlController
+ * AbstractHtmlController
  */
-abstract class BaseHtmlController implements RouteAwareInterface
+abstract class AbstractHtmlController implements RouteAwareInterface
 {
 	#[Inject]
 	protected App $app;
@@ -54,9 +54,11 @@ abstract class BaseHtmlController implements RouteAwareInterface
 	 */
 	protected function render(string $name, array $context = []): ResponseInterface
 	{
-		$context = array_merge($context, [
-			'route' => $this->route->getDefinition(),
-		]);
+		if ($this->route) {
+			$context = array_merge($context, [
+				'route' => $this->route->getDefinition(),
+			]);
+		}
 		$content = $this->view->render($name, $context);
 		$this->response->getBody()->write($content);
 		return $this->response->withStatus($this->status);

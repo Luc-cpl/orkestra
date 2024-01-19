@@ -10,7 +10,7 @@ use Orkestra\Services\Http\Traits\ErrorResponseTrait;
 use Psr\Http\Server\MiddlewareInterface;
 use DI\Attribute\Inject;
 
-abstract class BaseMiddleware implements
+abstract class AbstractMiddleware implements
 	MiddlewareInterface,
 	RouteAwareInterface
 {
