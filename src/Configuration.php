@@ -4,7 +4,7 @@ namespace Orkestra;
 
 use Orkestra\Interfaces\ConfigurationInterface;
 
-use Exception;
+use InvalidArgumentException;
 
 class Configuration implements ConfigurationInterface
 {
@@ -29,6 +29,14 @@ class Configuration implements ConfigurationInterface
 				? "slug \"$value\" is not valid"
 				: true,
 		]);
+
+		// Add the default definition
+		$this->set('definition', [
+			'env'  => [true, 'The environment the app is running in (development, production)'],
+			'root' => [true, 'The root directory of the app'],
+			'slug' => [true, 'The app slug'],
+			'host' => [false, 'The host domain of the app'],
+		]);
 	}
 
 	/**
@@ -52,7 +60,7 @@ class Configuration implements ConfigurationInterface
 			if (!$valid || is_string($valid)) {
 				$message = "Invalid configuration for \"$key\": ";
 				$message .= is_string($valid) ? $valid : "The value does not pass the validation";
-				throw new Exception($message);
+				throw new InvalidArgumentException($message);
 			}
 		}
 		return true;
@@ -63,16 +71,30 @@ class Configuration implements ConfigurationInterface
 		if ($key === 'validation') {
 			$errorMessage = 'Validation must be an array with keys as the config key and the value as a callable';
 			if (!is_array($value)) {
-				throw new Exception($errorMessage);
+				throw new InvalidArgumentException($errorMessage);
 			}
 			foreach ($value as $k => $validator) {
 				if (!is_string($k) || !is_callable($validator)) {
-					throw new Exception($errorMessage);
+					throw new InvalidArgumentException($errorMessage);
 				}
 			}
 			$current = (array) $this->get($key);
 			$value   = array_filter(array_merge($current, $value));
 		}
+
+		if ($key === 'definition') {
+			if (!is_array($value)) {
+				throw new InvalidArgumentException('Definition must be an array');
+			}
+			foreach ($value as $k => $v) {
+				if (!is_string($k) || !is_array($v) || count($v) !== 2) {
+					throw new InvalidArgumentException('Definition must be an array with keys as the config key and the value as an array with two elements: [required, description]');
+				}
+			}
+			$current = (array) $this->get($key);
+			$value   = array_filter(array_merge($current, $value));
+		}
+
 		$this->config[$key] = $value;
 		return $this;
 	}

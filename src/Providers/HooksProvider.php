@@ -29,6 +29,10 @@ class HooksProvider implements ProviderInterface
 			},
 		]);
 
+		$app->config()->set('definition', [
+			'listeners'  => [false, 'The hook listeners to register with the app'],
+		]);
+
 		$app->singleton(HooksInterface::class, Hooks::class);
 	}
 

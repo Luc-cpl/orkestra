@@ -43,6 +43,11 @@ class HttpProvider implements ProviderInterface
 			},
 		]);
 
+		$app->config()->set('definition', [
+			'routes'  => [true, 'The routes directory to load'],
+			'middleware'  => [false, 'The middleware to load'],
+		]);
+
 		$app->singleton(Router::class, Router::class);
 		$app->singleton(Validator::class, Validator::class);
 		$app->singleton(RouterInterface::class, Router::class);
