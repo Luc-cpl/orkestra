@@ -3,6 +3,7 @@
 namespace Orkestra\Providers;
 
 use Orkestra\App;
+use Orkestra\Commands\ConfigOptionsCommand;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Commands\StartServerCommand;
 
@@ -16,6 +17,7 @@ class CommandsProvider implements ProviderInterface
 	 */
 	protected array $commands = [
 		StartServerCommand::class,
+		ConfigOptionsCommand::class,
 	];
 
 	/**
@@ -72,6 +74,10 @@ class CommandsProvider implements ProviderInterface
 				}
 				return true;
 			},
+		]);
+
+		$app->config()->set('definition', [
+			'commands'  => [false, 'The commands to register with the console application'],
 		]);
 	}
 

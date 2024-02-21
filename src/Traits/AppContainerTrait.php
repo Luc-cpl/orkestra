@@ -133,13 +133,8 @@ trait AppContainerTrait
      *
      * @template T
      * @param class-string<T> $name   Entry name or a class name.
-     * @param mixed[]         $params Optional parameters to use to build the entry. Use this to force
-     *                                specific parameters to specific values. Parameters not defined in this
-     *                                array will be resolved using the container.
+     * @param mixed[]         $params Optional parameters to use to build the entry.
      * @return T
-     * @throws InvalidArgumentException The name parameter must be of type string.
-     * @throws DependencyException Error while resolving the entry.
-     * @throws NotFoundException No entry found for the given name.
      */
     public function get(string $name, array $params = []): mixed
     {
