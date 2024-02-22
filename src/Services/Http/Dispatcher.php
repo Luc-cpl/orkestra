@@ -17,6 +17,11 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 {
 	use MiddlewareAwareTrait;
 
+	/**
+	 * The current route being dispatched
+	 */
+	protected ?RouteInterface $route = null;
+
 	public function __construct(
 		protected App $app,
 		mixed $data
@@ -54,14 +59,16 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 				break;
 		}
 
-		return $this->handle($request, $route);
+		$this->route = $route;
+
+		return $this->handle($request);
 	}
 
-	public function handle(ServerRequestInterface $request, ?RouteInterface $route = null): ResponseInterface
+	public function handle(ServerRequestInterface $request): ResponseInterface
 	{
 		$middleware = $this->shiftMiddleware();
-		if ($route && $middleware instanceof RouteAwareInterface) {
-			$middleware->setRoute($route);
+		if ($this->route && $middleware instanceof RouteAwareInterface) {
+			$middleware->setRoute($this->route);
 		}
 		return $middleware->process($request, $this);
 	}
