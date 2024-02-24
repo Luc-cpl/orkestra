@@ -108,14 +108,15 @@ class ValidationMiddleware extends AbstractMiddleware
 		$filtered = [];
 
 		foreach ($params as $key => $value) {
-			$param = $this->rules[$prefix . $key] ?? null;
+			$keyPrefix = is_numeric($key) ? $prefix . '*' : $prefix . $key;
+			$param     = $this->rules[$keyPrefix] ?? null;
 
 			if ($param !== null) {
 				$filtered[$key] = $value;
 			}
 
 			if (is_array($value)) {
-				$inner = $this->removeUndefinedRules($value, $prefix . $key . '.');
+				$inner = $this->removeUndefinedRules($value, $keyPrefix . '.');
 				$filtered[$key] = $inner;
 			}
 		}
