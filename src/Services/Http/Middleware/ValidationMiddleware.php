@@ -47,7 +47,6 @@ class ValidationMiddleware extends AbstractMiddleware
 		$validation = $param->validation;
 
 		if ($typeValidation) {
-			$validation = is_array($validation) ? $validation : explode('|', $validation);
 			array_unshift($validation, $typeValidation);
 		}
 

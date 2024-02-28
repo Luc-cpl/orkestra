@@ -9,8 +9,8 @@ use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 class RouteDefinitionFacade
 {
 	public function __construct(
-		protected ParamDefinitionFactory    $paramDefinitionFactory,
-		protected DefinitionInterface       $definition
+		protected ParamDefinitionFactory $paramDefinitionFactory,
+		protected DefinitionInterface    $definition
 	) {
 	}
 

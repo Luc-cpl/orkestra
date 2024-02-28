@@ -42,8 +42,8 @@ class Configuration implements ConfigurationInterface
 	/**
 	 * Validate the configuration
 	 *
-	 * @return boolean   true if the validation passes
-	 * @throws Exception if the validation fails
+	 * @return boolean true if the validation passes
+	 * @throws InvalidArgumentException if the validation fails
 	 */
 	public function validate(): bool
 	{

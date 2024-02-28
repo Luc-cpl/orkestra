@@ -44,11 +44,9 @@ class HooksProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		/** @var HooksInterface */
-		$hooks = $app->get(HooksInterface::class);
-
 		/** @var class-string[] */
 		$listeners = $app->config()->get('listeners', []);
+		$hooks     = $app->get(HooksInterface::class);
 
 		$this->registerListeners($app, $hooks, $listeners);
 

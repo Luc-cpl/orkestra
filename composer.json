@@ -9,6 +9,7 @@
     ],
     "scripts": {
         "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/",
+        "phpstan:full": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
         "phpunit": "./vendor/bin/phpunit --testdox",
         "phpunit:coverage": "php -d xdebug.mode=coverage ./vendor/bin/phpunit --coverage-html coverage/"
     },
@@ -37,6 +38,7 @@
         "laminas/laminas-httphandlerrunner": "^2.9",
         "rakit/validation": "^1.4",
         "twig/twig": "^3.0",
-        "twig/markdown-extra": "^3.7"
+        "twig/markdown-extra": "^3.7",
+        "fakerphp/faker": "^1.23"
     }
 }

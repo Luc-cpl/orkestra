@@ -30,6 +30,7 @@ class ConfigOptionsCommand extends Command
         $output->writeln('Available configuration options:');
         $output->writeln('');
 
+        /** @var array<string, array{bool, string}> */
         $definition = $this->config->get('definition');
 
         $definition = array_map(function ($value, $key) {

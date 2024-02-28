@@ -7,8 +7,6 @@ use Orkestra\AppBind;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Interfaces\ConfigurationInterface;
 use DI\Container;
-use DI\DependencyException;
-use DI\NotFoundException;
 use DI\ContainerBuilder;
 use InvalidArgumentException;
 
@@ -131,7 +129,7 @@ trait AppContainerTrait
      * If the entry is a singleton, it will return the same instance,
      * otherwise, it will create a new instance.
      *
-     * @template T
+     * @template T of object
      * @param class-string<T> $name   Entry name or a class name.
      * @param mixed[]         $params Optional parameters to use to build the entry.
      * @return T
@@ -139,8 +137,10 @@ trait AppContainerTrait
     public function get(string $name, array $params = []): mixed
     {
         if (isset($this->singletons[$name])) {
+            /** @var T */
             return $this->container->get($name);
         }
+        /** @var T */
         return $this->container->make($name, $params);
     }
 

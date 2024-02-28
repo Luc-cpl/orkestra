@@ -3,31 +3,58 @@
 namespace Orkestra\Services\Http\Entities;
 
 use Orkestra\Services\Http\Enum\ParamType;
+use Orkestra\Entities\AbstractEntity;
 use BadMethodCallException;
 
-class ParamDefinition
+/**
+ * @property-read ParamType         $type
+ * @property-read string            $title
+ * @property-read string            $name
+ * @property-read mixed             $default
+ * @property-read string            $description
+ * @property-read string[]          $enum
+ * @property-read bool              $required
+ * @property-read ParamDefinition[] $inner
+ * @property-read string[]          $validation
+ */
+class ParamDefinition extends AbstractEntity
 {
-	public readonly bool $required;
+	/**
+	 * @var ParamDefinition[]
+	 */
+	protected array $inner = [];
 
 	/**
-	 * @param string|string[]   $validation
-	 * @param string|string[]   $sanitization
-	 * @param ParamDefinition[] $inner
-	 * @param mixed[]           $enum
+	 * @var string[] $validation
+	 */
+	protected array $validation = [];
+
+	/**
+	 * @param mixed[] $enum
 	 */
 	public function __construct(
-		public readonly ParamType    $type,
-		public readonly string       $title,
-		public readonly string       $name,
-		public readonly mixed        $default      = null,
-		public readonly string|array $validation   = '',
-		public readonly string|array $sanitization = '',
-		public readonly ?string      $description  = null,
-		public readonly array        $inner        = [],
-		public readonly array        $enum         = [],
+		protected ParamType $type,
+		protected string    $title,
+		protected string    $name,
+		protected mixed     $default     = null,
+		protected ?string   $description = null,
+		protected array     $enum        = [],
 	) {
-		$validation = is_string($validation) ? explode('|', $validation) : $validation;
-		$this->required = in_array('required', $validation);
+		//
+	}
+
+	public function getRequired(): bool
+	{
+		return in_array('required', $this->validation);
+	}
+
+	/**
+	 * @param string[]|string $validation
+	 */
+	public function setValidation(string|array $validation): self
+	{
+		$this->validation = is_string($validation) ? explode('|', $validation) : $validation;
+		return $this;
 	}
 
 	/**
@@ -39,10 +66,7 @@ class ParamDefinition
 			throw new BadMethodCallException('Cannot set inner on non-array or non-object param');
 		}
 
-		$params = (array) $this;
-		$params['inner'] = $inner;
-		unset($params['required']);
-
-		return new self(...$params);
+		$this->inner = $inner;
+		return $this;
 	}
 }

@@ -3,6 +3,7 @@
 namespace Orkestra;
 
 use Orkestra\Interfaces\ConfigurationInterface;
+use Orkestra\Interfaces\AppHooksInterface;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Traits\AppContainerTrait;
 use Orkestra\Traits\AppHooksTrait;
@@ -11,7 +12,7 @@ use Psr\Container\ContainerInterface;
 
 use Exception;
 
-class App implements ContainerInterface
+class App implements ContainerInterface, AppHooksInterface
 {
     use AppContainerTrait;
     use AppHooksTrait;
@@ -22,6 +23,8 @@ class App implements ContainerInterface
         // Define default container
         $this->initContainer($config);
         $this->singleton(ConfigurationInterface::class, $config);
+        $this->singleton(ContainerInterface::class, $this);
+        $this->singleton(AppHooksInterface::class, $this);
         $this->singleton(self::class, $this);
     }
 

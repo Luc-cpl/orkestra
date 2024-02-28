@@ -12,12 +12,12 @@ interface HooksInterface
     public function call(string $hook, mixed ...$args): void;
 
     /**
-     * @template T
-     * @param string $hook
-     * @param T      $value
-     * @param mixed  ...$args
-     * @return T
-     */
+     * @template TKey
+	 * @param string $hook
+	 * @param TKey   $value
+	 * @param mixed  ...$args
+	 * @return TKey
+	 */
     public function query(string $hook, mixed $value, mixed ...$args): mixed;
 
     /**
