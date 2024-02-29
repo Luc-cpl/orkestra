@@ -14,6 +14,11 @@ final class Hooks implements HooksInterface
 
 	protected string $current = '';
 
+	/**
+	 * @var array<string, int>
+	 */
+	protected array $executionCount = [];
+
 	public function call(string $tag, mixed ...$args): void
 	{
 		$this->hooks[$tag] ??= [];
@@ -22,6 +27,9 @@ final class Hooks implements HooksInterface
 		foreach ($this->hooks[$tag] as $hook) {
 			$hook(...$args);
 		}
+
+		$this->executionCount[$tag] ??= 0;
+		$this->executionCount[$tag]++;
 
 		$this->current = '';
 	}
@@ -34,6 +42,9 @@ final class Hooks implements HooksInterface
 		foreach ($this->hooks[$tag] as $hook) {
 			$value = $hook($value, ...$args);
 		}
+
+		$this->executionCount[$tag] ??= 0;
+		$this->executionCount[$tag]++;
 
 		$this->current = '';
 
@@ -86,7 +97,7 @@ final class Hooks implements HooksInterface
 	public function has(string $tag, callable|false $callable = false): bool
 	{
 		if ($callable === false) {
-			return isset($this->hooks[$tag]);
+			return isset($this->hooks[$tag]) && count($this->hooks[$tag]) > 0;
 		}
 
 		$this->hooks[$tag] ??= [];
@@ -102,21 +113,11 @@ final class Hooks implements HooksInterface
 
 	public function did(string $tag): int
 	{
-		if (!isset($this->hooks[$tag])) {
+		if (!isset($this->executionCount[$tag])) {
 			return 0;
 		}
 
-		$count = 0;
-
-		/**
-		 * The biggest count of all hooks registered to this tag
-		 * is the number of times the tag has been called.
-		 */
-		foreach ($this->hooks[$tag] as $hook) {
-			$count = $hook->count > $hook->count ? $hook->count : $count;
-		}
-
-		return $count;
+		return $this->executionCount[$tag];
 	}
 
 	public function doing(string $tag): bool

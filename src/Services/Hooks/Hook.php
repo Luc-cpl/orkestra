@@ -7,16 +7,13 @@ use ReflectionFunction;
 
 class Hook
 {
-	protected Closure $callback;
-
-	public int $count = 0;
+	private Closure $callback;
 
 	public function __construct(
 		public readonly string $name,
 		callable $callback,
 		public readonly int $priority = 10,
 	) {
-		$this->count = 0;
 		$this->callback = Closure::fromCallable($callback);
 	}
 
@@ -29,7 +26,6 @@ class Hook
 
 	public function __invoke(mixed ...$args): mixed
 	{
-		$this->count++;
 		return call_user_func_array($this->callback, $args);
 	}
 }

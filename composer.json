@@ -3,15 +3,15 @@
     "description": "Orchestration for PHP applications",
     "type": "project",
     "license": "MIT",
-    "version": "v1.0.0-beta.7",
+    "version": "v1.0.0-rc.1",
     "keywords": [
         "orkestra"
     ],
     "scripts": {
         "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/",
         "phpstan:full": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
-        "phpunit": "./vendor/bin/phpunit --testdox",
-        "phpunit:coverage": "php -d xdebug.mode=coverage ./vendor/bin/phpunit --coverage-html coverage/"
+        "phpunit": "vendor/bin/pest",
+        "phpunit:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
     },
     "autoload": {
         "psr-4": {
@@ -24,9 +24,15 @@
             "email": "lucas.carvalhopl@outlook.com"
         }
     ],
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
     "require-dev": {
         "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.4"
+        "pestphp/pest": "^2.34",
+        "mockery/mockery": "^1.6"
     },
     "require": {
         "php": ">=8.0",

@@ -21,7 +21,7 @@ class Configuration implements ConfigurationInterface
 				? 'env must be either "development" or "production"'
 				: true,
 			'root' => fn ($value) =>
-			!is_dir($value)
+			!is_dir($value ?? '')
 				? "root \"$value\" is not a directory"
 				: true,
 			'slug' => fn ($value) =>

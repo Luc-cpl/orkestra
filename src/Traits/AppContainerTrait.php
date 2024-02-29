@@ -46,8 +46,8 @@ trait AppContainerTrait
             throw new InvalidArgumentException('The root directory must be a string');
         }
 
-        /** @var string $cacheDir */
-        if ($isProduction && $cacheDir) {
+        if ($isProduction) {
+            /** @var string $cacheDir */
             $containerBuilder->enableCompilation($cacheDir);
             $containerBuilder->enableDefinitionCache('container_' . md5($cacheDir));
         }
