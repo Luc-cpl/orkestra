@@ -1,5 +1,5 @@
 {
-    "name": "orkestra/framework",
+    "name": "luccpl/orkestra",
     "description": "Orchestration for PHP applications",
     "type": "project",
     "license": "MIT",
@@ -20,7 +20,7 @@
     },
     "authors": [
         {
-            "name": "Luc-cpl",
+            "name": "Lucas Carvalho",
             "email": "lucas.carvalhopl@outlook.com"
         }
     ],
