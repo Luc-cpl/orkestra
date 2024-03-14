@@ -70,6 +70,19 @@ abstract class AbstractEntity
 		throw new InvalidArgumentException(sprintf('Undefined property: %s::$%s', static::class, $name));
 	}
 
+	public function __isset($name)
+	{
+		if (method_exists($this, 'get' . ucfirst($name))) {
+			return true;
+		}
+
+		if (property_exists($this, $name) && isset($this->{$name})) {
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * @return array<string, mixed>
 	 */
