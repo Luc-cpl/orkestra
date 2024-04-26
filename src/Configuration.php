@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
 		// Add the default validation
 		$this->set('validation', [
 			'env'  => fn ($value) =>
-			!in_array($value, ['development', 'production'], true)
-				? 'env must be either "development" or "production"'
+			!in_array($value, ['development', 'production', 'testing'], true)
+				? 'env must be either "development", "production" or "testing"'
 				: true,
 			'root' => fn ($value) =>
 			!is_dir($value ?? '')

@@ -10,12 +10,17 @@
     "scripts": {
         "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/",
         "phpstan:full": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
-        "phpunit": "vendor/bin/pest",
-        "phpunit:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
+        "pest": "vendor/bin/pest",
+        "pest:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
     },
     "autoload": {
         "psr-4": {
             "Orkestra\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -45,6 +50,7 @@
         "rakit/validation": "^1.4",
         "twig/twig": "^3.0",
         "twig/markdown-extra": "^3.7",
-        "fakerphp/faker": "^1.23"
+        "fakerphp/faker": "^1.23",
+        "larapack/dd": "^1.1"
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Orkestra\Testing\AbstractTestCase;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends AbstractTestCase
 {
     //
 }

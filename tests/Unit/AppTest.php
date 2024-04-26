@@ -5,6 +5,11 @@ use Orkestra\Configuration;
 use Orkestra\Interfaces\ProviderInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
+use Orkestra\Providers\CommandsProvider;
+use Orkestra\Providers\HooksProvider;
+use Orkestra\Providers\HttpProvider;
+use Orkestra\Providers\ViewProvider;
+
 beforeEach(function () {
     $this->config = new Configuration();
     $this->app = new App($this->config);
@@ -163,4 +168,22 @@ test('can boot', function () {
     $this->config->set('root', './');
     $this->app->boot();
     expect($provider->test)->toEqual('testValue');
+});
+
+test('can boot all existing providers', function () {
+    $this->config->set('env', 'development');
+    $this->config->set('root', './');
+
+    $this->app->provider(CommandsProvider::class);
+    $this->app->provider(HooksProvider::class);
+    $this->app->provider(HttpProvider::class);
+    $this->app->provider(ViewProvider::class);
+
+    $this->app->boot();
+
+    /**
+     * Do not run any assertions as we are only testing if the boot method runs without errors.
+     * We should add assertions to test the providers individually while testing the related services.
+     */
+    expect(true)->toBeTrue();
 });

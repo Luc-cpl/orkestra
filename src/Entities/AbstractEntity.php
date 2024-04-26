@@ -95,7 +95,7 @@ abstract class AbstractEntity
 		foreach ($properties as $property) {
 			$name = $property->getName();
 
-			if ($property->isPrivate()) {
+			if ($property->isPrivate() || !isset($this->{$name})) {
 				continue;
 			}
 

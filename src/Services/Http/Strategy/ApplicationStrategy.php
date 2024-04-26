@@ -51,6 +51,19 @@ class ApplicationStrategy extends AbstractStrategy implements ContainerAwareInte
 	{
 		$controller = $route->getCallable($this->getContainer());
 		$response = $controller($request, $route->getVars());
+
+		if (!$response instanceof ResponseInterface) {
+			if (!is_string($response)) {
+				$this->addResponseDecorator(static function (ResponseInterface $response): ResponseInterface {
+					return $response->withHeader('content-type', 'application/json');
+				});
+			}
+			$str = is_string ($response) ? $response : json_encode($response);
+			/** @var ResponseInterface */
+			$response = $this->app->get(ResponseInterface::class);
+			$response->getBody()->write($str);
+		}
+
 		return $this->decorateResponse($response);
 	}
 
