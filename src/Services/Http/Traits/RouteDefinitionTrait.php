@@ -39,7 +39,6 @@ trait RouteDefinitionTrait
 	 * 		'title': ?string,
 	 * 		'description': ?string,
 	 * 		'validation': ?string,
-	 * 		'sanitization': ?string,
 	 * 		'enum': ?mixed[],
 	 * 		'default': mixed,
 	 * 		'inner': mixed

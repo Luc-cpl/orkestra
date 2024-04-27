@@ -1,7 +1,9 @@
 <?php
 
 use Orkestra\Providers\HttpProvider;
+use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
+use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
@@ -87,7 +89,7 @@ test('can dispatch a request', function () {
 	expect($response->getHeaderLine('content-type'))->toBe('application/json');
 });
 
-test('can dispatch a with a router middleware', function () {
+test('can dispatch a request with a router middleware', function () {
 	$middleware = Mockery::mock(MiddlewareInterface::class);
 	$middleware->shouldReceive('process')->andReturnUsing(function ($request, $handler) {
 		$response = $handler->handle($request);
@@ -106,7 +108,7 @@ test('can dispatch a with a router middleware', function () {
 	expect($response->getHeaderLine('x-test'))->toBe('test');
 });
 
-test('can dispatch with a router lazy middleware', function () {
+test('can dispatch a request with a router lazy middleware', function () {
 	class LazyMiddleware implements MiddlewareInterface
 	{
 		public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -126,4 +128,48 @@ test('can dispatch with a router lazy middleware', function () {
 	$request = $request->withUri($request->getUri()->withPath('/'));
 	$response = $router->dispatch($request);
 	expect($response->getHeaderLine('x-test'))->toBe('test');
+});
+
+test('can use a invocable controller', function () {
+	class Controller {
+		public function __invoke(ServerRequestInterface $request, array $args) {
+			return 'test';
+		}
+	}
+
+	/** @var RouterInterface */
+	$router = app()->get(RouterInterface::class);
+	$router->map('GET', '/test', Controller::class);
+	$response = request(uri: '/test');
+	expect((string) $response->getBody())->toBe('test');	
+});
+
+test('can get the route with a RouteAwareInterface controller', function () {
+	class RouteAwareController implements RouteAwareInterface {
+		protected RouteInterface $route;
+
+		public function setRoute(RouteInterface $route): self {
+			$this->route = $route;
+			return $this;
+		}
+
+		public function __invoke(ServerRequestInterface $request, array $args) {
+			return $this->route->getPath();
+		}
+	}
+
+	/** @var RouterInterface */
+	$router = app()->get(RouterInterface::class);
+	$router->map('GET', '/', RouteAwareController::class);
+	$response = request();
+	expect((string) $response->getBody())->toBe('/');	
+});
+
+test('can get a route parent group', function () {
+	$router = app()->get(RouterInterface::class);
+	$group = $router->group('/api', fn () => null);
+
+	$route = $group->map('GET', '/test', fn () => 'test');
+
+	expect($route->getParentGroup())->toBe($group);
 });

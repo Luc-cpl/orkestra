@@ -17,7 +17,6 @@ interface RouteDefinitionInterface
 	 * 		'title': ?string,
 	 * 		'description': ?string,
 	 * 		'validation': ?string,
-	 * 		'sanitization': ?string,
 	 * 		'default': mixed,
 	 * 		'inner': mixed
 	 * 	}>,

@@ -15,7 +15,6 @@ class RouteDefinition implements DefinitionInterface
 	 * 	'title': ?string,
 	 * 	'description': ?string,
 	 * 	'validation': ?string,
-	 * 	'sanitization': ?string,
 	 * 	'default': mixed,
 	 *	'inner': mixed,
 	 *  'enum': ?mixed[],
@@ -65,7 +64,6 @@ class RouteDefinition implements DefinitionInterface
 	 * 	'title': ?string,
 	 * 	'description': ?string,
 	 * 	'validation': ?string,
-	 * 	'sanitization': ?string,
 	 * 	'default': mixed,
 	 *	'inner': mixed,
 	 *  'enum': ?mixed[],
@@ -85,14 +83,12 @@ class RouteDefinition implements DefinitionInterface
 
 			/** @var ParamDefinition $definition */
 			$definition = call_user_func_array($callable, [
-				$value['title'] ?? $key,
-				$key,
-				$value['validation'] ?? '',
-				$value['sanitization'] ?? '',
-				$value['default'] ?? null,
-				$value['description'] ?? null,
-				[],
-				$value['enum'] ?? [],
+				'title'       => $value['title'] ?? $key,
+				'name'        => $key,
+				'default'     => $value['default'] ?? null,
+				'validation'  => $value['validation'] ?? '',
+				'description' => $value['description'] ?? null,
+				'enum'        => $value['enum'] ?? [],
 			]);
 
 			if (isset($value['inner'])) {
@@ -102,7 +98,6 @@ class RouteDefinition implements DefinitionInterface
 				 * 	'title': ?string,
 				 * 	'description': ?string,
 				 * 	'validation': ?string,
-				 * 	'sanitization': ?string,
 				 * 	'default': mixed,
 				 *	'inner': mixed,
 				 *  'enum': ?mixed[],

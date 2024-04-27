@@ -3,6 +3,7 @@
 namespace Orkestra\Services\Http\Middleware;
 
 use Orkestra\Services\Http\Entities\ParamDefinition;
+use Orkestra\Services\Http\Enum\ParamType;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -66,7 +67,11 @@ class ValidationMiddleware extends AbstractMiddleware
 
 			if ($param->inner && !empty($param->inner)) {
 				$inner = $param->inner;
-				$inner = $this->flattenParams($inner, $prefix . $param->name . '.');
+				$postFix = $param->type === ParamType::Array && count($inner) > 1 ? '.*.' : '.';
+				if ($param->type === ParamType::Array && count($inner) === 1) {
+					$inner[0]->set(name: '*');
+				}
+				$inner = $this->flattenParams($inner, $prefix . $param->name . $postFix);
 				$flattened = array_merge($flattened, $inner);
 			}
 		}
