@@ -5,6 +5,7 @@ namespace Orkestra\Services\Http;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Entities\ParamDefinition;
+use Orkestra\Services\Http\Facades\RouteDefinitionFacade as DefinitionFacade;
 
 class RouteDefinition implements DefinitionInterface
 {
@@ -21,27 +22,31 @@ class RouteDefinition implements DefinitionInterface
 	 * }> $params
 	 */
 	public function __construct(
-		protected ?string $title       = null,
-		protected ?string $description = null,
-		protected ?string $type        = null,
-		protected ?array  $meta        = [],
-		protected array   $params      = [],
+		protected ?string           $title            = null,
+		protected ?string           $description      = null,
+		protected ?string           $type             = null,
+		protected ?array            $meta             = [],
+		protected array             $params           = [],
+		protected ?DefinitionFacade $parentDefinition = null,
 	) {
 	}
 
 	public function title(): string
 	{
-		return $this->title ?? '';
+		$title = $this->title ?? false;
+		return $title ?? ($this->parentDefinition ? $this->parentDefinition->title() : '');
 	}
 
 	public function description(): string
 	{
-		return $this->description ?? '';
+		$description = $this->description ?? false;
+		return $description ?? ($this->parentDefinition ? $this->parentDefinition->description() : '');
 	}
 
 	public function type(): string
 	{
-		return $this->type ?? '';
+		$type = $this->type ?? false;
+		return $type ?? ($this->parentDefinition ? $this->parentDefinition->type() : '');
 	}
 
 	public function meta(string $key, mixed $default = null): mixed

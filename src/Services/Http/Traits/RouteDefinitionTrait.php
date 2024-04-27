@@ -79,9 +79,12 @@ trait RouteDefinitionTrait
 			]);
 		}
 
-		if (is_array($this->definition)) {
+		if (is_array($this->definition)) {		
+			$group = method_exists($this, 'getParentGroup') ? $this->getParentGroup() : null;
+			$parentDefinition = $group ? $group->getDefinition() : null;
+			$definition = array_merge($this->definition, ['parentDefinition' => $parentDefinition]);
 			$this->definition = $this->app->get(RouteDefinitionFacade::class, [
-				'definition' => $this->app->get(RouteDefinition::class, $this->definition)
+				'definition' => $this->app->get(RouteDefinition::class, $definition)
 			]);
 		}
 

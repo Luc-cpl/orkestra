@@ -3,24 +3,14 @@
 namespace Orkestra\Services\View;
 
 use Orkestra\Services\View\Interfaces\ViewInterface;
-use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
-use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\View\Twig\OrkestraExtension;
 use Twig\Environment;
 
-class View implements ViewInterface, RouteAwareInterface
+class View implements ViewInterface
 {
-	protected ?RouteInterface $route = null;
-
 	public function __construct(
 		protected Environment $twig,
 	) {
-	}
-
-	public function setRoute(RouteInterface $route): self
-	{
-		$this->route = $route;
-		return $this;
 	}
 
 	/**

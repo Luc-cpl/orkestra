@@ -33,9 +33,6 @@ abstract class AbstractHtmlController implements RouteAwareInterface
 	public function setRoute(RouteInterface $route): self
 	{
 		$this->route = $route;
-		if ($this->view instanceof RouteAwareInterface) {
-			$this->view->setRoute($route);
-		}
 		return $this;
 	}
 

@@ -10,7 +10,7 @@ class RouteDefinitionFacade
 {
 	public function __construct(
 		protected ParamDefinitionFactory $paramDefinitionFactory,
-		protected DefinitionInterface    $definition
+		protected DefinitionInterface    $definition,
 	) {
 	}
 
