@@ -33,19 +33,19 @@ class RouteDefinition implements DefinitionInterface
 
 	public function title(): string
 	{
-		$title = $this->title ?? false;
+		$title = $this->title ?? null;
 		return $title ?? ($this->parentDefinition ? $this->parentDefinition->title() : '');
 	}
 
 	public function description(): string
 	{
-		$description = $this->description ?? false;
+		$description = $this->description ?? null;
 		return $description ?? ($this->parentDefinition ? $this->parentDefinition->description() : '');
 	}
 
 	public function type(): string
 	{
-		$type = $this->type ?? false;
+		$type = $this->type ?? null;
 		return $type ?? ($this->parentDefinition ? $this->parentDefinition->type() : '');
 	}
 
@@ -81,7 +81,7 @@ class RouteDefinition implements DefinitionInterface
 
 		foreach ($params as $key => $value) {
 			// Set a default type to string
-			$value = ['type' => 'string'] + $value;
+			$value = array_merge(['type' => 'string'], $value);
 
 			/** @var callable $callable */
 			$callable = [$factory, $value['type']];
