@@ -101,32 +101,26 @@ test('can dispatch a request with a router middleware', function () {
 	$router->middleware($middleware);
 	$router->map('GET', '/', fn () => 'test');
 
-	/** @var ServerRequestInterface */
-	$request = app()->get(ServerRequestInterface::class);
-	$request = $request->withUri($request->getUri()->withPath('/'));
-	$response = $router->dispatch($request);
+	$response = request();
 	expect($response->getHeaderLine('x-test'))->toBe('test');
 });
 
 test('can dispatch a request with a router lazy middleware', function () {
-	class LazyMiddleware implements MiddlewareInterface
-	{
-		public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-		{
+	app()->bind('middleware.test', function () {
+		$mock = Mockery::mock(MiddlewareInterface::class);
+		$mock->shouldReceive('process')->andReturnUsing(function ($request, $handler) {
 			$response = $handler->handle($request);
 			return $response->withHeader('x-test', 'test');
-		}
-	}
+		});
+		return $mock;
+	});
 
 	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
-	$router->middleware(LazyMiddleware::class);
+	$router->middleware('test');
 	$router->map('GET', '/', fn () => 'test');
 
-	/** @var ServerRequestInterface */
-	$request = app()->get(ServerRequestInterface::class);
-	$request = $request->withUri($request->getUri()->withPath('/'));
-	$response = $router->dispatch($request);
+	$response = request();
 	expect($response->getHeaderLine('x-test'))->toBe('test');
 });
 

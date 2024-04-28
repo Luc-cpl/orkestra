@@ -48,6 +48,15 @@ class HtmlTag implements Stringable
 			};
 		}
 
+		$voidTags = [
+			'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+			'link', 'meta', 'param', 'source', 'track', 'wbr',
+		];
+
+		if (in_array($this->tag, $voidTags, true)) {
+			return sprintf('<%s%s />', $this->tag, $attributes);
+		}
+
 		return sprintf('<%s%s>%s</%s>', $this->tag, $attributes, $this->content, $this->tag);
 	}
 }

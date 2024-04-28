@@ -104,7 +104,7 @@ class OrkestraExtension extends AbstractExtension
 		}
 		// If is relative we should get our settings url
 		if (strpos($src, 'http') === false) {
-			$publicUrl = $this->config->get('public_url');
+			$publicUrl = rtrim($this->config->get('public_url', ''), '/') . '/';
 			$src = $publicUrl . ltrim($src, '/');
 		}
 
@@ -128,7 +128,7 @@ class OrkestraExtension extends AbstractExtension
 	{
 		// If is relative we should get our settings url
 		if (strpos($href, 'http') === false) {
-			$publicUrl = $this->config->get('public_url');
+			$publicUrl = rtrim($this->config->get('public_url', ''), '/') . '/';
 			$href = $publicUrl . ltrim($href, '/');
 		}
 

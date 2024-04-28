@@ -23,7 +23,7 @@ class ViewProvider implements ProviderInterface
 	/**
 	 * @var array<class-string<AbstractExtension>>
 	 */
-	protected array $defaultExtensions = [
+	protected array $extensions = [
 		MarkdownExtension::class,
 		OrkestraExtension::class,
 	];
@@ -64,30 +64,18 @@ class ViewProvider implements ProviderInterface
 			$root         = $app->config()->get('root');
 			$isProduction = $app->config()->get('env') === 'production';
 
-			$app->hookCall('twig.loader', $loader);
-
-			$twig = new Environment($loader, $app->hookQuery('twig.environment', [
+			$twig = new Environment($loader, [
 				'cache'       => "$root/cache/views",
 				'auto_reload' => !$isProduction,
-			]));
+			]);
 
-			$twig->addRuntimeLoader($runtimeLoader);
-
-			/** @var class-string[] */
-			$extensions = $app->hookQuery('twig.extensions', $this->defaultExtensions);
-
-			/** @var AbstractExtension[] */
 			$mappedExtensions = array_map(
 				fn (string $extension) => $app->get($extension),
-				$extensions
+				$this->extensions
 			);
 
-			/**
-			 * Allow the app to register Twig extensions with hook event
-			 */
+			$twig->addRuntimeLoader($runtimeLoader);
 			$twig->setExtensions($mappedExtensions);
-
-			$app->hookCall('twig.init', $twig);
 
 			return $twig;
 		});
