@@ -15,11 +15,17 @@ interface ConfigurationInterface
 	public function validate(): bool;
 
 	/**
-	 * Set a configuration value
-	 * 
-	 * If the key is 'validation' then the value must be an array with keys as the config key and the value as a callable
-	 * and the callable must return true if the value is valid or a string with the error message if the value is invalid.
-	 * This array will be merged with the existing validation array.
+	 * Set a configuration value.
+	 *
+	 * Can be used to set the following keys:
+	 * - validation: array<string, fn ($value): bool|string>
+	 * - definition: array<string, [description, ?default]>
+	 * - any other key: the value to set
+	 *
+	 * - The validation should return true if the value is valid,
+	 * or a string with the error message.
+	 * - If the description does not have a default value, the
+	 * config turns into a required value.
 	 *
 	 * @param string $key
 	 * @param mixed $value
@@ -31,10 +37,9 @@ interface ConfigurationInterface
 	 * Get a configuration value
 	 *
 	 * @param string $key
-	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function get(string $key, mixed $default = null): mixed;
+	public function get(string $key): mixed;
 
 	/**
 	 * Check if a configuration value exists

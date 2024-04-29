@@ -104,8 +104,8 @@ class OrkestraExtension extends AbstractExtension
 		}
 		// If is relative we should get our settings url
 		if (strpos($src, 'http') === false) {
-			$publicUrl = rtrim($this->config->get('public_url', ''), '/') . '/';
-			$src = $publicUrl . ltrim($src, '/');
+			$assetsUrl = rtrim($this->config->get('assets'), '/') . '/';
+			$src = $assetsUrl . ltrim($src, '/');
 		}
 
 		$tag = new HtmlTag('script', [
@@ -128,8 +128,8 @@ class OrkestraExtension extends AbstractExtension
 	{
 		// If is relative we should get our settings url
 		if (strpos($href, 'http') === false) {
-			$publicUrl = rtrim($this->config->get('public_url', ''), '/') . '/';
-			$href = $publicUrl . ltrim($href, '/');
+			$assetsUrl = rtrim($this->config->get('assets'), '/') . '/';
+			$href = $assetsUrl . ltrim($href, '/');
 		}
 
 		$this->headTags[] = new HtmlTag('link', [

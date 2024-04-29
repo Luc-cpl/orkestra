@@ -33,7 +33,7 @@ class CommandsProvider implements ProviderInterface
 	{
 		$app->singleton(Application::class, function () use ($app) {
 			/** @var class-string[] */
-			$commands  = $app->config()->get('commands', []);
+			$commands  = $app->config()->get('commands');
 			$providers = $app->getProviders();
 			$console   = new Application($app->slug());
 
@@ -59,7 +59,6 @@ class CommandsProvider implements ProviderInterface
 			// 'app_name' => fn ($value) => is_string($value) ? true : 'App name must be a string',
 			'commands' => function ($value) {
 				$extendedClass = Command::class;
-				$value = $value ?? [];
 				if (!is_array($value)) {
 					return "Commands must be an array with command classes extending \"$extendedClass\"";
 				}
@@ -78,7 +77,7 @@ class CommandsProvider implements ProviderInterface
 		]);
 
 		$app->config()->set('definition', [
-			'commands'  => [false, 'The commands to register with the console application'],
+			'commands'  => ['Commands to register with the console application', []],
 		]);
 	}
 

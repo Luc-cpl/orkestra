@@ -19,15 +19,39 @@ class App implements AppHooksInterface, AppContainerInterface
     use AppHooksTrait;
 
     public function __construct(
-        ConfigurationInterface $config,
+        private ConfigurationInterface $config,
     ) {
-        // Define default container
+        $this->setDefaultConfig();
         $this->initContainer();
         $this->singleton(ConfigurationInterface::class, $config);
         $this->singleton(ContainerInterface::class, $this);
         $this->singleton(AppContainerInterface::class, $this);
         $this->singleton(AppHooksInterface::class, $this);
         $this->singleton(self::class, $this);
+    }
+
+    private function setDefaultConfig(): void
+    {
+        $this->config->set('validation', [
+			'env'  => fn ($value) =>
+                !in_array($value, ['development', 'production', 'testing'], true)
+                    ? 'env must be either "development", "production" or "testing"'
+                    : true,
+			'root' => fn ($value) =>
+                !is_dir($value ?? '')
+                    ? "root \"$value\" is not a directory"
+                    : true,
+			'slug' => fn ($value) =>
+                !empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
+                    ? "slug \"$value\" is not valid"
+                    : true,
+		]);
+
+		$this->config->set('definition', [
+			'env'  => ['The environment the app is running in (development, production)', 'development'],
+			'root' => ['The root directory of the app', getcwd()],
+			'slug' => ['The app slug', 'app'],
+		]);
     }
 
     /**
@@ -50,7 +74,7 @@ class App implements AppHooksInterface, AppContainerInterface
      */
     public function config(): ConfigurationInterface
     {
-        return $this->get(ConfigurationInterface::class);
+        return $this->config;
     }
 
     /**
