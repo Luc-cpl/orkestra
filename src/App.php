@@ -21,7 +21,7 @@ class App implements ContainerInterface, AppHooksInterface
         ConfigurationInterface $config,
     ) {
         // Define default container
-        $this->initContainer($config);
+        $this->initContainer();
         $this->singleton(ConfigurationInterface::class, $config);
         $this->singleton(ContainerInterface::class, $this);
         $this->singleton(AppHooksInterface::class, $this);

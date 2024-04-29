@@ -32,26 +32,11 @@ trait AppContainerTrait
     /**
      * Initialize the container
      *
-     * @param ConfigurationInterface $config
      * @return void
      */
-    protected function initContainer(ConfigurationInterface $config): void
+    protected function initContainer(): void
     {
         $containerBuilder = new ContainerBuilder();
-
-        $isProduction = $config->get('env') === 'production';
-        $cacheDir     = $config->get('root');
-
-        if ($isProduction && !is_string($cacheDir)) {
-            throw new InvalidArgumentException('The root directory must be a string');
-        }
-
-        if ($isProduction) {
-            /** @var string $cacheDir */
-            $containerBuilder->enableCompilation($cacheDir);
-            $containerBuilder->enableDefinitionCache('container_' . md5($cacheDir));
-        }
-
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAttributes(true);
         $this->container = $containerBuilder->build();
