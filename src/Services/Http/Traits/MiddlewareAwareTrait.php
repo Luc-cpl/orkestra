@@ -69,8 +69,12 @@ trait MiddlewareAwareTrait
 		$handler = is_array($middleware) ? $middleware[0] : $middleware;
 
 		if (is_string($handler) && !class_exists($handler)) {
-			$handler = "middleware.$handler";
+			$originalHandler = $handler;
+			$handler = $this->app->config()->get('middleware')[$handler] ?? false;
 			$middleware = is_array($middleware) ? [$handler, ...array_slice($middleware, 1)] : $handler;
+			if ($handler === false) {
+				throw new InvalidArgumentException(sprintf('Could not resolve "%s" middleware', $originalHandler));
+			}
 		}
 
 		if ($container === null && is_string($middleware) && class_exists($middleware)) {
@@ -94,6 +98,6 @@ trait MiddlewareAwareTrait
 		$middleware = is_array($middleware) ? $middleware[0] : $middleware;
 
 		/** @var string $middleware */
-		throw new InvalidArgumentException(sprintf('Could not resolve middleware class: %s', $middleware));
+		throw new InvalidArgumentException(sprintf('Could not resolve "%s" middleware', $originalHandler));
 	}
 }

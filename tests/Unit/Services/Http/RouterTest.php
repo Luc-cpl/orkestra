@@ -103,22 +103,31 @@ test('can dispatch a request with a router middleware', function () {
 });
 
 test('can dispatch a request with a router lazy middleware', function () {
-	app()->bind('middleware.test', function () {
-		$mock = Mockery::mock(MiddlewareInterface::class);
-		$mock->shouldReceive('process')->andReturnUsing(function ($request, $handler) {
-			$response = $handler->handle($request);
-			return $response->withHeader('x-test', 'test');
-		});
-		return $mock;
+	$mock = Mockery::mock(MiddlewareInterface::class);
+	$mock->shouldReceive('process')->andReturnUsing(function ($request, $handler) {
+		$response = $handler->handle($request);
+		return $response->withHeader('x-test', 'test');
 	});
 
+	app()->bind($mock::class, fn () => $mock);
+	app()->config()->set('middleware', [
+		'test' => $mock::class,
+	]);
+
 	$router = app()->get(RouterInterface::class);
-	$router->middleware('test');
 	$router->map('GET', '/', fn () => 'test');
+	$router->middleware('test');
 
 	$response = request();
 	expect($response->getHeaderLine('x-test'))->toBe('test');
 });
+
+test('can throw an exception if middleware is not found', function () {
+	$router = app()->get(RouterInterface::class);
+	$router->map('GET', '/', fn () => 'test');
+	$router->middleware('test');
+	request();
+})->throws(InvalidArgumentException::class);
 
 test('can use a invocable controller', function () {
 	class Controller {
