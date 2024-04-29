@@ -14,46 +14,37 @@ class Configuration implements ConfigurationInterface
 	public function __construct(
 		protected array $config = []
 	) {
-		// Add the default validation
-		$this->set('validation', [
-			'env'  => fn ($value) =>
-			!in_array($value, ['development', 'production', 'testing'], true)
-				? 'env must be either "development", "production" or "testing"'
-				: true,
-			'root' => fn ($value) =>
-			!is_dir($value ?? '')
-				? "root \"$value\" is not a directory"
-				: true,
-			'slug' => fn ($value) =>
-			!empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
-				? "slug \"$value\" is not valid"
-				: true,
-		]);
-
-		// Add the default definition
-		$this->set('definition', [
-			'env'  => [true, 'The environment the app is running in (development, production)'],
-			'root' => [true, 'The root directory of the app'],
-			'slug' => [true, 'The app slug'],
-			'host' => [false, 'The host domain of the app'],
-		]);
+		//
 	}
 
-	/**
-	 * Validate the configuration
-	 *
-	 * @return boolean true if the validation passes
-	 * @throws InvalidArgumentException if the validation fails
-	 */
 	public function validate(): bool
 	{
+		/**
+		 * @var array<string, {string, mixed}> $definitions
+		 */
+		$definitions = $this->get('definition');
+
 		/**
 		 * @var array<string, callable> $validation
 		 */
 		$validation = $this->get('validation');
-		if (!$validation) {
-			return true;
+
+		foreach ($this->config as $key => $value) {
+			if ($key === 'validation' || $key === 'definition') {
+				continue;
+			}
+			if (!isset($definitions[$key])) {
+				throw new InvalidArgumentException("Configuration key \"$key\" does not have a definition");
+			}
+			unset($definitions[$key]);
 		}
+
+		foreach ($definitions as $key => $definition) {
+			if (!isset($definition[1]) && !isset($this->config[$key])) {
+				throw new InvalidArgumentException("Configuration key \"$key\" is required");
+			}
+		}
+
 		foreach ($validation as $key => $validator) {
 			$value = $this->get($key);
 			$valid = call_user_func($validator, $value);
@@ -87,8 +78,8 @@ class Configuration implements ConfigurationInterface
 				throw new InvalidArgumentException('Definition must be an array');
 			}
 			foreach ($value as $k => $v) {
-				if (!is_string($k) || !is_array($v) || count($v) !== 2) {
-					throw new InvalidArgumentException('Definition must be an array with keys as the config key and the value as an array with two elements: [required, description]');
+				if (!is_string($k) || !is_array($v) || count($v) < 1 || count($v) > 2) {
+					throw new InvalidArgumentException('Definition must be an array with keys as the config key and the value as an array <description, ?default>');
 				}
 			}
 			$current = (array) $this->get($key);
@@ -99,24 +90,27 @@ class Configuration implements ConfigurationInterface
 		return $this;
 	}
 
-	public function get(string $key, mixed $default = null): mixed
+	public function get(string $key): mixed
 	{
-		return match ($key) {
-			'url'    => $this->getURL(),
-			'assets' => $this->getURL() . '/assets',
-			default  => isset($this->config[$key]) ? $this->config[$key] : $default,
-		};
+		if ($key === 'validation' || $key === 'definition') {
+			return $this->config[$key] ?? [];
+		}
+		if (!isset($this->config[$key])) {
+			$definition = $this->get('definition')[$key] ?? false;
+			if (!$definition) {
+				throw new InvalidArgumentException("Configuration key \"$key\" does not exist");
+			}
+			if (!isset($definition[1])) {
+				throw new InvalidArgumentException("Configuration key \"$key\" is required and is not set");
+			}
+			return !is_string($definition[1]) && is_callable($definition[1]) ? $definition[1]() : $definition[1];
+		}
+
+		return is_callable($this->config[$key]) ? $this->config[$key]() : $this->config[$key];
 	}
 
 	public function has(string $key): bool
 	{
 		return (bool) $this->get($key);
-	}
-
-	protected function getURL(): string
-	{
-		$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-		$host = $this->get('host') ?? $_SERVER['HTTP_HOST'];
-		return "$protocol://$host";
 	}
 }

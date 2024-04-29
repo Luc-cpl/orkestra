@@ -34,7 +34,7 @@ class ConfigOptionsCommand extends Command
         $definition = $this->config->get('definition');
 
         $definition = array_map(function ($value, $key) {
-            return [$key, $value[0] ? 'Yes' : 'No', $value[1]];
+            return [$key, isset($value[1]) ? 'Yes' : 'No', $value[0]];
         }, $definition, array_keys($definition));
         
         // Create a table to display the configuration options, with key, required, and description columns

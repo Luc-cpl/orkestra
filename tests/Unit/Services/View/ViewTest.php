@@ -41,12 +41,12 @@ test('can render a html view with head tags', function () {
 test('can render script tags', function () {
 	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
-	app()->config()->set('public_url', 'http://localhost');
+	app()->config()->set('assets', 'http://localhost/assets');
 	$rendered = $view->render('script');
 
 	// Remove line breaks added in template
 	$rendered = preg_replace('/\s+/', ' ', $rendered);
-	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head><script src="http://localhost/head1.js" type=""></script><script src="http://localhost/head2.js" type=""></script><script src="http://localhost/defered.js" defer type=""></script><script src="http://localhost/async.js" async type=""></script><script src="http://localhost/module.js" type="module"></script></head><body> <script src="http://localhost/footer.js" type=""></script></body></html>');
+	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head><script src="http://localhost/assets/head1.js" type=""></script><script src="http://localhost/assets/head2.js" type=""></script><script src="http://localhost/assets/defered.js" defer type=""></script><script src="http://localhost/assets/async.js" async type=""></script><script src="http://localhost/assets/module.js" type="module"></script></head><body> <script src="http://localhost/assets/footer.js" type=""></script></body></html>');
 });
 
 test('can render js constants', function () {
@@ -63,22 +63,23 @@ test('can render js constants', function () {
 test('can respect script and const order', function () {
 	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
+	app()->config()->set('host', 'localhost');
 	$rendered = $view->render('script-const-order');
 
 	// Remove line breaks added in template
 	$rendered = preg_replace('/\s+/', ' ', $rendered);
-	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head><script src="/head1.js" type=""></script><script>const const1 = {"test":"test1"};</script><script src="/head2.js" type=""></script><script>const const2 = {"test":"test2"};</script></head><body> <script>const constFooter1 = {"test":"test1"};</script><script src="/footer.js" type=""></script><script>const constFooter2 = {"test":"test2"};</script></body></html>');
+	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head><script src="http://localhost/assets/head1.js" type=""></script><script>const const1 = {"test":"test1"};</script><script src="http://localhost/assets/head2.js" type=""></script><script>const const2 = {"test":"test2"};</script></head><body> <script>const constFooter1 = {"test":"test1"};</script><script src="http://localhost/assets/footer.js" type=""></script><script>const constFooter2 = {"test":"test2"};</script></body></html>');
 });
 
 test('can render with css links', function () {
 	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
-	app()->config()->set('public_url', 'http://localhost');
+	app()->config()->set('assets', 'http://localhost/assets');
 	$rendered = $view->render('css');
 
 	// Remove line breaks added in template
 	$rendered = preg_replace('/\s+/', ' ', $rendered);
-	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head><link rel="stylesheet" href="http://localhost/style1.css" /><link rel="stylesheet" href="http://localhost/style2.css" /></head><body> </body></html>');
+	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head><link rel="stylesheet" href="http://localhost/assets/style1.css" /><link rel="stylesheet" href="http://localhost/assets/style2.css" /></head><body> </body></html>');
 });
 
 test('can autoload twig runtime extensions with app container', function () {

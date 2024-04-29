@@ -36,16 +36,16 @@ class HttpProvider implements ProviderInterface
 		// Set the required config so we can validate it
 		$app->config()->set('validation', [
 			'routes' => function ($value) {
-				return is_string($value ?? '') ? true : 'The routes config must be a string path to a file';
+				return is_string($value) ? true : 'The routes config must be a string path to a file';
 			},
 			'middleware' => function ($value) {
-				return is_array($value ?? []) ? true : 'The middleware config must be an array';
+				return is_array($value) ? true : 'The middleware config must be an array';
 			},
 		]);
 
 		$app->config()->set('definition', [
-			'routes'  => [false, 'The routes directory to load'],
-			'middleware'  => [false, 'The middleware to load'],
+			'routes'  => ['The routes directory to load', ''],
+			'middleware'  => ['The middleware to load', []],
 		]);
 
 		$app->singleton(Router::class, Router::class);
@@ -87,7 +87,7 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		$middleware = $app->config()->get('middleware', []);
+		$middleware = $app->config()->get('middleware');
 
 		/** @var mixed[] */
 		$middleware = $app->hookQuery('http.middleware', $middleware);
@@ -104,7 +104,7 @@ class HttpProvider implements ProviderInterface
 		/** @var string */
 		$configFile = $app->config()->get('routes');
 
-		if (!$configFile) {
+		if (empty($configFile)) {
 			$app->hookCall('http.router.config', $router);
 			return;
 		}

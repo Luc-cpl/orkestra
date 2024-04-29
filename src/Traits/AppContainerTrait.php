@@ -42,10 +42,6 @@ trait AppContainerTrait
         $isProduction = $config->get('env') === 'production';
         $cacheDir     = $config->get('root');
 
-        if ($isProduction && !is_string($cacheDir)) {
-            throw new InvalidArgumentException('The root directory must be a string');
-        }
-
         if ($isProduction) {
             /** @var string $cacheDir */
             $containerBuilder->enableCompilation($cacheDir);

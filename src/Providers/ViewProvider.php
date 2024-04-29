@@ -43,6 +43,30 @@ class ViewProvider implements ProviderInterface
 	 */
 	public function register(App $app): void
 	{
+		$url = function () use ($app): string {
+			$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+			$host = $app->config()->get('host');
+			return "$protocol://$host";
+		};
+
+		$app->config()->set('validation', [
+			'host'    => fn ($value) => !is_string($value)
+				? 'host must be a string with the domain of the app'
+				: true,
+			'url'     => fn ($value) => !is_string($value)
+				? 'url must be a string with the URL of the app'
+				: true,
+			'assets'  => fn ($value) => !is_string($value)
+				? 'assets must be a string with the URL of the assets'
+				: true,
+		]);
+
+		$app->config()->set('definition', [
+			'host'   => ['The host domain of the app', fn() => $_SERVER['HTTP_HOST'] ?? 'localhost'],
+			'url'    => ['The URL of the app', $url],
+			'assets' => ['The URL of the assets', fn () => $app->config()->get('url') . '/assets'],
+		]);
+
 		/**
 		 * Register runtime interfaces
 		 */

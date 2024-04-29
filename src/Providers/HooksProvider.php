@@ -25,12 +25,12 @@ class HooksProvider implements ProviderInterface
 	{
 		$app->config()->set('validation', [
 			'listeners' => function ($value) {
-				return is_array($value ?? []) ? true : 'The listeners config must be an array';
+				return is_array($value) ? true : 'The listeners config must be an array';
 			},
 		]);
 
 		$app->config()->set('definition', [
-			'listeners'  => [false, 'The hook listeners to register with the app'],
+			'listeners'  => ['The hook listeners to register with the app', []],
 		]);
 
 		$app->singleton(HooksInterface::class, Hooks::class);
@@ -45,7 +45,7 @@ class HooksProvider implements ProviderInterface
 	public function boot(App $app): void
 	{
 		/** @var class-string[] */
-		$listeners = $app->config()->get('listeners', []);
+		$listeners = $app->config()->get('listeners');
 		$hooks     = $app->get(HooksInterface::class);
 
 		$this->registerListeners($app, $hooks, $listeners);

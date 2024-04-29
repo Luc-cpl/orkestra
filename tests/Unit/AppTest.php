@@ -132,16 +132,6 @@ test('can check if container has service', function () {
     expect($this->app->has('test'))->toBeTrue();
 });
 
-test('can throw exception when booting without env', function () {
-    $this->config->set('root', './');
-    $this->app->boot();
-})->throws(InvalidArgumentException::class);
-
-test('can throw exception when booting without root', function () {
-    $this->config->set('env', 'development');
-    $this->app->boot();
-})->throws(InvalidArgumentException::class);
-
 test('can throw exception when booting twice', function () {
     $this->config->set('env', 'development');
     $this->config->set('root', './');
