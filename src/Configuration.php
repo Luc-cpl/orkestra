@@ -112,6 +112,11 @@ class Configuration implements ConfigurationInterface
 
 	public function has(string $key): bool
 	{
-		return (bool) $this->get($key);
+		try {
+			$this->get($key);
+			return true;
+		} catch (InvalidArgumentException) {
+			return false;
+		}
 	}
 }
