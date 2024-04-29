@@ -14,7 +14,6 @@ test('can handle a not found request', function () {
 })->throws(NotFoundException::class);
 
 test('can handle a found request', function () {
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/', fn () => 'test');
 

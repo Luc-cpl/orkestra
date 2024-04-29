@@ -95,6 +95,7 @@ class Configuration implements ConfigurationInterface
 		if ($key === 'validation' || $key === 'definition') {
 			return $this->config[$key] ?? [];
 		}
+
 		if (!isset($this->config[$key])) {
 			$definition = $this->get('definition')[$key] ?? false;
 			if (!$definition) {

@@ -11,6 +11,11 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class AbstractTestCase extends BaseTestCase
 {
+    /**
+     * Get the application configuration.
+     *
+     * @return array<string, mixed>
+     */
     protected function getApplicationConfig(): array
     {
         return [
@@ -27,7 +32,9 @@ abstract class AbstractTestCase extends BaseTestCase
         $container = Container::getInstance();
         $container->add(ConfigurationInterface::class, new Configuration($this->getApplicationConfig()));
 
-        $app = new App($container->get(ConfigurationInterface::class));
+        /** @var ConfigurationInterface */
+        $config = $container->get(ConfigurationInterface::class);
+        $app = new App($config);
 
         // Register a new application in each test
         $container->add(App::class, $app);
@@ -55,6 +62,7 @@ abstract class AbstractTestCase extends BaseTestCase
     protected function assertPreConditions(): void
     {
         $container = Container::getInstance();
+        /** @var App */
         $app = $container->get(App::class);
         $app->boot();
 

@@ -71,12 +71,10 @@ test('can get routes by definition type', function () {
 });
 
 test('can dispatch a request', function () {
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/', fn () => 'test');
 	$router->map('GET', '/test', fn () => ['test' => 'test']);
 
-	/** @var ServerRequestInterface */
 	$request = app()->get(ServerRequestInterface::class);
 
 	$request = $request->withUri($request->getUri()->withPath('/'));
@@ -96,7 +94,6 @@ test('can dispatch a request with a router middleware', function () {
 		return $response->withHeader('x-test', 'test');
 	});
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->middleware($middleware);
 	$router->map('GET', '/', fn () => 'test');
@@ -106,23 +103,31 @@ test('can dispatch a request with a router middleware', function () {
 });
 
 test('can dispatch a request with a router lazy middleware', function () {
-	app()->bind('middleware.test', function () {
-		$mock = Mockery::mock(MiddlewareInterface::class);
-		$mock->shouldReceive('process')->andReturnUsing(function ($request, $handler) {
-			$response = $handler->handle($request);
-			return $response->withHeader('x-test', 'test');
-		});
-		return $mock;
+	$mock = Mockery::mock(MiddlewareInterface::class);
+	$mock->shouldReceive('process')->andReturnUsing(function ($request, $handler) {
+		$response = $handler->handle($request);
+		return $response->withHeader('x-test', 'test');
 	});
 
-	/** @var RouterInterface */
+	app()->bind($mock::class, fn () => $mock);
+	app()->config()->set('middleware', [
+		'test' => $mock::class,
+	]);
+
 	$router = app()->get(RouterInterface::class);
-	$router->middleware('test');
 	$router->map('GET', '/', fn () => 'test');
+	$router->middleware('test');
 
 	$response = request();
 	expect($response->getHeaderLine('x-test'))->toBe('test');
 });
+
+test('can throw an exception if middleware is not found', function () {
+	$router = app()->get(RouterInterface::class);
+	$router->map('GET', '/', fn () => 'test');
+	$router->middleware('test');
+	request();
+})->throws(InvalidArgumentException::class);
 
 test('can use a invocable controller', function () {
 	class Controller {
@@ -131,7 +136,6 @@ test('can use a invocable controller', function () {
 		}
 	}
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/test', Controller::class);
 	$response = request(uri: '/test');
@@ -152,7 +156,6 @@ test('can get the route with a RouteAwareInterface controller', function () {
 		}
 	}
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/', RouteAwareController::class);
 	$response = request();

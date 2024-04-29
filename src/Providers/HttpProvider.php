@@ -87,18 +87,7 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
-		$middleware = $app->config()->get('middleware');
-
-		/** @var mixed[] */
-		$middleware = $app->hookQuery('http.middleware', $middleware);
-
-		foreach ($middleware as $key => $middleware) {
-			$app->bind("middleware.$key", $middleware);
-		}
-
-		/** @var RouterInterface */
 		$router = $app->get(RouterInterface::class);
-
 		$router->setStrategy($app->get(ApplicationStrategy::class));
 
 		/** @var string */
