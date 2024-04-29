@@ -15,6 +15,7 @@ if (!function_exists('app')) {
 	 */
 	function app(): App
 	{
+		/** @var App */
 		return Container::getInstance()->get(App::class);
 	}
 }
@@ -28,6 +29,7 @@ if (!function_exists('factory')) {
 	 */
 	function factory(): EntityFactory
 	{
+		/** @var EntityFactory */
 		return Container::getInstance()->get(EntityFactory::class);
 	}
 }
@@ -36,7 +38,11 @@ if (!function_exists('request')) {
 	/**
 	 * Return the Request instance
 	 *
-	 * @return ServerRequestInterface
+	 * @param string $method
+	 * @param string $uri
+	 * @param mixed[] $data
+	 * @param array<string, string> $headers
+	 * @return ResponseInterface
 	 */
 	function request(string $method = 'GET', string $uri = '/', array $data = [], array $headers = []): ResponseInterface
 	{
@@ -57,7 +63,6 @@ if (!function_exists('request')) {
 			->withUri($request->getUri()->withPath($uri))
 			->withParsedBody($data);
 
-		/** @var RouterInterface */
 		$router = app()->get(RouterInterface::class);
 		return $router->dispatch($request);
 	}

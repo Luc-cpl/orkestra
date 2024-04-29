@@ -29,11 +29,6 @@ trait AppContainerTrait
      */
     private array $providers = [];
 
-    /**
-     * Initialize the container
-     *
-     * @return void
-     */
     protected function initContainer(): void
     {
         $containerBuilder = new ContainerBuilder();
@@ -42,15 +37,6 @@ trait AppContainerTrait
         $this->container = $containerBuilder->build();
     }
 
-    /**
-     * Register a provider
-     * We should register classes that implement ProviderInterface
-     * That way we can use the container to resolve and start services
-     *
-     * @param string $class
-     * @return void
-     * @throws InvalidArgumentException If the provider class does not exist or does not implement ProviderInterface
-     */
     public function provider(string $class): void
     {
         $interface = ProviderInterface::class;
@@ -69,39 +55,16 @@ trait AppContainerTrait
         return;
     }
 
-    /**
-     * Get the providers
-     * 
-     * @return class-string[]
-     */
     public function getProviders(): array
     {
         return $this->providers;
     }
 
-    /**
-     * Add a service to the container
-     *
-     * @param string $name        Name of the service
-     * @param mixed  $service     Service to bind to the container
-     * @param bool   $useAutowire Use autowire or create to bind the service
-     * @return AppBind A bind instance that allows manage the service constructor and properties
-     * @throws InvalidArgumentException If the class specified in $service does not exist
-     */
     public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind
     {
         return new AppBind($this->container, $name, $service, $useAutowire);
     }
 
-    /**
-     * Add a service to the container as a singleton
-     *
-     * @param string $name
-     * @param mixed  $service
-     * @param bool   $useAutowire
-     * @return AppBind A bind instance that allows manage the service constructor and properties
-     * @throws InvalidArgumentException If the class specified in $service does not exist
-     */
     public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
     {
         $bind = $this->bind($name, $service, $useAutowire);
@@ -110,13 +73,7 @@ trait AppContainerTrait
     }
 
     /**
-     * Returns an entry of the container by its name.
-     * If the entry is a singleton, it will return the same instance,
-     * otherwise, it will create a new instance.
-     *
      * @template T of object
-     * @param class-string<T> $name   Entry name or a class name.
-     * @param mixed[]         $params Optional parameters to use to build the entry.
      * @return T
      */
     public function get(string $name, array $params = []): mixed
@@ -129,12 +86,11 @@ trait AppContainerTrait
         return $this->container->make($name, $params);
     }
 
-    /**
-     * Check if the container has a service
-     *
-     * @param string $name
-     * @return bool
-     */
+    public function call($callable, array $params = []) : mixed
+    {
+        return $this->container->call($callable, $params);
+    }
+
     public function has(string $name): bool
     {
         return $this->container->has($name);

@@ -71,12 +71,10 @@ test('can get routes by definition type', function () {
 });
 
 test('can dispatch a request', function () {
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/', fn () => 'test');
 	$router->map('GET', '/test', fn () => ['test' => 'test']);
 
-	/** @var ServerRequestInterface */
 	$request = app()->get(ServerRequestInterface::class);
 
 	$request = $request->withUri($request->getUri()->withPath('/'));
@@ -96,7 +94,6 @@ test('can dispatch a request with a router middleware', function () {
 		return $response->withHeader('x-test', 'test');
 	});
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->middleware($middleware);
 	$router->map('GET', '/', fn () => 'test');
@@ -115,7 +112,6 @@ test('can dispatch a request with a router lazy middleware', function () {
 		return $mock;
 	});
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->middleware('test');
 	$router->map('GET', '/', fn () => 'test');
@@ -131,7 +127,6 @@ test('can use a invocable controller', function () {
 		}
 	}
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/test', Controller::class);
 	$response = request(uri: '/test');
@@ -152,7 +147,6 @@ test('can get the route with a RouteAwareInterface controller', function () {
 		}
 	}
 
-	/** @var RouterInterface */
 	$router = app()->get(RouterInterface::class);
 	$router->map('GET', '/', RouteAwareController::class);
 	$response = request();

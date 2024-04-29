@@ -96,9 +96,7 @@ class HttpProvider implements ProviderInterface
 			$app->bind("middleware.$key", $middleware);
 		}
 
-		/** @var RouterInterface */
 		$router = $app->get(RouterInterface::class);
-
 		$router->setStrategy($app->get(ApplicationStrategy::class));
 
 		/** @var string */

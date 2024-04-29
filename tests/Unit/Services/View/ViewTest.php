@@ -13,7 +13,6 @@ beforeEach(function () {
 });
 
 test('can render a html view', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 
 	$rendered = $view->render('index', ['name' => 'World']);
@@ -21,7 +20,6 @@ test('can render a html view', function () {
 });
 
 test('can render a html view with different language', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 
 	$rendered = $view->render('lang', ['lang' => 'pt_BR']);
@@ -30,7 +28,6 @@ test('can render a html view with different language', function () {
 });
 
 test('can render a html view with head tags', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 
 	$rendered = $view->render('head', ['name' => 'World']);
@@ -39,7 +36,6 @@ test('can render a html view with head tags', function () {
 });
 
 test('can render script tags', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 	app()->config()->set('public_url', 'http://localhost');
 	$rendered = $view->render('script');
@@ -50,7 +46,6 @@ test('can render script tags', function () {
 });
 
 test('can render js constants', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 	$context = [ 'data' => ['test' => 'test', 'test2' => 'test2'] ];
 	$rendered = $view->render('js-constant', $context);
@@ -61,7 +56,6 @@ test('can render js constants', function () {
 });
 
 test('can respect script and const order', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 	$rendered = $view->render('script-const-order');
 
@@ -71,7 +65,6 @@ test('can respect script and const order', function () {
 });
 
 test('can render with css links', function () {
-	/** @var ViewInterface */
 	$view = app()->get(ViewInterface::class);
 	app()->config()->set('public_url', 'http://localhost');
 	$rendered = $view->render('css');
@@ -92,11 +85,11 @@ test('can autoload twig runtime extensions with app container', function () {
 	}
 
 	app()->bind('hello', fn () => 'Hello');
+
 	$mock = Mockery::mock(AbstractExtension::class)->makePartial();
 	$mock->shouldReceive('getFunctions')->andReturn([new TwigFunction('test', [RuntimeExtension::class, 'test'])]);
 	app()->get(Environment::class)->addExtension($mock);
 
-	/** @var View */
 	$view = app()->get(ViewInterface::class);
 	$rendered = $view->render('runtime-extension');
 	expect($rendered)->toBe('<!DOCTYPE html><html lang="en"><head></head><body>Hello World</body></html>');
