@@ -3,130 +3,129 @@
 namespace Orkestra\Services\Hooks;
 
 use Orkestra\Services\Hooks\Interfaces\HooksInterface;
-use Orkestra\Services\Hooks\Hook;
 
 final class Hooks implements HooksInterface
 {
-	/**
-	 * @var array<string, array<Hook>>
-	 */
-	protected array $hooks = [];
+    /**
+     * @var array<string, array<Hook>>
+     */
+    protected array $hooks = [];
 
-	protected string $current = '';
+    protected string $current = '';
 
-	/**
-	 * @var array<string, int>
-	 */
-	protected array $executionCount = [];
+    /**
+     * @var array<string, int>
+     */
+    protected array $executionCount = [];
 
-	public function call(string $tag, mixed ...$args): void
-	{
-		$this->hooks[$tag] ??= [];
-		$this->current = $tag;
+    public function call(string $tag, mixed ...$args): void
+    {
+        $this->hooks[$tag] ??= [];
+        $this->current = $tag;
 
-		foreach ($this->hooks[$tag] as $hook) {
-			$hook(...$args);
-		}
+        foreach ($this->hooks[$tag] as $hook) {
+            $hook(...$args);
+        }
 
-		$this->executionCount[$tag] ??= 0;
-		$this->executionCount[$tag]++;
+        $this->executionCount[$tag] ??= 0;
+        $this->executionCount[$tag]++;
 
-		$this->current = '';
-	}
+        $this->current = '';
+    }
 
-	public function query(string $tag, mixed $value, mixed ...$args): mixed
-	{
-		$this->hooks[$tag] ??= [];
-		$this->current = $tag;
+    public function query(string $tag, mixed $value, mixed ...$args): mixed
+    {
+        $this->hooks[$tag] ??= [];
+        $this->current = $tag;
 
-		foreach ($this->hooks[$tag] as $hook) {
-			$value = $hook($value, ...$args);
-		}
+        foreach ($this->hooks[$tag] as $hook) {
+            $value = $hook($value, ...$args);
+        }
 
-		$this->executionCount[$tag] ??= 0;
-		$this->executionCount[$tag]++;
+        $this->executionCount[$tag] ??= 0;
+        $this->executionCount[$tag]++;
 
-		$this->current = '';
+        $this->current = '';
 
-		return $value;
-	}
+        return $value;
+    }
 
-	public function register(string $tag, callable $callback, int $priority = 10): bool
-	{
-		// If the hook already exists, remove it first.
-		$this->remove($tag, $callback, $priority);
+    public function register(string $tag, callable $callback, int $priority = 10): bool
+    {
+        // If the hook already exists, remove it first.
+        $this->remove($tag, $callback, $priority);
 
-		$this->hooks[$tag][] = new Hook($tag, $callback, $priority);
+        $this->hooks[$tag][] = new Hook($tag, $callback, $priority);
 
-		return usort($this->hooks[$tag], function ($a, $b) {
-			return $a->priority <=> $b->priority;
-		});
-	}
+        return usort($this->hooks[$tag], function ($a, $b) {
+            return $a->priority <=> $b->priority;
+        });
+    }
 
-	public function remove(string $tag, callable $callback, int $priority = 10): bool
-	{
-		$this->hooks[$tag] ??= [];
+    public function remove(string $tag, callable $callback, int $priority = 10): bool
+    {
+        $this->hooks[$tag] ??= [];
 
-		foreach ($this->hooks[$tag] as $index => $hook) {
-			if ($hook->priority === $priority && $hook->isSameCallback($callback)) {
-				unset($this->hooks[$tag][$index]);
-			}
-		}
+        foreach ($this->hooks[$tag] as $index => $hook) {
+            if ($hook->priority === $priority && $hook->isSameCallback($callback)) {
+                unset($this->hooks[$tag][$index]);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function removeAll(string $tag, int|false $priority = false): bool
-	{
-		if ($priority === false) {
-			unset($this->hooks[$tag]);
-			return true;
-		}
+    public function removeAll(string $tag, int|false $priority = false): bool
+    {
+        if ($priority === false) {
+            unset($this->hooks[$tag]);
+            return true;
+        }
 
-		$this->hooks[$tag] ??= [];
+        $this->hooks[$tag] ??= [];
 
-		foreach ($this->hooks[$tag] as $index => $hook) {
-			if ($hook->priority === $priority) {
-				unset($this->hooks[$tag][$index]);
-			}
-		}
+        foreach ($this->hooks[$tag] as $index => $hook) {
+            if ($hook->priority === $priority) {
+                unset($this->hooks[$tag][$index]);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function has(string $tag, callable|false $callable = false): bool
-	{
-		if ($callable === false) {
-			return isset($this->hooks[$tag]) && count($this->hooks[$tag]) > 0;
-		}
+    public function has(string $tag, callable|false $callable = false): bool
+    {
+        if ($callable === false) {
+            return isset($this->hooks[$tag]) && count($this->hooks[$tag]) > 0;
+        }
 
-		$this->hooks[$tag] ??= [];
+        $this->hooks[$tag] ??= [];
 
-		foreach ($this->hooks[$tag] as $hook) {
-			if ($hook->isSameCallback($callable)) {
-				return true;
-			}
-		}
+        foreach ($this->hooks[$tag] as $hook) {
+            if ($hook->isSameCallback($callable)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function did(string $tag): int
-	{
-		if (!isset($this->executionCount[$tag])) {
-			return 0;
-		}
+    public function did(string $tag): int
+    {
+        if (!isset($this->executionCount[$tag])) {
+            return 0;
+        }
 
-		return $this->executionCount[$tag];
-	}
+        return $this->executionCount[$tag];
+    }
 
-	public function doing(string $tag): bool
-	{
-		return $this->current === $tag;
-	}
+    public function doing(string $tag): bool
+    {
+        return $this->current === $tag;
+    }
 
-	public function current(): string
-	{
-		return $this->current;
-	}
+    public function current(): string
+    {
+        return $this->current;
+    }
 }

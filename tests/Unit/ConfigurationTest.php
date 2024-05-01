@@ -14,8 +14,8 @@ test('can validate configuration', function () {
             'key2' => ['description2', 'default2'],
         ],
         'validation' => [
-            'key1' => fn($value) => $value === 'default1',
-            'key2' => fn($value) => $value === 'default2',
+            'key1' => fn ($value) => $value === 'default1',
+            'key2' => fn ($value) => $value === 'default2',
         ],
     ]);
 
@@ -43,7 +43,7 @@ test('can throw exception when validating undefined configuration key', function
         'definition' => [],
         'validation' => [],
     ]);
-	$config->validate();
+    $config->validate();
 })->throws(InvalidArgumentException::class);
 
 test('can throw exception when required configuration key is missing', function () {
@@ -53,7 +53,7 @@ test('can throw exception when required configuration key is missing', function 
         ],
         'validation' => [],
     ]);
-	$config->validate();
+    $config->validate();
 })->throws(InvalidArgumentException::class);
 
 test('can throw exception when configuration does not pass validation', function () {
@@ -63,25 +63,25 @@ test('can throw exception when configuration does not pass validation', function
             'key' => ['description', 'validValue'],
         ],
         'validation' => [
-            'key' => fn($value) => $value === 'validValue',
+            'key' => fn ($value) => $value === 'validValue',
         ],
     ]);
-	$config->validate();
+    $config->validate();
 })->throws(InvalidArgumentException::class);
 
 test('can throw exception when setting invalid validation', function () {
     $config = new Configuration([]);
-	$config->set('validation', 'invalidValue');
+    $config->set('validation', 'invalidValue');
 })->throws(InvalidArgumentException::class);
 
 test('can throw exception when setting invalid definition', function () {
     $config = new Configuration([]);
-	$config->set('definition', 'invalidValue');
+    $config->set('definition', 'invalidValue');
 })->throws(InvalidArgumentException::class);
 
 test('can throw exception when getting undefined configuration key', function () {
     $config = new Configuration([]);
-	$config->get('undefinedKey');
+    $config->get('undefinedKey');
 })->throws(InvalidArgumentException::class);
 
 test('can throw exception when getting required configuration key that is not set', function () {
@@ -90,5 +90,5 @@ test('can throw exception when getting required configuration key that is not se
             'requiredKey' => ['description', null],
         ],
     ]);
-	$config->get('requiredKey');
+    $config->get('requiredKey');
 })->throws(InvalidArgumentException::class);

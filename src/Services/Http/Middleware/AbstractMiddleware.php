@@ -11,22 +11,22 @@ use Psr\Http\Server\MiddlewareInterface;
 use DI\Attribute\Inject;
 
 abstract class AbstractMiddleware implements
-	MiddlewareInterface,
-	RouteAwareInterface
+    MiddlewareInterface,
+    RouteAwareInterface
 {
-	use ErrorResponseTrait;
+    use ErrorResponseTrait;
 
-	#[Inject]
-	protected App $app;
+    #[Inject]
+    protected App $app;
 
-	protected ?RouteInterface $route = null;
+    protected ?RouteInterface $route = null;
 
-	/**
-	 * @return $this
-	 */
-	public function setRoute(RouteInterface $route): self
-	{
-		$this->route = $route;
-		return $this;
-	}
+    /**
+     * @return $this
+     */
+    public function setRoute(RouteInterface $route): self
+    {
+        $this->route = $route;
+        return $this;
+    }
 }

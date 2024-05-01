@@ -33,25 +33,25 @@ class App implements AppHooksInterface, AppContainerInterface
     private function setDefaultConfig(): void
     {
         $this->config->set('validation', [
-			'env'  => fn ($value) =>
+            'env'  => fn ($value) =>
                 !in_array($value, ['development', 'production', 'testing'], true)
                     ? 'env must be either "development", "production" or "testing"'
                     : true,
-			'root' => fn ($value) =>
+            'root' => fn ($value) =>
                 !is_dir($value ?? '')
                     ? "root \"$value\" is not a directory"
                     : true,
-			'slug' => fn ($value) =>
+            'slug' => fn ($value) =>
                 !empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
                     ? "slug \"$value\" is not valid"
                     : true,
-		]);
+        ]);
 
-		$this->config->set('definition', [
-			'env'  => ['The environment the app is running in (development, production)', 'development'],
-			'root' => ['The root directory of the app', getcwd()],
-			'slug' => ['The app slug', 'app'],
-		]);
+        $this->config->set('definition', [
+            'env'  => ['The environment the app is running in (development, production)', 'development'],
+            'root' => ['The root directory of the app', getcwd()],
+            'slug' => ['The app slug', 'app'],
+        ]);
     }
 
     /**
@@ -104,7 +104,7 @@ class App implements AppHooksInterface, AppContainerInterface
             $this->get($provider)->boot($this);
         }
 
-        $this->bind('booted', fn() => true, false);
+        $this->bind('booted', fn () => true, false);
 
         $this->hookCall('boot.after', $this);
     }

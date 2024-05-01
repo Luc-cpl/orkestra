@@ -5,7 +5,6 @@ namespace Orkestra\Traits;
 use Orkestra\AppBind;
 
 use Orkestra\Interfaces\ProviderInterface;
-use Orkestra\Interfaces\ConfigurationInterface;
 use DI\Container;
 use DI\ContainerBuilder;
 use InvalidArgumentException;
@@ -16,7 +15,6 @@ use InvalidArgumentException;
  */
 trait AppContainerTrait
 {
-
     private Container $container;
 
     /**
@@ -86,7 +84,7 @@ trait AppContainerTrait
         return $this->container->make($name, $params);
     }
 
-    public function call($callable, array $params = []) : mixed
+    public function call($callable, array $params = []): mixed
     {
         return $this->container->call($callable, $params);
     }

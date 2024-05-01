@@ -8,9 +8,9 @@
         "orkestra"
     ],
     "scripts": {
-        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/",
-        "phpstan:full": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
+        "pint": "vendor/bin/pint",
         "pest": "vendor/bin/pest",
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
         "pest:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
     },
     "autoload": {
@@ -37,7 +37,8 @@
     "require-dev": {
         "phpstan/phpstan": "^1.10",
         "pestphp/pest": "^2.34",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "laravel/pint": "^1.15"
     },
     "require": {
         "php": ">=8.1",

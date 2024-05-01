@@ -15,7 +15,8 @@ class EntityTest extends AbstractEntity
     public function __construct(
         protected string $name,
         protected int $age = 0
-    ) {}
+    ) {
+    }
 
     protected function getNonPropertyValue(): string
     {

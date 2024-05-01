@@ -19,54 +19,54 @@ use BadMethodCallException;
  */
 class ParamDefinition extends AbstractEntity
 {
-	/**
-	 * @var ParamDefinition[]
-	 */
-	protected array $inner = [];
+    /**
+     * @var ParamDefinition[]
+     */
+    protected array $inner = [];
 
-	/**
-	 * @var string[] $validation
-	 */
-	protected array $validation = [];
+    /**
+     * @var string[] $validation
+     */
+    protected array $validation = [];
 
-	/**
-	 * @param mixed[] $enum
-	 */
-	public function __construct(
-		protected ParamType $type,
-		protected string    $title,
-		protected string    $name,
-		protected mixed     $default     = null,
-		protected ?string   $description = null,
-		protected array     $enum        = [],
-	) {
-		//
-	}
+    /**
+     * @param mixed[] $enum
+     */
+    public function __construct(
+        protected ParamType $type,
+        protected string    $title,
+        protected string    $name,
+        protected mixed     $default     = null,
+        protected ?string   $description = null,
+        protected array     $enum        = [],
+    ) {
+        //
+    }
 
-	public function getRequired(): bool
-	{
-		return in_array('required', $this->validation);
-	}
+    public function getRequired(): bool
+    {
+        return in_array('required', $this->validation);
+    }
 
-	/**
-	 * @param string[]|string $validation
-	 */
-	public function setValidation(string|array $validation): self
-	{
-		$this->validation = is_string($validation) ? explode('|', $validation) : $validation;
-		return $this;
-	}
+    /**
+     * @param string[]|string $validation
+     */
+    public function setValidation(string|array $validation): self
+    {
+        $this->validation = is_string($validation) ? explode('|', $validation) : $validation;
+        return $this;
+    }
 
-	/**
-	 * @param ParamDefinition[] $inner
-	 */
-	public function setInner(array $inner): self
-	{
-		if ($this->type->name !== 'Array' && $this->type->name !== 'Object') {
-			throw new BadMethodCallException('Cannot set inner on non-array or non-object param');
-		}
+    /**
+     * @param ParamDefinition[] $inner
+     */
+    public function setInner(array $inner): self
+    {
+        if ($this->type->name !== 'Array' && $this->type->name !== 'Object') {
+            throw new BadMethodCallException('Cannot set inner on non-array or non-object param');
+        }
 
-		$this->inner = $inner;
-		return $this;
-	}
+        $this->inner = $inner;
+        return $this;
+    }
 }

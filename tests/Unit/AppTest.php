@@ -26,7 +26,7 @@ test('can get configuration', function () {
 });
 
 test('can get from container', function () {
-    $this->app->bind('test', fn() => 'testValue');
+    $this->app->bind('test', fn () => 'testValue');
     expect($this->app->get('test'))->toEqual('testValue');
 });
 
@@ -36,12 +36,12 @@ test('can not get from container with non existent key', function () {
 });
 
 test('can get from container with constructor parameters', function () {
-    $this->app->bind('test', fn($param) => $param);
+    $this->app->bind('test', fn ($param) => $param);
     expect($this->app->get('test', ['param' => 'testValue']))->toEqual('testValue');
 });
 
 test('can register a provider', function () {
-    $providerClass = new class implements ProviderInterface {
+    $providerClass = new class () implements ProviderInterface {
         public string $test;
         public function register(App $app): void
         {
@@ -62,7 +62,7 @@ test('can not register provider with non existent class', function () {
 });
 
 test('can not register a provider with non provider class', function () {
-    $nonProviderClass = new class {};
+    $nonProviderClass = new class () {};
     $this->app->provider($nonProviderClass::class);
 })->throws(InvalidArgumentException::class);
 
@@ -72,14 +72,13 @@ test('can not bind a value in container', function () {
 })->throws(InvalidArgumentException::class);
 
 test('can bind a closure in container', function () {
-    $callback = fn() => 'testValue';
+    $callback = fn () => 'testValue';
     $this->app->bind('test', $callback);
     expect($this->app->get('test'))->toEqual('testValue');
 });
 
 test('can bind a class in container by name', function () {
-    $class = new class
-    {
+    $class = new class () {
         public string $value;
     };
 
@@ -91,8 +90,7 @@ test('can bind a class in container by name', function () {
 });
 
 test('can bind a class instance in container', function () {
-    $class = new class
-    {
+    $class = new class () {
     };
 
     $this->app->bind('testClass', $class);
@@ -101,8 +99,7 @@ test('can bind a class instance in container', function () {
 });
 
 test('can instantiate a singleton in the container', function () {
-    $class = new class
-    {
+    $class = new class () {
         public string $value;
     };
 
@@ -114,21 +111,20 @@ test('can instantiate a singleton in the container', function () {
 });
 
 test('can run if available with existing class', function () {
-    $class = new class
-    {
+    $class = new class () {
     };
-    $value = $this->app->runIfAvailable($class::class, fn($instance) => $instance);
+    $value = $this->app->runIfAvailable($class::class, fn ($instance) => $instance);
     expect($value)->toBeInstanceOf(get_class($class));
 });
 
 test('can not run if available with non existent class', function () {
-    $value = $this->app->runIfAvailable('notExistClass', fn() => 'testValue');
+    $value = $this->app->runIfAvailable('notExistClass', fn () => 'testValue');
     expect($value)->toBeNull();
 });
 
 test('can check if container has service', function () {
     expect($this->app->has('test'))->toBeFalse();
-    $this->app->bind('test', fn() => 'testValue');
+    $this->app->bind('test', fn () => 'testValue');
     expect($this->app->has('test'))->toBeTrue();
 });
 
@@ -140,8 +136,7 @@ test('can throw exception when booting twice', function () {
 })->throws(Exception::class);
 
 test('can boot', function () {
-    $providerClass = new class implements ProviderInterface
-    {
+    $providerClass = new class () implements ProviderInterface {
         public $test = null;
         public function register(App $app): void
         {

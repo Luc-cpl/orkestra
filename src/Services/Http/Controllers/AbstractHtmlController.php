@@ -14,50 +14,50 @@ use DI\Attribute\Inject;
  */
 abstract class AbstractHtmlController implements RouteAwareInterface
 {
-	#[Inject]
-	protected App $app;
+    #[Inject]
+    protected App $app;
 
-	#[Inject]
-	protected ViewInterface $view;
+    #[Inject]
+    protected ViewInterface $view;
 
-	#[Inject]
-	protected ResponseInterface $response;
+    #[Inject]
+    protected ResponseInterface $response;
 
-	protected ?RouteInterface $route = null;
+    protected ?RouteInterface $route = null;
 
-	protected int $status = 200;
+    protected int $status = 200;
 
-	/**
-	 * @return $this
-	 */
-	public function setRoute(RouteInterface $route): self
-	{
-		$this->route = $route;
-		return $this;
-	}
+    /**
+     * @return $this
+     */
+    public function setRoute(RouteInterface $route): self
+    {
+        $this->route = $route;
+        return $this;
+    }
 
-	protected function setStatus(int $status): self
-	{
-		$this->status = $status;
-		return $this;
-	}
+    protected function setStatus(int $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
 
-	/**
-	 * Render a view
-	 *
-	 * @param string $name
-	 * @param mixed[] $context
-	 * @return ResponseInterface
-	 */
-	protected function render(string $name, array $context = []): ResponseInterface
-	{
-		if ($this->route) {
-			$context = array_merge($context, [
-				'route' => $this->route->getDefinition(),
-			]);
-		}
-		$content = $this->view->render($name, $context);
-		$this->response->getBody()->write($content);
-		return $this->response->withStatus($this->status);
-	}
+    /**
+     * Render a view
+     *
+     * @param string $name
+     * @param mixed[] $context
+     * @return ResponseInterface
+     */
+    protected function render(string $name, array $context = []): ResponseInterface
+    {
+        if ($this->route) {
+            $context = array_merge($context, [
+                'route' => $this->route->getDefinition(),
+            ]);
+        }
+        $content = $this->view->render($name, $context);
+        $this->response->getBody()->write($content);
+        return $this->response->withStatus($this->status);
+    }
 }

@@ -13,55 +13,55 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 interface RouterInterface extends
-	MiddlewareAwareInterface,
-	RouteCollectionInterface,
-	StrategyAwareInterface,
-	RequestHandlerInterface,
-	RouteConditionHandlerInterface
+    MiddlewareAwareInterface,
+    RouteCollectionInterface,
+    StrategyAwareInterface,
+    RequestHandlerInterface,
+    RouteConditionHandlerInterface
 {
-	/**
-	 * Add a route group.
-	 * 
-	 * @param string $prefix
-	 * @param callable $group
-	 * @return RouteGroupInterface
-	 */
-	public function group(string $prefix, callable $group): RouteGroupInterface;
+    /**
+     * Add a route group.
+     *
+     * @param string $prefix
+     * @param callable $group
+     * @return RouteGroupInterface
+     */
+    public function group(string $prefix, callable $group): RouteGroupInterface;
 
-	/**
-	 * Get all registered routes.
-	 * 
-	 * @return Route[]
-	 */
-	public function getRoutes(): array;
+    /**
+     * Get all registered routes.
+     *
+     * @return Route[]
+     */
+    public function getRoutes(): array;
 
-	/**
-	 * Get all routes by definition type.
-	 * 
-	 * This method should return all routes that have a
-	 * DefinitionInterface type that matches the given type.
-	 * 
-	 * @param string $type
-	 * @return Route[]
-	 */
-	public function getRoutesByDefinitionType(string $type): array;
+    /**
+     * Get all routes by definition type.
+     *
+     * This method should return all routes that have a
+     * DefinitionInterface type that matches the given type.
+     *
+     * @param string $type
+     * @return Route[]
+     */
+    public function getRoutesByDefinitionType(string $type): array;
 
-	/**
-	 * Dispatch the router.
-	 *
-	 * This method should return a response from the router.
-	 *
-	 * @param ServerRequestInterface $request
-	 * @return ResponseInterface
-	 */
-	public function dispatch(ServerRequestInterface $request): ResponseInterface;
+    /**
+     * Dispatch the router.
+     *
+     * This method should return a response from the router.
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function dispatch(ServerRequestInterface $request): ResponseInterface;
 
-	/**
-	 * Prepare the routes.
-	 * This method should be called before dispatching the router.
-	 *
-	 * @param ServerRequestInterface $request
-	 * @return void
-	 */
-	public function prepareRoutes(ServerRequestInterface $request): void;
+    /**
+     * Prepare the routes.
+     * This method should be called before dispatching the router.
+     *
+     * @param ServerRequestInterface $request
+     * @return void
+     */
+    public function prepareRoutes(ServerRequestInterface $request): void;
 }

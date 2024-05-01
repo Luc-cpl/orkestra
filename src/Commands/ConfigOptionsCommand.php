@@ -36,7 +36,7 @@ class ConfigOptionsCommand extends Command
         $definition = array_map(function ($value, $key) {
             return [$key, isset($value[1]) ? 'Yes' : 'No', $value[0]];
         }, $definition, array_keys($definition));
-        
+
         // Create a table to display the configuration options, with key, required, and description columns
         $table = new Table($output);
         $table

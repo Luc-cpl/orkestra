@@ -22,7 +22,7 @@ interface AppContainerInterface extends ContainerInterface
 
     /**
      * Get the providers
-     * 
+     *
      * @return class-string[]
      */
     public function getProviders(): array;
@@ -71,7 +71,8 @@ interface AppContainerInterface extends ContainerInterface
      *                           or not indexed (same order as the parameters).
      * @return mixed Result of the function.
      */
-    public function call($callable, array $params = []) : mixed;
+    public function call($callable, array $params = []): mixed;
+
     /**
      * Check if the container has a service
      *
