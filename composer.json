@@ -9,7 +9,7 @@
     ],
     "scripts": {
         "pint": "vendor/bin/pint",
-        "pest": "vendor/bin/pest",
+        "pest": "XDEBUG_MODE=coverage vendor/bin/pest",
         "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
         "pest:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
     },

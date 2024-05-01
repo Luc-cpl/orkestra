@@ -1,0 +1,45 @@
+#----------------------------------------------------------------------------
+# ACTION METADATA
+#----------------------------------------------------------------------------
+name: 'Get composer package version'
+description: 'Get the current version from composer.json file.'
+
+#----------------------------------------------------------------------------
+# ACTION INPUTS
+#----------------------------------------------------------------------------
+inputs:
+  working-directory:
+    description: 'The base directory to be used.'
+    default: .
+  branch:
+    description: 'The branch to checkout.'
+    default: ${{ github.ref }}
+
+#----------------------------------------------------------------------------
+# ACTION OUTPUTS
+#----------------------------------------------------------------------------
+outputs:
+  version:
+    description: 'The current version from composer.json file.'
+    value: ${{ steps.version_check.outputs.version }}
+
+#----------------------------------------------------------------------------
+# ACTION STEPS
+#----------------------------------------------------------------------------
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout to branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.branch }}
+
+    - name: Check composer file version
+      id: version_check
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [[ -f composer.json ]]; then
+          echo "version=$(cat composer.json | jq -r .version)" >> $GITHUB_OUTPUT
+        fi
+        echo "version=0.0.0" >> $GITHUB_OUTPUT
