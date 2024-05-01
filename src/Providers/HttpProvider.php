@@ -25,7 +25,7 @@ use Rakit\Validation\Validator;
 class HttpProvider implements ProviderInterface
 {
     /**
-     * @var array<class-string<Command>>
+     * @var class-string[]
      */
     public array $commands = [
         MiddlewareListCommand::class,
@@ -96,6 +96,7 @@ class HttpProvider implements ProviderInterface
      */
     public function boot(App $app): void
     {
+        /** @var array<string, class-string> */
         $middlewareStack = $app->config()->get('middleware');
         $middlewareSources = array_map(fn () => 'configuration', $middlewareStack);
         foreach ($app->getProviders() as $provider) {

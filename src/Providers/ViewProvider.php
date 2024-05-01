@@ -44,8 +44,9 @@ class ViewProvider implements ProviderInterface
     public function register(App $app): void
     {
         $url = function () use ($app): string {
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            /** @var string */
             $host = $app->config()->get('host');
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
             return "$protocol://$host";
         };
 

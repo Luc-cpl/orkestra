@@ -20,7 +20,7 @@ class Configuration implements ConfigurationInterface
     public function validate(): bool
     {
         /**
-         * @var array<string, {string, mixed}> $definitions
+         * @var array<string, array{string, mixed}> $definitions
          */
         $definitions = $this->get('definition');
 
@@ -97,7 +97,9 @@ class Configuration implements ConfigurationInterface
         }
 
         if (!isset($this->config[$key])) {
-            $definition = $this->get('definition')[$key] ?? false;
+            /** @var array<string, array{string, mixed}> */
+            $definitionStack = $this->get('definition');
+            $definition = $definitionStack[$key] ?? false;
             if (!$definition) {
                 throw new InvalidArgumentException("Configuration key \"$key\" does not exist");
             }

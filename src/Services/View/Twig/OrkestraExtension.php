@@ -104,7 +104,9 @@ class OrkestraExtension extends AbstractExtension
         }
         // If is relative we should get our settings url
         if (strpos($src, 'http') === false) {
-            $assetsUrl = rtrim($this->config->get('assets'), '/') . '/';
+            /** @var string */
+            $assetsUrl = $this->config->get('assets');
+            $assetsUrl = rtrim($assetsUrl, '/') . '/';
             $src = $assetsUrl . ltrim($src, '/');
         }
 
@@ -128,7 +130,9 @@ class OrkestraExtension extends AbstractExtension
     {
         // If is relative we should get our settings url
         if (strpos($href, 'http') === false) {
-            $assetsUrl = rtrim($this->config->get('assets'), '/') . '/';
+            /** @var string */
+            $assetsUrl = $this->config->get('assets');
+            $assetsUrl = rtrim($assetsUrl, '/') . '/';
             $href = $assetsUrl . ltrim($href, '/');
         }
 
