@@ -29,7 +29,6 @@ jobs:
         if: ${{ github.base_ref }} == 'main'
         with:
           working-directory: .
-          branch: ${{ github.head_ref }}
 
       - name: Get main branch version
         id: main_version

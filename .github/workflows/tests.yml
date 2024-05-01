@@ -40,7 +40,7 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: '[ci-review] Pint'
+          commit_message: '[ci-review] code fixer'
           commit_author: 'GitHub Action <actions@github.com>'
           commit_user_email: 'action@github.com'
           file_pattern: '*.php'

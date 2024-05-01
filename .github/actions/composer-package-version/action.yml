@@ -35,6 +35,7 @@ runs:
       run: echo "name=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')" >> $GITHUB_OUTPUT
 
     - name: Checkout to branch
+      if: ${{ inputs.branch }} != ${{ steps.current_branch.outputs.name }}
       uses: actions/checkout@v4
       with:
         ref: ${{ inputs.branch }}
@@ -51,6 +52,7 @@ runs:
         echo "version=0.0.0" >> $GITHUB_OUTPUT
 
     - name: Checkout to current branch
+      if: ${{ inputs.branch }} != ${{ steps.current_branch.outputs.name }}
       uses: actions/checkout@v4
       with:
         ref: ${{ steps.current_branch.outputs.name }}
