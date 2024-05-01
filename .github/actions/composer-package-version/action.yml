@@ -46,6 +46,7 @@ runs:
       run: |
         if [[ -f composer.json ]]; then
           echo "version=$(cat composer.json | jq -r .version)" >> $GITHUB_OUTPUT
+          exit 0
         fi
         echo "version=0.0.0" >> $GITHUB_OUTPUT
 
