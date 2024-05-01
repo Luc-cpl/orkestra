@@ -29,6 +29,11 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Get current branch
+      id: current_branch
+      shell: bash
+      run: echo "name=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')" >> $GITHUB_OUTPUT
+
     - name: Checkout to branch
       uses: actions/checkout@v4
       with:
@@ -43,3 +48,8 @@ runs:
           echo "version=$(cat composer.json | jq -r .version)" >> $GITHUB_OUTPUT
         fi
         echo "version=0.0.0" >> $GITHUB_OUTPUT
+
+    - name: Checkout to current branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ steps.current_branch.outputs.name }}

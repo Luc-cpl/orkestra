@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Check if PR can push to base branch
         run: |
           echo "Checking if PR can push to base branch"
@@ -25,13 +26,15 @@ jobs:
       - name: Get current version
         id: current_version
         uses: ./.github/actions/composer-package-version
+        if: ${{ github.base_ref }} == 'main'
         with:
           working-directory: .
-          branch: ${{ github.base_ref }}
+          branch: ${{ github.head_ref }}
 
       - name: Get main branch version
         id: main_version
         uses: ./.github/actions/composer-package-version
+        if: ${{ github.base_ref }} == 'main'
         with:
           working-directory: .
           branch: main
@@ -39,11 +42,13 @@ jobs:
       - name: "Read Semver Info"
         id: "semver_info"
         uses: YunaBraska/semver-info-action@main
+        if: ${{ github.base_ref }} == 'main'
         with:
           semver-a: ${{ steps.current_version.outputs.version }}
           semver-b: ${{ steps.main_version.outputs.version }}
 
       - name: "Check Semver"
+        if: ${{ github.base_ref }} == 'main'
         run: |
           echo "Checking Semver"
           echo "Semver A: ${{ steps.current_version.outputs.version }}"
