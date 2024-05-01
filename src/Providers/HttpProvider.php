@@ -107,16 +107,17 @@ class HttpProvider implements ProviderInterface
 				throw new InvalidArgumentException(sprintf('Middleware must be an array in %s', $provider::class));
 			}
 			foreach ($provider->middleware as $alias => $middleware) {
+				if (isset($middlewareStack[$alias])) {
+					continue;
+				}
 				if (!is_string($alias)) {
 					throw new InvalidArgumentException(sprintf('Middleware alias must be a string in %s', $provider::class));
 				}
 				if (!is_string($middleware)) {
 					throw new InvalidArgumentException(sprintf('Middleware must be a class string in %s', $provider::class));
 				}
-				if (!isset($middlewareStack[$alias])) {
-					$middlewareStack[$alias] = $middleware;
-					$middlewareSources[$alias] = $provider::class;
-				}
+				$middlewareStack[$alias] = $middleware;
+				$middlewareSources[$alias] = $provider::class;
 			}
 		}
 
@@ -142,28 +143,5 @@ class HttpProvider implements ProviderInterface
 
 		(require $configFile)($router);
 		$app->hookCall('http.router.config', $router);
-	}
-
-	/**
-	 * @param class-string[] $listeners
-	 */
-	protected function registerListeners(App $app, HooksInterface $hooks, array $listeners): void
-	{
-		foreach ($listeners as $listener) {
-			// Set listeners as singletons
-			$app->singleton($listener, $listener);
-			/** @var ListenerInterface */
-			$listener = $app->get($listener);
-			$listenerHooks = $listener->hook();
-			$listenerHooks = is_array($listenerHooks) ? $listenerHooks : [$listenerHooks];
-			foreach ($listenerHooks as $listenerHook) {
-				if (!method_exists($listener, 'handle')) {
-					throw new Exception(sprintf('Listener %s must implement handle method', $listener::class));
-				}
-				$listenerHook = str_replace('{app}', $app->slug(), $listenerHook);
-				// @phpstan-ignore-next-line
-				$hooks->register($listenerHook, $listener->handle(...));
-			}
-		}
 	}
 }
