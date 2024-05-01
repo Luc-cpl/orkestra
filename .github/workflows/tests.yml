@@ -22,7 +22,7 @@ jobs:
           key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
       - name: "Install Dependencies"
         if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install -q --no-interaction --no-scripts
       - name: Cache Pint
         uses: actions/cache@v4
         with:
@@ -56,7 +56,7 @@ jobs:
           key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
       - name: Install Dependencies
         if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install -q --no-interaction --no-scripts
       - name: Pest tests
         run: composer run pest -- --coverage --min=83 # should be increased with time
       - name: PHPStan
