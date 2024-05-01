@@ -11,6 +11,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Check if PR can push to base branch
         run: |
           echo "Checking if PR can push to base branch"
