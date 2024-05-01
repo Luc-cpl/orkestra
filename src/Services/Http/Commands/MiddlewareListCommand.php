@@ -33,7 +33,7 @@ class MiddlewareListCommand extends Command
         /** @var array<string, string> */
         $middlewareStack = $this->config->get('middleware');
         /** @var array<string, string> */
-		$middlewareSources = $this->config->get('middleware_sources');
+        $middlewareSources = $this->config->get('middleware_sources');
 
         $definition = array_map(function ($middleware, $alias) use ($middlewareSources) {
             return [$alias, $middleware, $middlewareSources[$alias] ?? ''];
@@ -41,8 +41,8 @@ class MiddlewareListCommand extends Command
 
         $table = new Table($output);
         $table
-        ->setHeaders(['Alias', 'Middleware', 'Placed By'])
-        ->setRows($definition);
+            ->setHeaders(['Alias', 'Middleware', 'Placed By'])
+            ->setRows($definition);
 
         $table->render();
 

@@ -45,10 +45,10 @@ test('can list the available middleware', function () {
 
 	$outputLines = explode(PHP_EOL, $tester->getDisplay());
 
-    // Check the number of lines in the output
+	// Check the number of lines in the output
 	expect(count($outputLines))->toBe(12);
 
-    // Check the content of each line
+	// Check the content of each line
 	expect($outputLines[0]) ->toBe('Available middleware options:');
 	expect($outputLines[1]) ->toBe('');
 	expect($outputLines[2]) ->toBe('+-------------+-------------+---------------+');
