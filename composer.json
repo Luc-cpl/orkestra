@@ -3,7 +3,7 @@
     "description": "Orchestration for PHP applications",
     "type": "project",
     "license": "MIT",
-    "version": "v1.0.0-rc.1",
+    "version": "v1.0.0",
     "keywords": [
         "orkestra"
     ],
