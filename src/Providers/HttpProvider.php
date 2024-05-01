@@ -2,6 +2,7 @@
 
 namespace Orkestra\Providers;
 
+use InvalidArgumentException;
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 
@@ -18,10 +19,18 @@ use Laminas\Diactoros\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 
 use League\Route\Strategy\JsonStrategy;
+use Orkestra\Services\Http\Commands\MiddlewareListCommand;
 use Rakit\Validation\Validator;
 
 class HttpProvider implements ProviderInterface
 {
+	/**
+	 * @var array<class-string<Command>>
+	 */
+	public array $commands = [
+		MiddlewareListCommand::class,
+	];
+
 	/**
 	 * Register services with the container.
 	 * We can use the container to bind services to the app.
@@ -87,6 +96,40 @@ class HttpProvider implements ProviderInterface
 	 */
 	public function boot(App $app): void
 	{
+		$middlewareStack = $app->config()->get('middleware');
+		$middlewareSources = array_map(fn () => 'configuration', $middlewareStack);
+		foreach ($app->getProviders() as $provider) {
+			$provider = $app->get($provider);
+			if (!property_exists($provider, 'middleware')) {
+				continue;
+			}
+			if (!is_array($provider->middleware)) {
+				throw new InvalidArgumentException(sprintf('Middleware must be an array in %s', $provider::class));
+			}
+			foreach ($provider->middleware as $alias => $middleware) {
+				if (isset($middlewareStack[$alias])) {
+					continue;
+				}
+				if (!is_string($alias)) {
+					throw new InvalidArgumentException(sprintf('Middleware alias must be a string in %s', $provider::class));
+				}
+				if (!is_string($middleware)) {
+					throw new InvalidArgumentException(sprintf('Middleware must be a class string in %s', $provider::class));
+				}
+				$middlewareStack[$alias] = $middleware;
+				$middlewareSources[$alias] = $provider::class;
+			}
+		}
+
+		$app->config()->set('definition', [
+			'middleware_sources' => [
+				'Middleware stack sources',
+				$middlewareSources,
+			],
+		]);
+
+		$app->config()->set('middleware', $middlewareStack);
+
 		$router = $app->get(RouterInterface::class);
 		$router->setStrategy($app->get(ApplicationStrategy::class));
 
