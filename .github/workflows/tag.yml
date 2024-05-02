@@ -7,7 +7,6 @@ on:
 
 jobs:
   coverage_badge:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
 
@@ -32,7 +31,6 @@ jobs:
           vendor/bin/php-coveralls --coverage_clover=../clover.xml -v
 
   tag_version:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
