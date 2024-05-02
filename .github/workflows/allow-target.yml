@@ -29,14 +29,12 @@ jobs:
         with:
           working-directory: .
 
-      - uses: actions/checkout@v4
+      - name: Get Latest Release
+        id: latest_release
+        uses: pozetroninc/github-action-get-latest-release@v0.7.0
         with:
-          ref: ${{ github.base_ref }}
-      - name: 'Get Previous tag'
-        id: previous_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 0.0.0
+          owner: Luc-cpl
+          repo: orkestra
 
       - name: "Read Semver Info"
         id: "semver_info"
@@ -44,14 +42,14 @@ jobs:
         if: ${{ github.base_ref }} == 'main'
         with:
           semver-a: ${{ steps.current_version.outputs.version }}
-          semver-b: ${{ steps.previous_tag.outputs.tag }}
+          semver-b: ${{ steps.latest_release.outputs.release }}
 
       - name: "Check Semver"
         if: ${{ github.base_ref }} == 'main'
         run: |
           echo "Checking Semver"
           echo "Semver A: ${{ steps.current_version.outputs.version }}"
-          echo "Semver B: ${{ steps.previous_tag.outputs.tag }}"
+          echo "Semver B: ${{ steps.latest_release.outputs.release }}"
           is_greater_a=${{ steps.semver_info.outputs.is_greater_a }}
           is_stable_a=${{ steps.semver_info.outputs.is_stable_a }}
           if [ $is_greater_a == "true" ] && [ $is_stable_a == "true" ]; then
