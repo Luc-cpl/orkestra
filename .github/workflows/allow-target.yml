@@ -5,8 +5,6 @@ on:
       - main
     types:
       - synchronize
-    paths:
-      - composer.json
 jobs:
   check:
     runs-on: ubuntu-latest
