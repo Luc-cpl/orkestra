@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - synchronize
+      - opened
 jobs:
   code-quality:
     runs-on: ubuntu-latest

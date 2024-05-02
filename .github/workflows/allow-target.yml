@@ -5,6 +5,7 @@ on:
       - main
     types:
       - synchronize
+      - opened
 jobs:
   check:
     runs-on: ubuntu-latest
