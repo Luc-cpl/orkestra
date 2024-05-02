@@ -3,7 +3,7 @@
 <!-- badges area start -->
 [![Packagist Version](https://img.shields.io/packagist/v/luccpl/orkestra)](https://packagist.org/packages/luccpl/orkestra)
 [![Packagist License](https://img.shields.io/packagist/l/luccpl/orkestra)](https://github.com/Luc-cpl/orkestra/blob/main/LICENSE)
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FLuc-cpl%2Forkestra%2Fbadge%3Fref%3Dmain&style=flat)](https://actions-badge.atrox.dev/Luc-cpl/orkestra/goto?ref=main)
+![PHPStan badge](https://img.shields.io/badge/PHPStan-level%209-brightgreen)
 [![Coverage Status](https://coveralls.io/repos/github/Luc-cpl/orkestra/badge.svg)](https://coveralls.io/github/Luc-cpl/orkestra)
 <!-- badges area end -->
 
