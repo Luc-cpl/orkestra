@@ -29,6 +29,9 @@ jobs:
         with:
           working-directory: .
 
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
       - name: 'Get Previous tag'
         id: previous_tag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
