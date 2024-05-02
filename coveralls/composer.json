@@ -1,6 +1,0 @@
-{
-    "name": "local/coveralls",
-    "require": {
-        "php-coveralls/php-coveralls": "^2.7"
-    }
-}
