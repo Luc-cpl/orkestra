@@ -1,9 +1,7 @@
 name: Tag version
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - main
 
@@ -14,9 +12,6 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
-          fetch-depth: '0'
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -31,8 +26,10 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: |
-          composer global require php-coveralls/php-coveralls
-          php-coveralls --coverage_clover=clover.xml -v
+          mkdir -p coveralls && cd coveralls
+          composer init --no-interaction --name=local/coveralls
+          composer require php-coveralls/php-coveralls --no-suggest --no-progress
+          vendor/bin/php-coveralls --coverage_clover=../clover.xml -v
 
   tag_version:
     if: github.event.pull_request.merged == true
@@ -42,9 +39,6 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
-          fetch-depth: '0'
 
       - name: Get current version
         id: version
@@ -55,5 +49,5 @@ jobs:
       - name: Push tag
         uses: anothrNick/github-tag-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          WITH_V: ${{ steps.version.outputs.version }}
+          GITHUB_TOKEN: "${{ secrets.ACCESS_TOKEN }}"
+          WITH_V: "${{ steps.version.outputs.version }}"

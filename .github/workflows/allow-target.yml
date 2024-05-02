@@ -5,8 +5,7 @@ on:
       - main
     types:
       - synchronize
-    paths:
-      - composer.json
+      - opened
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -30,13 +29,12 @@ jobs:
         with:
           working-directory: .
 
-      - name: Get main branch version
-        id: main_version
-        uses: ./.github/actions/composer-package-version
-        if: ${{ github.base_ref }} == 'main'
+      - name: Get Latest Release
+        id: latest_release
+        uses: pozetroninc/github-action-get-latest-release@v0.7.0
         with:
-          working-directory: .
-          branch: main
+          owner: Luc-cpl
+          repo: orkestra
 
       - name: "Read Semver Info"
         id: "semver_info"
@@ -44,14 +42,14 @@ jobs:
         if: ${{ github.base_ref }} == 'main'
         with:
           semver-a: ${{ steps.current_version.outputs.version }}
-          semver-b: ${{ steps.main_version.outputs.version }}
+          semver-b: ${{ steps.latest_release.outputs.release }}
 
       - name: "Check Semver"
         if: ${{ github.base_ref }} == 'main'
         run: |
           echo "Checking Semver"
           echo "Semver A: ${{ steps.current_version.outputs.version }}"
-          echo "Semver B: ${{ steps.main_version.outputs.version }}"
+          echo "Semver B: ${{ steps.latest_release.outputs.release }}"
           is_greater_a=${{ steps.semver_info.outputs.is_greater_a }}
           is_stable_a=${{ steps.semver_info.outputs.is_stable_a }}
           if [ $is_greater_a == "true" ] && [ $is_stable_a == "true" ]; then
