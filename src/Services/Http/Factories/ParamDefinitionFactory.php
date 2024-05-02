@@ -17,45 +17,45 @@ use Orkestra\Entities\EntityFactory;
  */
 class ParamDefinitionFactory
 {
-	public function __construct(
-		private EntityFactory $factory,
-	) {
-		//
-	}
+    public function __construct(
+        private EntityFactory $factory,
+    ) {
+        //
+    }
 
-	/**
-	 * @param mixed[] $args
-	 */
-	public function __call(string $method, array $args): ParamDefinition
-	{
-		$options = ParamType::cases();
-		$name    = ucfirst($method);
+    /**
+     * @param mixed[] $args
+     */
+    public function __call(string $method, array $args): ParamDefinition
+    {
+        $options = ParamType::cases();
+        $name    = ucfirst($method);
 
-		foreach ($options as $option) {
-			if ($option->name === $name) {
-				$type = $option;
-				break;
-			}
-		}
+        foreach ($options as $option) {
+            if ($option->name === $name) {
+                $type = $option;
+                break;
+            }
+        }
 
-		if (!isset($type)) {
-			throw new BadMethodCallException("Invalid method: $method");
-		}
-		
-		// If we pass positional arguments, we need change them to named arguments.
-		if (isset($args[0])) {
-			$args = [
-				'title'        => $args[0],
-				'name'         => $args[1],
-				'default'      => $args[2] ?? null,
-				'validation'   => $args[3] ?? null,
-				'description'  => $args[4] ?? null,
-				'enum'         => $args[6] ?? null,
-			];
-		}
+        if (!isset($type)) {
+            throw new BadMethodCallException("Invalid method: $method");
+        }
 
-		$args['type'] = $type;
+        // If we pass positional arguments, we need change them to named arguments.
+        if (isset($args[0])) {
+            $args = [
+                'title'        => $args[0],
+                'name'         => $args[1],
+                'default'      => $args[2] ?? null,
+                'validation'   => $args[3] ?? null,
+                'description'  => $args[4] ?? null,
+                'enum'         => $args[6] ?? null,
+            ];
+        }
 
-		return $this->factory->make(ParamDefinition::class, ...$args);
-	}
+        $args['type'] = $type;
+
+        return $this->factory->make(ParamDefinition::class, ...$args);
+    }
 }

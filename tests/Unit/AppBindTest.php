@@ -1,8 +1,6 @@
 <?php
 
 use Orkestra\AppBind;
-use \DI\create;
-use \DI\autowire;
 use DI\Container;
 use DI\Definition\Helper\CreateDefinitionHelper;
 

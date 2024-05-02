@@ -1,5 +1,12 @@
 # Orkestra PHP Framework
 
+<!-- badges area start -->
+[![Packagist Version](https://img.shields.io/packagist/v/luccpl/orkestra)](https://packagist.org/packages/luccpl/orkestra)
+[![Packagist License](https://img.shields.io/packagist/l/luccpl/orkestra)](https://github.com/Luc-cpl/orkestra/blob/main/LICENSE)
+![PHPStan badge](https://img.shields.io/badge/PHPStan-level%209-brightgreen)
+[![Coverage Status](https://coveralls.io/repos/github/Luc-cpl/orkestra/badge.svg)](https://coveralls.io/github/Luc-cpl/orkestra)
+<!-- badges area end -->
+
 Orkestra is a lightweight and highly extensible PHP framework designed to provide a flexible foundation for web development. With a focus on ease of service provider addition, extensibility, and maintaining high code quality, Orkestra empowers developers to build robust and scalable applications.
 
 ## Features

@@ -10,13 +10,13 @@ use League\Route\Strategy\StrategyAwareInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 interface RouteInterface extends
-	MiddlewareInterface,
-	MiddlewareAwareInterface,
-	RouteConditionHandlerInterface,
-	StrategyAwareInterface,
-	RouteDefinitionInterface,
-	RouteStrategyInterface
+    MiddlewareInterface,
+    MiddlewareAwareInterface,
+    RouteConditionHandlerInterface,
+    StrategyAwareInterface,
+    RouteDefinitionInterface,
+    RouteStrategyInterface
 {
-	public function getParentGroup(): ?RouteGroupInterface;
-	public function getPath(): string;
+    public function getParentGroup(): ?RouteGroupInterface;
+    public function getPath(): string;
 }

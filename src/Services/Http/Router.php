@@ -4,8 +4,6 @@ namespace Orkestra\Services\Http;
 
 use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
-use Orkestra\Services\Http\Route;
-use Orkestra\Services\Http\RouteGroup;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 
@@ -81,7 +79,11 @@ class Router extends LeagueRouter implements RouterInterface
 
     public function getRoutesByDefinitionType(string $type): array
     {
-        return array_filter($this->routes, function (Route $route) use ($type) {
+        if ($this->routesPrepared === false) {
+            $this->prepareRoutes($this->app->get(ServerRequestInterface::class));
+        }
+
+        return array_values(array_filter($this->routes, function (Route $route) use ($type) {
             $definition = $route->getDefinition();
 
             if ($definition->type() === $type) {
@@ -97,7 +99,7 @@ class Router extends LeagueRouter implements RouterInterface
             $definition = $group->getDefinition();
 
             return $definition->type() === $type;
-        });
+        }));
     }
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface

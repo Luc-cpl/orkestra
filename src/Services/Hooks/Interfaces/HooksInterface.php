@@ -13,11 +13,11 @@ interface HooksInterface
 
     /**
      * @template TKey
-	 * @param string $hook
-	 * @param TKey   $value
-	 * @param mixed  ...$args
-	 * @return TKey
-	 */
+     * @param string $hook
+     * @param TKey   $value
+     * @param mixed  ...$args
+     * @return TKey
+     */
     public function query(string $hook, mixed $value, mixed ...$args): mixed;
 
     /**

@@ -20,86 +20,99 @@ use Twig\Extension\AbstractExtension;
 
 class ViewProvider implements ProviderInterface
 {
-	/**
-	 * @var array<class-string<AbstractExtension>>
-	 */
-	protected array $defaultExtensions = [
-		MarkdownExtension::class,
-		OrkestraExtension::class,
-	];
+    /**
+     * @var array<class-string<AbstractExtension>>
+     */
+    protected array $extensions = [
+        MarkdownExtension::class,
+        OrkestraExtension::class,
+    ];
 
-	/**
-	 * @var array<class-string, class-string>
-	 */
-	protected array $runtimeInterfaces = [
-		MarkdownInterface::class => DefaultMarkdown::class,
-	];
+    /**
+     * @var array<class-string, class-string>
+     */
+    protected array $runtimeInterfaces = [
+        MarkdownInterface::class => DefaultMarkdown::class,
+    ];
 
-	/**
-	 * Register services with the container.
-	 *
-	 * @param App $app
-	 * @return void
-	 */
-	public function register(App $app): void
-	{
-		/**
-		 * Register runtime interfaces
-		 */
-		foreach ($this->runtimeInterfaces as $interface => $class) {
-			$app->bind($interface, $class);
-		}
+    /**
+     * Register services with the container.
+     *
+     * @param App $app
+     * @return void
+     */
+    public function register(App $app): void
+    {
+        $url = function () use ($app): string {
+            /** @var string */
+            $host = $app->config()->get('host');
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            return "$protocol://$host";
+        };
 
-		$app->bind(ViewInterface::class, View::class);
-		$app->bind(RuntimeLoaderInterface::class, RuntimeLoader::class);
-		$app->bind(LoaderInterface::class, FilesystemLoader::class)->constructor(
-			$app->config()->get('root') . '/views',
-		);
+        $app->config()->set('validation', [
+            'host'    => fn ($value) => !is_string($value)
+                ? 'host must be a string with the domain of the app'
+                : true,
+            'url'     => fn ($value) => !is_string($value)
+                ? 'url must be a string with the URL of the app'
+                : true,
+            'assets'  => fn ($value) => !is_string($value)
+                ? 'assets must be a string with the URL of the assets'
+                : true,
+        ]);
 
-		$app->singleton(Environment::class, function (
-			RuntimeLoaderInterface $runtimeLoader,
-			LoaderInterface        $loader,
-		) use ($app) {
-			/** @var string $root */
-			$root         = $app->config()->get('root');
-			$isProduction = $app->config()->get('env') === 'production';
+        $app->config()->set('definition', [
+            'host'   => ['The host domain of the app', fn () => $_SERVER['HTTP_HOST'] ?? 'localhost'],
+            'url'    => ['The URL of the app', $url],
+            'assets' => ['The URL of the assets', fn () => $app->config()->get('url') . '/assets'],
+        ]);
 
-			$app->hookCall('twig.loader', $loader);
+        /**
+         * Register runtime interfaces
+         */
+        foreach ($this->runtimeInterfaces as $interface => $class) {
+            $app->bind($interface, $class);
+        }
 
-			$twig = new Environment($loader, $app->hookQuery('twig.environment', [
-				'cache'       => "$root/cache/views",
-				'auto_reload' => !$isProduction,
-			]));
+        $app->bind(ViewInterface::class, View::class);
+        $app->bind(RuntimeLoaderInterface::class, RuntimeLoader::class);
+        $app->bind(LoaderInterface::class, FilesystemLoader::class)->constructor(
+            $app->config()->get('root') . '/views',
+        );
 
-			$twig->addRuntimeLoader($runtimeLoader);
+        $app->singleton(Environment::class, function (
+            RuntimeLoaderInterface $runtimeLoader,
+            LoaderInterface        $loader,
+        ) use ($app) {
+            /** @var string $root */
+            $root         = $app->config()->get('root');
+            $isProduction = $app->config()->get('env') === 'production';
 
-			/** @var class-string[] */
-			$extensions = $app->hookQuery('twig.extensions', $this->defaultExtensions);
+            $twig = new Environment($loader, [
+                'cache'       => "$root/cache/views",
+                'auto_reload' => !$isProduction,
+            ]);
 
-			/** @var AbstractExtension[] */
-			$mappedExtensions = array_map(
-				fn (string $extension) => $app->get($extension),
-				$extensions
-			);
+            $mappedExtensions = array_map(
+                fn (string $extension) => $app->get($extension),
+                $this->extensions
+            );
 
-			/**
-			 * Allow the app to register Twig extensions with hook event
-			 */
-			$twig->setExtensions($mappedExtensions);
+            $twig->addRuntimeLoader($runtimeLoader);
+            $twig->setExtensions($mappedExtensions);
 
-			$app->hookCall('twig.init', $twig);
+            return $twig;
+        });
+    }
 
-			return $twig;
-		});
-	}
-
-	/**
-	 * Here we can use the container to resolve and start services.
-	 *
-	 * @param App $app
-	 * @return void
-	 */
-	public function boot(App $app): void
-	{
-	}
+    /**
+     * Here we can use the container to resolve and start services.
+     *
+     * @param App $app
+     * @return void
+     */
+    public function boot(App $app): void
+    {
+    }
 }

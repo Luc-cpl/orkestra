@@ -3,19 +3,24 @@
     "description": "Orchestration for PHP applications",
     "type": "project",
     "license": "MIT",
-    "version": "v1.0.0-rc.1",
+    "version": "v1.0.0",
     "keywords": [
         "orkestra"
     ],
     "scripts": {
-        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/",
-        "phpstan:full": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
-        "phpunit": "vendor/bin/pest",
-        "phpunit:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
+        "pint": "vendor/bin/pint",
+        "pest": "XDEBUG_MODE=coverage vendor/bin/pest",
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2048M src/ --level 9",
+        "pest:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html=coverage"
     },
     "autoload": {
         "psr-4": {
             "Orkestra\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -32,10 +37,11 @@
     "require-dev": {
         "phpstan/phpstan": "^1.10",
         "pestphp/pest": "^2.34",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "laravel/pint": "^1.15"
     },
     "require": {
-        "php": ">=8.1",
+        "php": "^8.1",
         "php-di/php-di": "^7.0",
         "symfony/console": "^6.3",
         "symfony/process": "^6.3",
@@ -45,6 +51,7 @@
         "rakit/validation": "^1.4",
         "twig/twig": "^3.0",
         "twig/markdown-extra": "^3.7",
-        "fakerphp/faker": "^1.23"
+        "fakerphp/faker": "^1.23",
+        "larapack/dd": "^1.1"
     }
 }

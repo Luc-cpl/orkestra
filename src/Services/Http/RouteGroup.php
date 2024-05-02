@@ -3,7 +3,6 @@
 namespace Orkestra\Services\Http;
 
 use Orkestra\App;
-use Orkestra\Services\Http\Route;
 use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 use Orkestra\Services\Http\Traits\RouteStrategyTrait;

@@ -13,27 +13,27 @@ use Orkestra\Services\Http\Traits\ErrorResponseTrait;
  */
 abstract class AbstractApiController implements RouteAwareInterface
 {
-	use ErrorResponseTrait;
+    use ErrorResponseTrait;
 
-	#[Inject]
-	protected App $app;
+    #[Inject]
+    protected App $app;
 
-	protected ?RouteInterface $route = null;
+    protected ?RouteInterface $route = null;
 
-	protected int $status = 200;
+    protected int $status = 200;
 
-	/**
-	 * @return $this
-	 */
-	public function setRoute(RouteInterface $route): self
-	{
-		$this->route = $route;
-		return $this;
-	}
+    /**
+     * @return $this
+     */
+    public function setRoute(RouteInterface $route): self
+    {
+        $this->route = $route;
+        return $this;
+    }
 
-	protected function setStatus(int $status): self
-	{
-		$this->status = $status;
-		return $this;
-	}
+    protected function setStatus(int $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
 }

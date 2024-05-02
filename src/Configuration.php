@@ -8,115 +8,117 @@ use InvalidArgumentException;
 
 class Configuration implements ConfigurationInterface
 {
-	/**
-	 * @param array<string, mixed> $config
-	 */
-	public function __construct(
-		protected array $config = []
-	) {
-		// Add the default validation
-		$this->set('validation', [
-			'env'  => fn ($value) =>
-			!in_array($value, ['development', 'production'], true)
-				? 'env must be either "development" or "production"'
-				: true,
-			'root' => fn ($value) =>
-			!is_dir($value ?? '')
-				? "root \"$value\" is not a directory"
-				: true,
-			'slug' => fn ($value) =>
-			!empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
-				? "slug \"$value\" is not valid"
-				: true,
-		]);
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(
+        protected array $config = []
+    ) {
+        //
+    }
 
-		// Add the default definition
-		$this->set('definition', [
-			'env'  => [true, 'The environment the app is running in (development, production)'],
-			'root' => [true, 'The root directory of the app'],
-			'slug' => [true, 'The app slug'],
-			'host' => [false, 'The host domain of the app'],
-		]);
-	}
+    public function validate(): bool
+    {
+        /**
+         * @var array<string, array{string, mixed}> $definitions
+         */
+        $definitions = $this->get('definition');
 
-	/**
-	 * Validate the configuration
-	 *
-	 * @return boolean true if the validation passes
-	 * @throws InvalidArgumentException if the validation fails
-	 */
-	public function validate(): bool
-	{
-		/**
-		 * @var array<string, callable> $validation
-		 */
-		$validation = $this->get('validation');
-		if (!$validation) {
-			return true;
-		}
-		foreach ($validation as $key => $validator) {
-			$value = $this->get($key);
-			$valid = call_user_func($validator, $value);
-			if (!$valid || is_string($valid)) {
-				$message = "Invalid configuration for \"$key\": ";
-				$message .= is_string($valid) ? $valid : "The value does not pass the validation";
-				throw new InvalidArgumentException($message);
-			}
-		}
-		return true;
-	}
+        /**
+         * @var array<string, callable> $validation
+         */
+        $validation = $this->get('validation');
 
-	public function set(string $key, mixed $value): self
-	{
-		if ($key === 'validation') {
-			$errorMessage = 'Validation must be an array with keys as the config key and the value as a callable';
-			if (!is_array($value)) {
-				throw new InvalidArgumentException($errorMessage);
-			}
-			foreach ($value as $k => $validator) {
-				if (!is_string($k) || !is_callable($validator)) {
-					throw new InvalidArgumentException($errorMessage);
-				}
-			}
-			$current = (array) $this->get($key);
-			$value   = array_filter(array_merge($current, $value));
-		}
+        foreach ($this->config as $key => $value) {
+            if ($key === 'validation' || $key === 'definition') {
+                continue;
+            }
+            if (!isset($definitions[$key])) {
+                throw new InvalidArgumentException("Configuration key \"$key\" does not have a definition");
+            }
+            unset($definitions[$key]);
+        }
 
-		if ($key === 'definition') {
-			if (!is_array($value)) {
-				throw new InvalidArgumentException('Definition must be an array');
-			}
-			foreach ($value as $k => $v) {
-				if (!is_string($k) || !is_array($v) || count($v) !== 2) {
-					throw new InvalidArgumentException('Definition must be an array with keys as the config key and the value as an array with two elements: [required, description]');
-				}
-			}
-			$current = (array) $this->get($key);
-			$value   = array_filter(array_merge($current, $value));
-		}
+        foreach ($definitions as $key => $definition) {
+            if (!isset($definition[1]) && !isset($this->config[$key])) {
+                throw new InvalidArgumentException("Configuration key \"$key\" is required");
+            }
+        }
 
-		$this->config[$key] = $value;
-		return $this;
-	}
+        foreach ($validation as $key => $validator) {
+            $value = $this->get($key);
+            $valid = call_user_func($validator, $value);
+            if (!$valid || is_string($valid)) {
+                $message = "Invalid configuration for \"$key\": ";
+                $message .= is_string($valid) ? $valid : "The value does not pass the validation";
+                throw new InvalidArgumentException($message);
+            }
+        }
+        return true;
+    }
 
-	public function get(string $key, mixed $default = null): mixed
-	{
-		return match ($key) {
-			'url'    => $this->getURL(),
-			'assets' => $this->getURL() . '/assets',
-			default  => isset($this->config[$key]) ? $this->config[$key] : $default,
-		};
-	}
+    public function set(string $key, mixed $value): self
+    {
+        if ($key === 'validation') {
+            $errorMessage = 'Validation must be an array with keys as the config key and the value as a callable';
+            if (!is_array($value)) {
+                throw new InvalidArgumentException($errorMessage);
+            }
+            foreach ($value as $k => $validator) {
+                if (!is_string($k) || !is_callable($validator)) {
+                    throw new InvalidArgumentException($errorMessage);
+                }
+            }
+            $current = (array) $this->get($key);
+            $value   = array_filter(array_merge($current, $value));
+        }
 
-	public function has(string $key): bool
-	{
-		return (bool) $this->get($key);
-	}
+        if ($key === 'definition') {
+            if (!is_array($value)) {
+                throw new InvalidArgumentException('Definition must be an array');
+            }
+            foreach ($value as $k => $v) {
+                if (!is_string($k) || !is_array($v) || count($v) < 1 || count($v) > 2) {
+                    throw new InvalidArgumentException('Definition must be an array with keys as the config key and the value as an array <description, ?default>');
+                }
+            }
+            $current = (array) $this->get($key);
+            $value   = array_filter(array_merge($current, $value));
+        }
 
-	protected function getURL(): string
-	{
-		$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-		$host = $this->get('host') ?? $_SERVER['HTTP_HOST'];
-		return "$protocol://$host";
-	}
+        $this->config[$key] = $value;
+        return $this;
+    }
+
+    public function get(string $key): mixed
+    {
+        if ($key === 'validation' || $key === 'definition') {
+            return $this->config[$key] ?? [];
+        }
+
+        if (!isset($this->config[$key])) {
+            /** @var array<string, array{string, mixed}> */
+            $definitionStack = $this->get('definition');
+            $definition = $definitionStack[$key] ?? false;
+            if (!$definition) {
+                throw new InvalidArgumentException("Configuration key \"$key\" does not exist");
+            }
+            if (!isset($definition[1])) {
+                throw new InvalidArgumentException("Configuration key \"$key\" is required and is not set");
+            }
+            return !is_string($definition[1]) && is_callable($definition[1]) ? $definition[1]() : $definition[1];
+        }
+
+        return is_callable($this->config[$key]) ? $this->config[$key]() : $this->config[$key];
+    }
+
+    public function has(string $key): bool
+    {
+        try {
+            $this->get($key);
+            return true;
+        } catch (InvalidArgumentException) {
+            return false;
+        }
+    }
 }

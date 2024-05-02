@@ -1,0 +1,57 @@
+name: Tag version
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  coverage_badge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: '0'
+
+      - name: Generate coverage results
+        run: |
+          composer install
+          XDEBUG_MODE=coverage vendor/bin/pest --coverage-clover clover.xml
+
+      - name: Upload coverage results to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          php-coveralls --coverage_clover=clover.xml -v
+
+  tag_version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: '0'
+
+      - name: Get current version
+        id: version
+        uses: ./.github/actions/composer-package-version
+        with:
+          working-directory: .
+
+      - name: Push tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          WITH_V: ${{ steps.version.outputs.version }}

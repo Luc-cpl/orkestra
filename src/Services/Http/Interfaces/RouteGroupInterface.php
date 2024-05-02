@@ -10,12 +10,12 @@ use League\Route\RouteConditionHandlerInterface;
 use League\Route\Strategy\StrategyAwareInterface;
 
 interface RouteGroupInterface extends
-	MiddlewareAwareInterface,
-	RouteCollectionInterface,
-	RouteConditionHandlerInterface,
-	StrategyAwareInterface,
-	RouteDefinitionInterface,
-	RouteStrategyInterface
+    MiddlewareAwareInterface,
+    RouteCollectionInterface,
+    RouteConditionHandlerInterface,
+    StrategyAwareInterface,
+    RouteDefinitionInterface,
+    RouteStrategyInterface
 {
-	public function getPrefix(): string;
+    public function getPrefix(): string;
 }

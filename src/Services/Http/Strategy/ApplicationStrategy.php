@@ -13,64 +13,75 @@ use Throwable;
 
 class ApplicationStrategy extends AbstractStrategy implements ContainerAwareInterface
 {
-	use ContainerAwareTrait;
+    use ContainerAwareTrait;
 
-	public function __construct(
-		protected App $app
-	) {
-	}
+    public function __construct(
+        protected App $app
+    ) {
+    }
 
-	public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception): MiddlewareInterface
-	{
-		return $this->throwThrowableMiddleware($exception);
-	}
+    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception): MiddlewareInterface
+    {
+        return $this->throwThrowableMiddleware($exception);
+    }
 
-	public function getNotFoundDecorator(NotFoundException $exception): MiddlewareInterface
-	{
-		return $this->throwThrowableMiddleware($exception);
-	}
+    public function getNotFoundDecorator(NotFoundException $exception): MiddlewareInterface
+    {
+        return $this->throwThrowableMiddleware($exception);
+    }
 
-	public function getThrowableHandler(): MiddlewareInterface
-	{
-		return new class implements MiddlewareInterface
-		{
-			public function process(
-				ServerRequestInterface $request,
-				RequestHandlerInterface $handler
-			): ResponseInterface {
-				try {
-					return $handler->handle($request);
-				} catch (Throwable $e) {
-					throw $e;
-				}
-			}
-		};
-	}
+    public function getThrowableHandler(): MiddlewareInterface
+    {
+        return new class () implements MiddlewareInterface {
+            public function process(
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler
+            ): ResponseInterface {
+                try {
+                    return $handler->handle($request);
+                } catch (Throwable $e) {
+                    throw $e;
+                }
+            }
+        };
+    }
 
-	public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
-	{
-		$controller = $route->getCallable($this->getContainer());
-		$response = $controller($request, $route->getVars());
-		return $this->decorateResponse($response);
-	}
+    public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
+    {
+        $controller = $route->getCallable($this->getContainer());
+        $response = $controller($request, $route->getVars());
 
-	protected function throwThrowableMiddleware(Throwable $error): MiddlewareInterface
-	{
-		return new class($error) implements MiddlewareInterface
-		{
-			protected Throwable $error;
+        if (!$response instanceof ResponseInterface) {
+            if (!is_string($response)) {
+                $this->addResponseDecorator(static function (ResponseInterface $response): ResponseInterface {
+                    return $response->withHeader('content-type', 'application/json');
+                });
+            }
+            /** @var string */
+            $str = is_string($response) ? $response : json_encode($response);
+            $response = $this->app->get(ResponseInterface::class);
+            $response->getBody()->write($str);
+        }
 
-			public function __construct(Throwable $error)
-			{
-				$this->error = $error;
-			}
+        return $this->decorateResponse($response);
+    }
 
-			public function process(
-				ServerRequestInterface $request,
-				RequestHandlerInterface $handler
-			): ResponseInterface {
-				throw $this->error;
-			}
-		};
-	}
+    protected function throwThrowableMiddleware(Throwable $error): MiddlewareInterface
+    {
+        return new class ($error) implements MiddlewareInterface {
+            protected Throwable $error;
+
+            public function __construct(Throwable $error)
+            {
+                $this->error = $error;
+            }
+
+            public function process(
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler
+            ): ResponseInterface {
+                throw $this->error;
+            }
+        };
+    }
 }

@@ -3,15 +3,15 @@
 namespace Orkestra\Commands;
 
 use Orkestra\Interfaces\ConfigurationInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'app:config:list')]
 class ConfigOptionsCommand extends Command
 {
-    protected static $defaultName = 'app:config:options';
-
     public function __construct(
         private ConfigurationInterface $config
     ) {
@@ -30,13 +30,13 @@ class ConfigOptionsCommand extends Command
         $output->writeln('Available configuration options:');
         $output->writeln('');
 
-        /** @var array<string, array{bool, string}> */
+        /** @var array<string, array{string, mixed}> */
         $definition = $this->config->get('definition');
 
         $definition = array_map(function ($value, $key) {
-            return [$key, $value[0] ? 'Yes' : 'No', $value[1]];
+            return [$key, isset($value[1]) ? 'Yes' : 'No', $value[0]];
         }, $definition, array_keys($definition));
-        
+
         // Create a table to display the configuration options, with key, required, and description columns
         $table = new Table($output);
         $table
