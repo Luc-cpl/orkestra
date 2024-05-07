@@ -2,8 +2,8 @@
 
 namespace Orkestra\Services\Http\Commands;
 
-use Orkestra\Interfaces\AppContainerInterface;
 use Orkestra\Interfaces\ConfigurationInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -15,7 +15,7 @@ class MiddlewareListCommand extends Command
 {
     public function __construct(
         private ConfigurationInterface $config,
-        private AppContainerInterface $container,
+        private ContainerInterface $container,
     ) {
         parent::__construct();
     }
