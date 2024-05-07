@@ -2,6 +2,7 @@
 
 namespace Orkestra\Services\Http\Commands;
 
+use Orkestra\Interfaces\AppContainerInterface;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -13,7 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MiddlewareListCommand extends Command
 {
     public function __construct(
-        private ConfigurationInterface $config
+        private ConfigurationInterface $config,
+        private AppContainerInterface $container,
     ) {
         parent::__construct();
     }
@@ -33,7 +35,7 @@ class MiddlewareListCommand extends Command
         /** @var array<string, string> */
         $middlewareStack = $this->config->get('middleware');
         /** @var array<string, string> */
-        $middlewareSources = $this->config->get('middleware_sources');
+        $middlewareSources = $this->container->get('middleware.sources');
 
         $definition = array_map(function ($middleware, $alias) use ($middlewareSources) {
             return [$alias, $middleware, $middlewareSources[$alias] ?? ''];
