@@ -38,7 +38,7 @@ abstract class AbstractTestCase extends BaseTestCase
 
         // Register a new application in each test
         $container->add(App::class, $app);
-        $container->add(EntityFactory::class, $app->get(EntityFactory::class, ['useFaker' => true]));
+        $container->add(EntityFactory::class, $app->make(EntityFactory::class, ['useFaker' => true]));
     }
 
     /**

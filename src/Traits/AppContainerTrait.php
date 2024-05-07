@@ -18,11 +18,6 @@ trait AppContainerTrait
     private Container $container;
 
     /**
-     * @var array<string, bool>
-     */
-    private array $singletons = [];
-
-    /**
      * @var class-string[]
      */
     private array $providers = [];
@@ -45,7 +40,7 @@ trait AppContainerTrait
             throw new InvalidArgumentException("Provider \"$class\" must implement \"$interface\"");
         }
         $this->providers[] = $class;
-        $this->singleton($class, $class, false);
+        $this->bind($class, $class, false);
 
         /** @var ProviderInterface $instance */
         $instance = $this->get($class);
@@ -63,23 +58,22 @@ trait AppContainerTrait
         return new AppBind($this->container, $name, $service, $useAutowire);
     }
 
-    public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
+    /**
+     * @template T of object
+     * @return T
+     */
+    public function get(string $name): mixed
     {
-        $bind = $this->bind($name, $service, $useAutowire);
-        $this->singletons[$name] = true;
-        return $bind;
+        /** @var T */
+        return $this->container->get($name);
     }
 
     /**
      * @template T of object
      * @return T
      */
-    public function get(string $name, array $params = []): mixed
+    public function make(string $name, array $params = []): mixed
     {
-        if (isset($this->singletons[$name])) {
-            /** @var T */
-            return $this->container->get($name);
-        }
         /** @var T */
         return $this->container->make($name, $params);
     }

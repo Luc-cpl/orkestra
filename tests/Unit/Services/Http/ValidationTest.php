@@ -27,7 +27,7 @@ test('can add a route definition with validation and default value', function ()
 
 test('can add a route definition class with validation', function () {
     $definition = Mockery::mock(DefinitionInterface::class);
-    app()->singleton($definition::class, function () use ($definition) {
+    app()->bind($definition::class, function () use ($definition) {
         $factory = app()->get(ParamDefinitionFactory::class);
         $definition->shouldReceive('params')->andReturn([
             $factory->String(
@@ -46,7 +46,7 @@ test('can add a route definition class with validation', function () {
 
 test('can add inner parameters as array', function () {
     $definition = Mockery::mock(DefinitionInterface::class);
-    app()->singleton($definition::class, function () use ($definition) {
+    app()->bind($definition::class, function () use ($definition) {
         $factory = app()->get(ParamDefinitionFactory::class);
         $definition->shouldReceive('params')->andReturn([
             $factory->Array(
@@ -76,7 +76,7 @@ test('can add inner parameters as array', function () {
 
 test('can validate a request with a route definition', function () {
     $definition = Mockery::mock(DefinitionInterface::class);
-    app()->singleton($definition::class, function () use ($definition) {
+    app()->bind($definition::class, function () use ($definition) {
         $factory = app()->get(ParamDefinitionFactory::class);
         $definition->shouldReceive('params')->andReturn([
             $factory->String(
@@ -102,7 +102,7 @@ test('can validate a request with a route definition', function () {
 
 test('can validate a request with inner parameters', function () {
     $definition = Mockery::mock(DefinitionInterface::class);
-    app()->singleton($definition::class, function () use ($definition) {
+    app()->bind($definition::class, function () use ($definition) {
         $factory = app()->get(ParamDefinitionFactory::class);
         $definition->shouldReceive('params')->andReturn([
             $factory->Array(

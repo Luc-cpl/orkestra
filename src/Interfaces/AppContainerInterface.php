@@ -39,27 +39,23 @@ interface AppContainerInterface extends ContainerInterface
     public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind;
 
     /**
-     * Add a service to the container as a singleton
+     * Returns an entry of the container by its name.
      *
-     * @param string $name
-     * @param mixed  $service
-     * @param bool   $useAutowire
-     * @return AppBind A bind instance that allows manage the service constructor and properties
-     * @throws InvalidArgumentException If the class specified in $service does not exist
+     * @template T of object
+     * @param class-string<T> $name   Entry name or a class name.
+     * @return T
      */
-    public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind;
+    public function get(string $name): mixed;
 
     /**
-     * Returns an entry of the container by its name.
-     * If the entry is a singleton, it will return the same instance,
-     * otherwise, it will create a new instance.
+     * Resolves the given entry from the container.
      *
      * @template T of object
      * @param class-string<T> $name   Entry name or a class name.
      * @param mixed[]         $params Optional parameters to use to build the entry.
      * @return T
      */
-    public function get(string $name, array $params = []): mixed;
+    public function make(string $name, array $params = []): mixed;
 
     /**
      * Call the given function using the given parameters.

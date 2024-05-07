@@ -35,9 +35,9 @@ test('can not get from container with non existent key', function () {
     $this->app->get('nonExistentKey');
 });
 
-test('can get from container with constructor parameters', function () {
+test('can make from container with constructor parameters', function () {
     $this->app->bind('test', fn ($param) => $param);
-    expect($this->app->get('test', ['param' => 'testValue']))->toEqual('testValue');
+    expect($this->app->make('test', ['param' => 'testValue']))->toEqual('testValue');
 });
 
 test('can register a provider', function () {
@@ -86,7 +86,8 @@ test('can bind a class in container by name', function () {
     expect($this->app->get('testClassString'))->toBeInstanceOf(get_class($class));
     $instance = $this->app->get('testClassString');
     $instance->value = 'testValue2';
-    $this->assertNotEquals($instance, $this->app->get('testClassString'));
+    $this->assertEquals($instance, $this->app->get('testClassString'));
+    $this->assertNotEquals($instance, $this->app->make('testClassString'));
 });
 
 test('can bind a class instance in container', function () {
@@ -96,18 +97,6 @@ test('can bind a class instance in container', function () {
     $this->app->bind('testClass', $class);
     expect($this->app->get('testClass'))->toBeInstanceOf(get_class($class));
     expect($this->app->get('testClass'))->toEqual($class);
-});
-
-test('can instantiate a singleton in the container', function () {
-    $class = new class () {
-        public string $value;
-    };
-
-    $this->app->singleton('testClassString', $class::class);
-    expect($this->app->get('testClassString'))->toBeInstanceOf(get_class($class));
-    $instance = $this->app->get('testClassString');
-    $instance->value = 'testValue2';
-    expect($this->app->get('testClassString'))->toEqual($instance);
 });
 
 test('can run if available with existing class', function () {

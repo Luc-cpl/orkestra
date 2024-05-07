@@ -47,7 +47,7 @@ test('can make a new entity', function () {
 
 test('can make a new entity with faker', function () {
     $app = app();
-    $factory = $app->get(EntityFactory::class, ['useFaker' => true]);
+    $factory = $app->make(EntityFactory::class, ['useFaker' => true]);
     $entity = $factory->make(EntityTest::class);
     expect($entity)->toBeInstanceOf(EntityTest::class);
     expect($entity->name)->toBeString();
