@@ -172,3 +172,61 @@ test('can boot all existing providers', function () {
      */
     expect(true)->toBeTrue();
 });
+
+test('can decorate a service', function () {
+    $mock = Mockery::mock();
+    $mock->shouldReceive('test')->andReturn('testValue');
+    
+    $mock2 = Mockery::mock();
+    $mock2->shouldReceive('test')->andReturn('testValueDecorated');
+
+    $mock3 = Mockery::mock();
+    $mock3->shouldReceive('test')->andReturn('testValueDecoratedDecorated');
+
+    $callbackMock = Mockery::mock();
+    $callbackMock->shouldReceive('run')->once()->andReturn($mock2);
+
+    $this->app->bind($mock::class, fn () => $mock);
+    $this->app->decorate($mock::class, fn ($service) => $callbackMock->run());
+    $this->app->decorate($mock::class, fn ($service) => $mock3);
+    expect($this->app->get($mock::class)->test())->toEqual('testValueDecoratedDecorated');
+});
+
+test('can decorate a service before add to container', function () {
+    $class = new class () {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+    
+    $mock2 = Mockery::mock();
+    $mock2->shouldReceive('test')->andReturn('testValueDecorated');
+
+    $this->app->decorate($class::class, fn ($service) => $mock2);
+    $this->app->bind($class::class, fn () => $class);
+    expect($this->app->get($class::class)->test())->toEqual('testValueDecorated');
+});
+
+test('can decorate a service without bind the class', function () {
+    $class = new class () {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+    $mock2 = Mockery::mock();
+    $mock2->shouldReceive('test')->andReturn('testValueDecorated');
+
+    $this->app->decorate($class::class, fn ($service) => $mock2);
+    expect($this->app->get($class::class)->test())->toEqual('testValueDecorated');
+});
+
+test('can not decorate a service after booting', function () {
+    $this->app->boot();
+    $this->app->decorate(Mockery::mock()::class, fn ($service) => 'testValueDecorated');
+})->throws(BadMethodCallException::class);
+
+test('can not decorate a service with non existent class', function () {
+    $this->app->decorate('nonExistentClass', fn ($service) => 'testValueDecorated');
+})->throws(InvalidArgumentException::class);

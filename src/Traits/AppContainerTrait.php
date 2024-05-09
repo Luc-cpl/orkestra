@@ -7,7 +7,11 @@ use Orkestra\AppBind;
 use Orkestra\Interfaces\ProviderInterface;
 use DI\Container;
 use DI\ContainerBuilder;
+use DI\Definition\Helper\DefinitionHelper;
 use InvalidArgumentException;
+use BadMethodCallException;
+
+use function DI\decorate;
 
 /**
  * Implement dependency injection functionality for the application.
@@ -26,6 +30,11 @@ trait AppContainerTrait
      * @var class-string[]
      */
     private array $providers = [];
+
+    /**
+     * @var array<string, callable[]>
+     */
+    private array $decorators = [];
 
     protected function initContainer(): void
     {
@@ -60,7 +69,11 @@ trait AppContainerTrait
 
     public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind
     {
-        return new AppBind($this->container, $name, $service, $useAutowire);
+        $bind = new AppBind($this->container, $name, $service, $useAutowire);
+        if ($this->decorators[$name] ?? false) {
+            $this->container->set($name, $this->addContainerDecorator($name));
+        }
+        return $bind;
     }
 
     public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
@@ -94,15 +107,34 @@ trait AppContainerTrait
         return $this->container->has($name);
     }
 
-    /**
-     * Run a callback if the service is available
-     *
-     * @param class-string $name
-     * @param callable     $callback
-     * @return mixed
-     */
+    public function decorate(string $name, callable $decorator): void
+    {
+        if ($this->has('booted')) {
+            throw new BadMethodCallException('Cannot decorate services after the application has been booted');
+        }
+
+        if (!class_exists($name)) {
+            throw new InvalidArgumentException('Cannot decorate non-existent class: ' . $name);
+        }
+
+        $this->decorators[$name] ??= [];
+        $this->decorators[$name][] = $decorator;
+        $this->container->set($name, $this->addContainerDecorator($name));
+    }
+
     public function runIfAvailable(string $name, callable $callback): mixed
     {
         return $this->has($name) ? $callback($this->get($name)) : null;
+    }
+
+    private function addContainerDecorator(string $name): DefinitionHelper
+    {
+        $decorators = $this->decorators[$name] ?? [];
+        return decorate(function ($instance) use ($decorators) {
+            foreach ($decorators as $decorator) {
+                $instance = $this->call($decorator, [$instance]);
+            }
+            return $instance;
+        });
     }
 }
