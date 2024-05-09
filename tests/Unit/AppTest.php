@@ -176,7 +176,7 @@ test('can boot all existing providers', function () {
 test('can decorate a service', function () {
     $mock = Mockery::mock();
     $mock->shouldReceive('test')->andReturn('testValue');
-    
+
     $mock2 = Mockery::mock();
     $mock2->shouldReceive('test')->andReturn('testValueDecorated');
 
@@ -199,7 +199,7 @@ test('can decorate a service before add to container', function () {
             return 'testValue';
         }
     };
-    
+
     $mock2 = Mockery::mock();
     $mock2->shouldReceive('test')->andReturn('testValueDecorated');
 

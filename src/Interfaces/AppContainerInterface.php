@@ -56,7 +56,7 @@ interface AppContainerInterface extends ContainerInterface
      * The $decorator function should receive the original service as the
      * first argument and return the new service.
      * You can resolve other services in the container using other arguments.
-     * 
+     *
      * Example:
      * $container->decorate(Service::class, function (Service $service, OtherService $otherService) {
      *    return new ServiceDecorator($service, $otherService);
