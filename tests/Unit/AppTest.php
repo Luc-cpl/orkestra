@@ -212,7 +212,8 @@ test('can decorate a service before add to container', function () {
 });
 
 test('can decorate a bind interface', function () {
-    interface TestInterface {
+    interface TestInterface
+    {
         public function test();
     }
 
