@@ -26,18 +26,18 @@ test('can get configuration', function () {
 });
 
 test('can get from container', function () {
-    $this->app->bind('test', fn () => 'testValue');
-    expect($this->app->get('test'))->toEqual('testValue');
+    app()->bind('test', fn () => 'testValue');
+    expect(app()->get('test'))->toEqual('testValue');
 });
 
 test('can not get from container with non existent key', function () {
     $this->expectException(NotFoundExceptionInterface::class);
-    $this->app->get('nonExistentKey');
+    app()->get('nonExistentKey');
 });
 
 test('can get from container with constructor parameters', function () {
-    $this->app->bind('test', fn ($param) => $param);
-    expect($this->app->get('test', ['param' => 'testValue']))->toEqual('testValue');
+    app()->bind('test', fn ($param) => $param);
+    expect(app()->get('test', ['param' => 'testValue']))->toEqual('testValue');
 });
 
 test('can register a provider', function () {
@@ -51,6 +51,7 @@ test('can register a provider', function () {
         }
     };
     $this->app->provider($providerClass::class);
+    $this->app->boot();
     $provider = $this->app->get($providerClass::class);
     $provider->test = 'testValue';
     expect($this->app->get($providerClass::class))->toEqual($provider);
@@ -67,14 +68,13 @@ test('can not register a provider with non provider class', function () {
 })->throws(InvalidArgumentException::class);
 
 test('can not bind a value in container', function () {
-    $value = 'testValue';
-    $this->app->bind('test', $value);
+    app()->bind('test', 'testValue');
 })->throws(InvalidArgumentException::class);
 
 test('can bind a closure in container', function () {
     $callback = fn () => 'testValue';
-    $this->app->bind('test', $callback);
-    expect($this->app->get('test'))->toEqual('testValue');
+    app()->bind('test', $callback);
+    expect(app()->get('test'))->toEqual('testValue');
 });
 
 test('can bind a class in container by name', function () {
@@ -82,20 +82,20 @@ test('can bind a class in container by name', function () {
         public string $value;
     };
 
-    $this->app->bind('testClassString', $class::class);
-    expect($this->app->get('testClassString'))->toBeInstanceOf(get_class($class));
-    $instance = $this->app->get('testClassString');
+    app()->bind('testClassString', $class::class);
+    expect(app()->get('testClassString'))->toBeInstanceOf(get_class($class));
+    $instance = app()->get('testClassString');
     $instance->value = 'testValue2';
-    $this->assertNotEquals($instance, $this->app->get('testClassString'));
+    $this->assertNotEquals($instance, app()->get('testClassString'));
 });
 
 test('can bind a class instance in container', function () {
     $class = new class () {
     };
 
-    $this->app->bind('testClass', $class);
-    expect($this->app->get('testClass'))->toBeInstanceOf(get_class($class));
-    expect($this->app->get('testClass'))->toEqual($class);
+    app()->bind('testClass', $class);
+    expect(app()->get('testClass'))->toBeInstanceOf(get_class($class));
+    expect(app()->get('testClass'))->toEqual($class);
 });
 
 test('can instantiate a singleton in the container', function () {
@@ -103,36 +103,33 @@ test('can instantiate a singleton in the container', function () {
         public string $value;
     };
 
-    $this->app->singleton('testClassString', $class::class);
-    expect($this->app->get('testClassString'))->toBeInstanceOf(get_class($class));
-    $instance = $this->app->get('testClassString');
+    app()->singleton('testClassString', $class::class);
+    expect(app()->get('testClassString'))->toBeInstanceOf(get_class($class));
+    $instance = app()->get('testClassString');
     $instance->value = 'testValue2';
-    expect($this->app->get('testClassString'))->toEqual($instance);
+    expect(app()->get('testClassString'))->toEqual($instance);
 });
 
 test('can run if available with existing class', function () {
     $class = new class () {
     };
-    $value = $this->app->runIfAvailable($class::class, fn ($instance) => $instance);
+    $value = app()->runIfAvailable($class::class, fn ($instance) => $instance);
     expect($value)->toBeInstanceOf(get_class($class));
 });
 
 test('can not run if available with non existent class', function () {
-    $value = $this->app->runIfAvailable('notExistClass', fn () => 'testValue');
+    $value = app()->runIfAvailable('notExistClass', fn () => 'testValue');
     expect($value)->toBeNull();
 });
 
 test('can check if container has service', function () {
-    expect($this->app->has('test'))->toBeFalse();
-    $this->app->bind('test', fn () => 'testValue');
-    expect($this->app->has('test'))->toBeTrue();
+    expect(app()->has('test'))->toBeFalse();
+    app()->bind('test', fn () => 'testValue');
+    expect(app()->has('test'))->toBeTrue();
 });
 
 test('can throw exception when booting twice', function () {
-    $this->config->set('env', 'development');
-    $this->config->set('root', './');
-    $this->app->boot();
-    $this->app->boot();
+    app()->boot();
 })->throws(Exception::class);
 
 test('can boot', function () {
@@ -147,11 +144,11 @@ test('can boot', function () {
         }
     };
     $this->app->provider($providerClass::class);
-    $provider = $this->app->get($providerClass::class);
-    expect($provider->test)->toEqual(null);
     $this->config->set('env', 'development');
     $this->config->set('root', './');
     $this->app->boot();
+
+    $provider = $this->app->get($providerClass::class);
     expect($provider->test)->toEqual('testValue');
 });
 
@@ -173,6 +170,10 @@ test('can boot all existing providers', function () {
     expect(true)->toBeTrue();
 });
 
+test('can not get a service from container before booting', function () {
+    $this->app->get('test');
+})->throws(BadMethodCallException::class);
+
 test('can decorate a service', function () {
     $mock = Mockery::mock();
     $mock->shouldReceive('test')->andReturn('testValue');
@@ -189,6 +190,7 @@ test('can decorate a service', function () {
     $this->app->bind($mock::class, fn () => $mock);
     $this->app->decorate($mock::class, fn ($service) => $callbackMock->run());
     $this->app->decorate($mock::class, fn ($service) => $mock3);
+    $this->app->boot();
     expect($this->app->get($mock::class)->test())->toEqual('testValueDecoratedDecorated');
 });
 
@@ -205,7 +207,33 @@ test('can decorate a service before add to container', function () {
 
     $this->app->decorate($class::class, fn ($service) => $mock2);
     $this->app->bind($class::class, fn () => $class);
+    $this->app->boot();
     expect($this->app->get($class::class)->test())->toEqual('testValueDecorated');
+});
+
+test('can decorate a bind interface', function () {
+    interface TestInterface {
+        public function test();
+    }
+
+    $class = new class () implements TestInterface {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+
+    $class2 = new class () implements TestInterface {
+        public function test()
+        {
+            return 'testValueDecorated';
+        }
+    };
+
+    $this->app->bind(TestInterface::class, $class::class);
+    $this->app->decorate(TestInterface::class, fn ($service) => $class2);
+    $this->app->boot();
+    expect($this->app->get(TestInterface::class)->test())->toEqual('testValueDecorated');
 });
 
 test('can decorate a service without bind the class', function () {
@@ -219,14 +247,18 @@ test('can decorate a service without bind the class', function () {
     $mock2->shouldReceive('test')->andReturn('testValueDecorated');
 
     $this->app->decorate($class::class, fn ($service) => $mock2);
+    $this->app->boot();
     expect($this->app->get($class::class)->test())->toEqual('testValueDecorated');
 });
 
 test('can not decorate a service after booting', function () {
     $this->app->boot();
-    $this->app->decorate(Mockery::mock()::class, fn ($service) => 'testValueDecorated');
-})->throws(BadMethodCallException::class);
+    $this->app->decorate('test', fn ($service) => $service);
+})->throws(Exception::class);
 
-test('can not decorate a service with non existent class', function () {
-    $this->app->decorate('nonExistentClass', fn ($service) => 'testValueDecorated');
-})->throws(InvalidArgumentException::class);
+test('can decorate a value in container', function () {
+    $this->app->bind('test', fn () => 'testValue');
+    $this->app->decorate('test', fn ($value) => $value . 'Decorated');
+    $this->app->boot();
+    expect($this->app->get('test'))->toEqual('testValueDecorated');
+});

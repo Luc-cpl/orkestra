@@ -21,6 +21,10 @@ trait AppContainerTrait
 {
     private Container $container;
 
+    private ContainerBuilder $builder;
+
+    private bool $booted = false;
+
     /**
      * @var array<string, bool>
      */
@@ -36,16 +40,48 @@ trait AppContainerTrait
      */
     private array $decorators = [];
 
+    /**
+     * @var array<string, callable[]>
+     */
+    private array $rootDecorators = [];
+
+    /**
+     * @var array<string, AppBind>
+     */
+    private array $binds = [];
+
+    protected function bootGate(bool $booted = false): void
+    {
+        if ($booted && !$this->booted) {
+            throw new BadMethodCallException('Application has not been booted');
+        }
+        if (!$booted && $this->booted) {
+            throw new BadMethodCallException('Application has already been booted');
+        }
+    }
+
+    protected function bootContainer(): void
+    {
+        $this->bootGate();
+        $bindDefinitions = array_map(fn (AppBind $bind) => $bind->service, $this->binds);
+        $this->builder->addDefinitions($bindDefinitions);
+        $this->builder->addDefinitions($this->rootDecorators);
+
+        $this->container = $this->builder->build();
+        $this->booted = true;
+    }
+
     protected function initContainer(): void
     {
-        $containerBuilder = new ContainerBuilder();
-        $containerBuilder->useAutowiring(true);
-        $containerBuilder->useAttributes(true);
-        $this->container = $containerBuilder->build();
+        $this->bootGate();
+        $this->builder = new ContainerBuilder();
+        $this->builder->useAutowiring(true);
+        $this->builder->useAttributes(true);
     }
 
     public function provider(string $class): void
     {
+        $this->bootGate();
         $interface = ProviderInterface::class;
         if (!class_exists($class)) {
             throw new InvalidArgumentException("Provider \"$class\" does not exist");
@@ -53,12 +89,12 @@ trait AppContainerTrait
         if (!in_array($interface, class_implements($class), true)) {
             throw new InvalidArgumentException("Provider \"$class\" must implement \"$interface\"");
         }
-        $this->providers[] = $class;
-        $this->singleton($class, $class, false);
-
-        /** @var ProviderInterface $instance */
-        $instance = $this->get($class);
+        /** @var ProviderInterface */
+        $instance = new $class();
         $instance->register($this);
+
+        $this->providers[] = $class;
+        $this->singleton($class, $instance, false);
         return;
     }
 
@@ -69,10 +105,17 @@ trait AppContainerTrait
 
     public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind
     {
-        $bind = new AppBind($this->container, $name, $service, $useAutowire);
-        if ($this->decorators[$name] ?? false) {
-            $this->container->set($name, $this->addContainerDecorator($name));
+        $bind = new AppBind(
+            container: $this->container ?? null,
+            name: $name,
+            service: $service,
+            autowire: $useAutowire
+        );
+
+        if (!$this->booted) {
+            $this->binds[$name] = $bind;
         }
+
         return $bind;
     }
 
@@ -89,6 +132,7 @@ trait AppContainerTrait
      */
     public function get(string $name, array $params = []): mixed
     {
+        $this->bootGate(true);
         if (isset($this->singletons[$name])) {
             /** @var T */
             return $this->container->get($name);
@@ -99,27 +143,25 @@ trait AppContainerTrait
 
     public function call($callable, array $params = []): mixed
     {
+        $this->bootGate(true);
         return $this->container->call($callable, $params);
     }
 
     public function has(string $name): bool
     {
+        $this->bootGate(true);
         return $this->container->has($name);
     }
 
     public function decorate(string $name, callable $decorator): void
     {
-        if ($this->has('booted')) {
-            throw new BadMethodCallException('Cannot decorate services after the application has been booted');
-        }
-
-        if (!class_exists($name)) {
-            throw new InvalidArgumentException('Cannot decorate non-existent class: ' . $name);
-        }
+        $this->bootGate();
 
         $this->decorators[$name] ??= [];
         $this->decorators[$name][] = $decorator;
-        $this->container->set($name, $this->addContainerDecorator($name));
+        if (count($this->decorators[$name]) === 1) {
+            $this->rootDecorators[$name] = $this->addContainerDecorator($name);
+        }
     }
 
     public function runIfAvailable(string $name, callable $callback): mixed
@@ -129,8 +171,8 @@ trait AppContainerTrait
 
     private function addContainerDecorator(string $name): DefinitionHelper
     {
-        $decorators = $this->decorators[$name] ?? [];
-        return decorate(function ($instance) use ($decorators) {
+        return decorate(function ($instance) use ($name) {
+            $decorators = $this->decorators[$name] ?? [];
             foreach ($decorators as $decorator) {
                 $instance = $this->call($decorator, [$instance]);
             }
