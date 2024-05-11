@@ -10,9 +10,9 @@ use DI;
 use InvalidArgumentException;
 
 /**
- * @param readonly string $name
- * @param readonly mixed $service
- * @param readonly bool $autowire
+ * @property-read string $name
+ * @property-read mixed $service
+ * @property-read bool $autowire
  */
 class AppBind extends AbstractEntity
 {

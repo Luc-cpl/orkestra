@@ -19,11 +19,14 @@ use function DI\decorate;
  */
 trait AppContainerTrait
 {
+    private bool $booted = false;
+
     private Container $container;
 
+    /** 
+     * @var ContainerBuilder<Container> 
+     */
     private ContainerBuilder $builder;
-
-    private bool $booted = false;
 
     /**
      * @var array<string, bool>
@@ -41,7 +44,7 @@ trait AppContainerTrait
     private array $decorators = [];
 
     /**
-     * @var array<string, callable[]>
+     * @var array<string, DefinitionHelper>
      */
     private array $rootDecorators = [];
 
