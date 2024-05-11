@@ -122,12 +122,7 @@ class HttpProvider implements ProviderInterface
             }
         }
 
-        $app->config()->set('definition', [
-            'middleware_sources' => [
-                'Middleware stack sources',
-                $middlewareSources,
-            ],
-        ]);
+        $app->bind('middleware.sources', fn () => $middlewareSources);
 
         $app->config()->set('middleware', $middlewareStack);
 

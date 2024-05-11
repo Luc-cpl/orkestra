@@ -48,7 +48,7 @@ class App implements AppHooksInterface, AppContainerInterface
         ]);
 
         $this->config->set('definition', [
-            'env'  => ['The environment the app is running in (development, production)', 'development'],
+            'env'  => ['The environment the app is running in (development, production or testing)', 'development'],
             'root' => ['The root directory of the app', getcwd()],
             'slug' => ['The app slug', 'app'],
         ]);
