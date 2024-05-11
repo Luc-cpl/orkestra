@@ -23,8 +23,8 @@ trait AppContainerTrait
 
     private Container $container;
 
-    /** 
-     * @var ContainerBuilder<Container> 
+    /**
+     * @var ContainerBuilder<Container>
      */
     private ContainerBuilder $builder;
 
