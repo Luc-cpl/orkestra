@@ -81,7 +81,7 @@ class ViewProvider implements ProviderInterface
             $app->config()->get('root') . '/views',
         );
 
-        $app->singleton(Environment::class, function (
+        $app->bind(Environment::class, function (
             RuntimeLoaderInterface $runtimeLoader,
             LoaderInterface        $loader,
         ) use ($app) {

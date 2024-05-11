@@ -29,11 +29,6 @@ trait AppContainerTrait
     private ContainerBuilder $builder;
 
     /**
-     * @var array<string, bool>
-     */
-    private array $singletons = [];
-
-    /**
      * @var class-string[]
      */
     private array $providers = [];
@@ -97,7 +92,7 @@ trait AppContainerTrait
         $instance->register($this);
 
         $this->providers[] = $class;
-        $this->singleton($class, $instance, false);
+        $this->bind($class, $instance);
         return;
     }
 
@@ -122,24 +117,33 @@ trait AppContainerTrait
         return $bind;
     }
 
+    /**
+     * @deprecated 1.1.0 Use bind instead
+     */
     public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
     {
-        $bind = $this->bind($name, $service, $useAutowire);
-        $this->singletons[$name] = true;
-        return $bind;
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        return $this->bind($name, $service, $useAutowire);
     }
 
     /**
      * @template T of object
      * @return T
      */
-    public function get(string $name, array $params = []): mixed
+    public function get(string $name): mixed
     {
         $this->bootGate(true);
-        if (isset($this->singletons[$name])) {
-            /** @var T */
-            return $this->container->get($name);
-        }
+        /** @var T */
+        return $this->container->get($name);
+    }
+
+    /**
+     * @template T of object
+     * @return T
+     */
+    public function make(string $name, array $params = []): mixed
+    {
+        $this->bootGate(true);
         /** @var T */
         return $this->container->make($name, $params);
     }

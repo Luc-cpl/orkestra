@@ -65,7 +65,7 @@ abstract class AbstractTestCase extends BaseTestCase
         $app = $container->get(App::class);
         $app->boot();
 
-        $container->add(EntityFactory::class, $app->get(EntityFactory::class, ['useFaker' => true]));
+        $container->add(EntityFactory::class, $app->make(EntityFactory::class, ['useFaker' => true]));
         parent::assertPreConditions();
     }
 }

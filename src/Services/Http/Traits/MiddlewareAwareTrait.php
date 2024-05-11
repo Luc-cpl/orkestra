@@ -90,7 +90,7 @@ trait MiddlewareAwareTrait
         // If the middleware is an array we should resolve from App instance
         if (is_array($middleware) && $this->app->has($middleware[0])) {
             // @phpstan-ignore-next-line
-            $middleware = $this->app->get(...$middleware);
+            $middleware = $this->app->make(...$middleware);
         }
 
         if ($middleware instanceof MiddlewareInterface) {
