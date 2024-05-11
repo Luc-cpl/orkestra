@@ -15,3 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Modified `Orkestra\AppContainerTrait` to built the container during the application boot process.
+
+## [1.0.1] - 2024-05-11
+
+### Changed
+
+- Binds the `middleware.sources` in container instead of add a new configuration definition.
+- Updates `env` configuration definition to specify `testing` as a valid value.
+
+### Fixed
+
+- Makes the `app:config:list` command to show the correct required values.
