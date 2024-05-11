@@ -59,6 +59,15 @@ trait AppContainerTrait
     }
 
     /**
+     * @deprecated 1.1.0 Use bind instead
+     */
+    public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind
+    {
+        trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+        return $this->bind($name, $service, $useAutowire);
+    }
+
+    /**
      * @template T of object
      * @return T
      */
