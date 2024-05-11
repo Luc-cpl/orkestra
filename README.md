@@ -25,7 +25,7 @@ Orkestra is a lightweight and highly extensible PHP framework designed to provid
 
 ### Prerequisites
 
-- PHP 8.1 or higher
+- PHP 8.2 or higher
 - Composer
 
 ### Installation
