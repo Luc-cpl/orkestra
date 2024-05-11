@@ -10,11 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Introduced the `Orkestra\App::decorate()` method, enabling service decoration during container resolution.
-- Enhanced container operations `call`, `get`, `has` and `decorate` to verify application boot state.
+- Introduced the `Orkestra\App::make()` method for resolving new instances from the container.
 
 ### Changed
 
 - Modified `Orkestra\AppContainerTrait` to built the container during the application boot process.
+- Modified `Orkestra\App::get()` according psr-11 signature to only accept one argument.
+- Enhanced container operations `call`, `get`, `has` and `decorate` to verify application boot state.
+
+### Deprecated
+
+- Deprecated the `Orkestra\App::singleton()` method in favor of `Orkestra\App::bind()` only.
 
 ## [1.0.1] - 2024-05-11
 
