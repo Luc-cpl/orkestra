@@ -6,6 +6,7 @@ use Psr\Container\ContainerInterface;
 
 use Orkestra\AppBind;
 use InvalidArgumentException;
+use BadMethodCallException;
 
 interface AppContainerInterface extends ContainerInterface
 {
@@ -48,6 +49,25 @@ interface AppContainerInterface extends ContainerInterface
      * @throws InvalidArgumentException If the class specified in $service does not exist
      */
     public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind;
+
+    /**
+     * Decorate a service in the container
+     *
+     * The $decorator function should receive the original service as the
+     * first argument and return the new service.
+     * You can resolve other services in the container using other arguments.
+     *
+     * Example:
+     * $container->decorate(Service::class, function (Service $service, OtherService $otherService) {
+     *    return new ServiceDecorator($service, $otherService);
+     * });
+     *
+     * @param class-string $name      Name of the service
+     * @param callable     $decorator Decorator function
+     * @throws BadMethodCallException   If the application is already booted this modification should not be allowed
+     * @throws InvalidArgumentException If the class does not exist
+     */
+    public function decorate(string $name, callable $decorator): void;
 
     /**
      * Returns an entry of the container by its name.

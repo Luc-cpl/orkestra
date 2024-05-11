@@ -11,8 +11,6 @@ use Orkestra\Traits\AppHooksTrait;
 
 use Psr\Container\ContainerInterface;
 
-use Exception;
-
 class App implements AppHooksInterface, AppContainerInterface
 {
     use AppContainerTrait;
@@ -85,10 +83,9 @@ class App implements AppHooksInterface, AppContainerInterface
      */
     public function boot(): void
     {
-        // Ensure we only run once
-        if ($this->has('booted')) {
-            throw new Exception('App already booted');
-        }
+        $this->bootGate();
+
+        $this->bootContainer();
 
         $this->hookCall('config.validate.before', $this);
 
