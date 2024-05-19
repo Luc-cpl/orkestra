@@ -11,8 +11,6 @@ use Orkestra\Traits\AppHooksTrait;
 
 use Psr\Container\ContainerInterface;
 
-use Exception;
-
 class App implements AppHooksInterface, AppContainerInterface
 {
     use AppContainerTrait;
@@ -23,11 +21,11 @@ class App implements AppHooksInterface, AppContainerInterface
     ) {
         $this->setDefaultConfig();
         $this->initContainer();
-        $this->singleton(ConfigurationInterface::class, $config);
-        $this->singleton(ContainerInterface::class, $this);
-        $this->singleton(AppContainerInterface::class, $this);
-        $this->singleton(AppHooksInterface::class, $this);
-        $this->singleton(self::class, $this);
+        $this->bind(ConfigurationInterface::class, $config);
+        $this->bind(ContainerInterface::class, $this);
+        $this->bind(AppContainerInterface::class, $this);
+        $this->bind(AppHooksInterface::class, $this);
+        $this->bind(self::class, $this);
     }
 
     private function setDefaultConfig(): void
@@ -85,10 +83,9 @@ class App implements AppHooksInterface, AppContainerInterface
      */
     public function boot(): void
     {
-        // Ensure we only run once
-        if ($this->has('booted')) {
-            throw new Exception('App already booted');
-        }
+        $this->bootGate();
+
+        $this->bootContainer();
 
         $this->hookCall('config.validate.before', $this);
 

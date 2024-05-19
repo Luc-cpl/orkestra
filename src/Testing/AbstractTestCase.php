@@ -4,7 +4,6 @@ namespace Orkestra\Testing;
 
 use Orkestra\App;
 use Orkestra\Configuration;
-use Orkestra\Entities\EntityFactory;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Pest\Support\Container;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -38,7 +37,6 @@ abstract class AbstractTestCase extends BaseTestCase
 
         // Register a new application in each test
         $container->add(App::class, $app);
-        $container->add(EntityFactory::class, $app->get(EntityFactory::class, ['useFaker' => true]));
     }
 
     /**
