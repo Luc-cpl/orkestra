@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modified `Orkestra\AppContainerTrait` to built the container during the application boot process.
 - Modified `Orkestra\App::get()` according psr-11 signature to only accept one argument.
 - Enhanced container operations `call`, `get`, `has` and `decorate` to verify application boot state.
+- Get entity factory from app container directly in tests `factory` function.
 
 ### Deprecated
 

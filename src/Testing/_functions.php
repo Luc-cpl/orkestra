@@ -30,7 +30,7 @@ if (!function_exists('factory')) {
     function factory(): EntityFactory
     {
         /** @var EntityFactory */
-        return Container::getInstance()->get(EntityFactory::class);
+        return app()->make(EntityFactory::class, ['useFaker' => true]);
     }
 }
 
