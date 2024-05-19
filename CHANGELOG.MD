@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Introduced the `Orkestra\App::decorate()` method, enabling service decoration during container resolution.
 - Introduced the `Orkestra\App::make()` method for resolving new instances from the container.
+- Allow the use of `Faker` attribute in class properties to generate fake data.
 
 ### Changed
 

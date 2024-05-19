@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use Attribute;
 use Closure;
 
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class Faker
 {
     private ?Closure $callback = null;
@@ -18,13 +18,13 @@ class Faker
      * @param mixed[] $args
      */
     public function __construct(
-        public string $key,
+        public string $key = '',
         private mixed $value = null,
         ?string $method = null,
         array $args = [],
     ) {
         if ($method === null && $value === null) {
-            throw new InvalidArgumentException('Faker attribute must have at least one argument');
+            throw new InvalidArgumentException('Faker attribute must have a value or a method');
         }
 
         if ($value !== null) {

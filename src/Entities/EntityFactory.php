@@ -6,6 +6,7 @@ use Orkestra\App;
 use Orkestra\Entities\Attributes\Faker;
 use Faker\Factory;
 use InvalidArgumentException;
+use ReflectionAttribute;
 use ReflectionClass;
 
 class EntityFactory
@@ -27,9 +28,7 @@ class EntityFactory
         string $class,
         ...$args
     ): object {
-
-        $reflection = new ReflectionClass($class);
-
+        $reflection  = new ReflectionClass($class);
         $parsedArgs  = $this->separateConstructorFromParams($reflection, $args);
         $constructor = $parsedArgs['constructor'];
         $properties  = $parsedArgs['properties'];
@@ -96,19 +95,26 @@ class EntityFactory
             'properties'  => [],
         ];
 
-        $attrs       = $reflection->getAttributes();
-        $constructor = $reflection->getConstructor()?->getParameters() ?? [];
+        /** @var ReflectionAttribute<Faker>[] */
+        $attrs = [];
 
-        foreach ($attrs as $attr) {
-            if ($attr->getName() !== Faker::class) {
+        foreach ($reflection->getProperties() as $property) {
+            $attr = $property->getAttributes(Faker::class)[0] ?? null;
+            if ($attr === null) {
                 continue;
             }
+            $attrs[$property->getName()] = $attr;
+        }
 
+        array_push($attrs, ...$reflection->getAttributes(Faker::class));
+        $constructor = $reflection->getConstructor()?->getParameters() ?? [];
+
+        foreach ($attrs as $key => $attr) {
             /** @var Faker $instance */
             $instance = $attr->newInstance();
             $instance->setLocale($this->locale);
 
-            $key   = $instance->key;
+            $key   = is_string($key) ? $key : $instance->key;
             $value = $instance->getValue();
 
             foreach ($constructor as $param) {
