@@ -69,15 +69,24 @@ test('can throw exception when configuration does not pass validation', function
     $config->validate();
 })->throws(InvalidArgumentException::class);
 
-test('can throw exception when setting invalid validation', function () {
+test('can throw exception when setting invalid validation', function ($validator) {
     $config = new Configuration([]);
-    $config->set('validation', 'invalidValue');
-})->throws(InvalidArgumentException::class);
+    $config->set('validation', $validator);
+})->with([
+    ['invalidValidator'],
+    [['key' => 'invalidValidator']],
+    [[fn () => true]],
+])->throws(InvalidArgumentException::class);
 
-test('can throw exception when setting invalid definition', function () {
+test('can throw exception when setting invalid definition', function ($definition) {
     $config = new Configuration([]);
-    $config->set('definition', 'invalidValue');
-})->throws(InvalidArgumentException::class);
+    $config->set('definition', $definition);
+})->with([
+    ['invalidDefinition'],
+    [['key' => []]],
+    [['key' => ['description', 'default', 'invalid value']]],
+    [[['description', 'default']]],
+])->throws(InvalidArgumentException::class);
 
 test('can throw exception when getting undefined configuration key', function () {
     $config = new Configuration([]);

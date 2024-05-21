@@ -3,6 +3,7 @@
 use Orkestra\App;
 use Orkestra\Configuration;
 use Orkestra\Interfaces\ProviderInterface;
+use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
 use Orkestra\Providers\CommandsProvider;
@@ -39,6 +40,28 @@ test('can make from container with constructor parameters', function () {
     app()->bind('test', fn ($param) => $param);
     expect(app()->make('test', ['param' => 'testValue']))->toEqual('testValue');
 });
+
+test('can not use a invalid env config', function () {
+    $this->config->set('env', 'invalidEnv');
+    $this->app->boot();
+})->expectException(InvalidArgumentException::class);
+
+test('can not use a invalid root config', function () {
+    $this->config->set('root', 'invalidRoot');
+    $this->app->boot();
+})->expectException(InvalidArgumentException::class);
+
+test('can not use a invalid slug config', function (string $slug) {
+    $this->config->set('slug', $slug);
+    $this->app->boot();
+})->with([
+    'invalid slug',
+    'invalidSlug',
+    'invalid slug!',
+    'invalidSlug!',
+    'invalid-slug!',
+    'invalid_slug!',
+])->expectException(InvalidArgumentException::class);
 
 test('can register a provider', function () {
     $providerClass = new class () implements ProviderInterface {
@@ -131,6 +154,7 @@ test('can check if container has service', function () {
 
 test('can throw exception when booting twice', function () {
     app()->boot();
+    app()->boot();
 })->throws(Exception::class);
 
 test('can boot', function () {
@@ -144,6 +168,7 @@ test('can boot', function () {
             $this->test = 'testValue';
         }
     };
+
     $this->app->provider($providerClass::class);
     $this->config->set('env', 'development');
     $this->config->set('root', './');
@@ -263,4 +288,40 @@ test('can decorate a value in container', function () {
     $this->app->decorate('test', fn ($value) => $value . 'Decorated');
     $this->app->boot();
     expect($this->app->get('test'))->toEqual('testValueDecorated');
+});
+
+test('can query a app hook', function () {
+    app()->provider(HooksProvider::class);
+    app()->boot();
+
+    app()->get(HooksInterface::class)->register('app.test', fn () => 'testValue');
+    expect(app()->hookQuery('test', null))->toEqual('testValue');
+});
+
+test('can call a app hook', function () {
+    app()->provider(HooksProvider::class);
+    app()->boot();
+
+    $value = false;
+    $callback = function () use (&$value) {
+        $value = true;
+    };
+
+    app()->get(HooksInterface::class)->register('app.test', $callback);
+    app()->hookCall('test');
+    expect($value)->toBeTrue();
+});
+
+test('can register an app hook', function () {
+    app()->provider(HooksProvider::class);
+    app()->boot();
+
+    $value = false;
+    $callback = function () use (&$value) {
+        $value = true;
+    };
+
+    app()->hookRegister('test', $callback);
+    app()->get(HooksInterface::class)->call('app.test');
+    expect($value)->toBeTrue();
 });
