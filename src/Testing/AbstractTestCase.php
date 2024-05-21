@@ -5,7 +5,6 @@ namespace Orkestra\Testing;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Orkestra\Configuration;
 use Orkestra\App as BaseApp;
-use Orkestra\Testing\App;
 use Pest\Support\Container;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -38,7 +37,7 @@ abstract class AbstractTestCase extends BaseTestCase
 
         // Return the test app in the container
         $app->bind(BaseApp::class, $app);
-        
+
         // Register a new application in each test
         $container->add(App::class, $app);
         $container->add(BaseApp::class, $app);

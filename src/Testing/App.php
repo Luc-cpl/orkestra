@@ -11,18 +11,18 @@ use Orkestra\App as BaseApp;
  */
 class App extends BaseApp
 {
-	protected function bootGate(bool $booted = false): void
+    protected function bootGate(bool $booted = false): void
     {
-		try {
-			parent::bootGate($booted);
-			return;
-		} catch (\BadMethodCallException $e) {
-			// throw in case of app has already been booted
-			if (!$booted) {
-				throw $e;
-			}
-		}
-		// boot the application
-		$this->boot();
+        try {
+            parent::bootGate($booted);
+            return;
+        } catch (\BadMethodCallException $e) {
+            // throw in case of app has already been booted
+            if (!$booted) {
+                throw $e;
+            }
+        }
+        // boot the application
+        $this->boot();
     }
 }
