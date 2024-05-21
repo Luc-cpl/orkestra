@@ -40,7 +40,7 @@ class App implements AppHooksInterface, AppContainerInterface
                     ? "root \"$value\" is not a directory"
                     : true,
             'slug' => fn ($value) =>
-                !empty($value) && !preg_match('/^[a-z0-9-]+$/', $value)
+                !empty($value) && !preg_match('/^[a-z0-9-_]+$/', $value)
                     ? "slug \"$value\" is not valid"
                     : true,
         ]);

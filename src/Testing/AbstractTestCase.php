@@ -2,9 +2,9 @@
 
 namespace Orkestra\Testing;
 
-use Orkestra\App;
-use Orkestra\Configuration;
 use Orkestra\Interfaces\ConfigurationInterface;
+use Orkestra\Configuration;
+use Orkestra\App as BaseApp;
 use Pest\Support\Container;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -35,8 +35,12 @@ abstract class AbstractTestCase extends BaseTestCase
         $config = $container->get(ConfigurationInterface::class);
         $app = new App($config);
 
+        // Return the test app in the container
+        $app->bind(BaseApp::class, $app);
+
         // Register a new application in each test
         $container->add(App::class, $app);
+        $container->add(BaseApp::class, $app);
     }
 
     /**
@@ -50,20 +54,5 @@ abstract class AbstractTestCase extends BaseTestCase
         require_once __DIR__ . '/_functions.php';
 
         parent::setUp();
-    }
-
-    /**
-     * Performs assertions shared by all tests of a test case.
-     *
-     * This method is called between setUp() and test.
-     */
-    protected function assertPreConditions(): void
-    {
-        $container = Container::getInstance();
-        /** @var App */
-        $app = $container->get(App::class);
-        $app->boot();
-
-        parent::assertPreConditions();
     }
 }
