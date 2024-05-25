@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced the `Orkestra\App::make()` method for resolving new instances from the container.
 - Allow the use of `Faker` attribute in class properties to generate fake data.
 - Automatically boot the application during test execution instead of throw an exception.
+- Introduce the `middleware` testing function and `Orkestra\Testing\Middleware` class to ease middleware testing.
 
 ### Changed
 
