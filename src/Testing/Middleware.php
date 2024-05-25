@@ -10,6 +10,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Laminas\Diactoros\ResponseFactory;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @property-read class-string           $name
+ * @property-read array<string, mixed>   $params
+ * @property-read string                 $method
+ * @property-read mixed[]                $data
+ * @property-read array<string, string>  $headers
+ * @property-read ServerRequestInterface $request
+ */
 class Middleware extends AbstractEntity
 {
     protected ?ServerRequestInterface $request = null;
@@ -45,7 +53,6 @@ class Middleware extends AbstractEntity
 
         /** @var TestCase */
         $test = test();
-
         $mockHandler = $test->getMockBuilder(RequestHandlerInterface::class)->getMock();
         $mockHandler->method('handle')->willReturnCallback($this->runController(...));
 
