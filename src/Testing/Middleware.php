@@ -8,11 +8,18 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Laminas\Diactoros\ResponseFactory;
+use PHPUnit\Framework\TestCase;
 
 class Middleware extends AbstractEntity
 {
     protected ?ServerRequestInterface $request = null;
 
+    /**
+     * @param class-string          $name    Middleware class name
+     * @param array<string, mixed>  $params  Constructor parameters
+     * @param mixed[]               $data    Request data
+     * @param array<string, string> $headers Request headers
+     */
     public function __construct(
         protected string $name,
         protected array $params = [],
@@ -36,9 +43,13 @@ class Middleware extends AbstractEntity
         /** @var MiddlewareInterface */
         $middleware  = app()->make($this->name, $this->params);
 
-        $mockHandler = test()->createMock(RequestHandlerInterface::class);
+        /** @var TestCase */
+        $test = test();
+
+        $mockHandler = $test->getMockBuilder(RequestHandlerInterface::class)->getMock();
         $mockHandler->method('handle')->willReturnCallback($this->runController(...));
 
+        /** @var RequestHandlerInterface $mockHandler */
         return $middleware->process($request, $mockHandler);
     }
 }
