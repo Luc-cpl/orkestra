@@ -10,7 +10,7 @@ use Pest\Support\Container;
 
 trait HasApplicationTrait
 {
-	/**
+    /**
      * Get the application configuration.
      *
      * @return array<string, mixed>
