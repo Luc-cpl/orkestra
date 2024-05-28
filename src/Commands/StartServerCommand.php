@@ -20,7 +20,7 @@ class StartServerCommand extends Command
             ->addOption('port', 'p', InputOption::VALUE_OPTIONAL, 'The port to run the server on.', 3000);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /**
          * @var string $port
