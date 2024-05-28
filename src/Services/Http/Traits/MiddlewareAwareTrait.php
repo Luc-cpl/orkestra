@@ -69,8 +69,9 @@ trait MiddlewareAwareTrait
         $handler = is_array($middleware) ? $middleware[0] : $middleware;
 
         if (is_string($handler) && !class_exists($handler)) {
-            /** @var array<string, string> */
-            $middlewareStack = $this->app->config()->get('middleware');
+            /** @var array<string, array<string, string>> */
+            $middlewareConfig = $this->app->config()->get('middleware');
+            $middlewareStack = $middlewareConfig['stack'] ?? [];
             $originalHandler = $handler;
             $handler = $middlewareStack[$handler] ?? false;
             $middleware = is_array($middleware) ? [$handler, ...array_slice($middleware, 1)] : $handler;

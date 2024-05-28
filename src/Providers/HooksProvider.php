@@ -65,7 +65,6 @@ class HooksProvider implements ProviderInterface
     protected function registerListeners(App $app, HooksInterface $hooks, array $listeners): void
     {
         foreach ($listeners as $listener) {
-            $app->bind($listener, $listener);
             /** @var ListenerInterface */
             $listener = $app->get($listener);
             $listenerHooks = $listener->hook();
