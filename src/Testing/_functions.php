@@ -59,11 +59,11 @@ if (!function_exists('middleware')) {
      * Create a middleware testing instance
      *
      * @param string $class
-     * @param mixed[] $params
+     * @param mixed[] $constructor
      */
-    function middleware(string $class, array $params = []): Middleware
+    function middleware(string $class, array $constructor = []): Middleware
     {
-        return factory()->make(Middleware::class, name: $class, params: $params);
+        return factory()->make(Middleware::class, name: $class, constructor: $constructor);
     }
 }
 

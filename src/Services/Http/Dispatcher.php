@@ -81,6 +81,6 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
             return;
         }
 
-        $this->middleware([ValidationMiddleware::class, ['params' => $params]]);
+        $this->middleware(ValidationMiddleware::class, ['params' => $params]);
     }
 }

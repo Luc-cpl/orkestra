@@ -7,10 +7,11 @@ use Psr\Http\Server\MiddlewareInterface;
 interface MiddlewareAwareInterface
 {
     /**
-     * @param MiddlewareInterface|string|array{string,mixed} $middleware
+     * @param MiddlewareInterface|class-string|string $middleware
+     * @param array<string, mixed> $constructor
      * @return $this
      */
-    public function middleware(MiddlewareInterface|string|array $middleware): self;
+    public function middleware(MiddlewareInterface|string $middleware, array $constructor = []): self;
 
     /** @return array<MiddlewareInterface|string|array{string,mixed}> */
     public function getMiddlewareStack(): iterable;

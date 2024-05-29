@@ -24,13 +24,13 @@ class Middleware extends AbstractEntity
 
     /**
      * @param class-string          $name    Middleware class name
-     * @param array<string, mixed>  $params  Constructor parameters
+     * @param array<string, mixed>  $constructor  Constructor parameters
      * @param mixed[]               $data    Request data
      * @param array<string, string> $headers Request headers
      */
     public function __construct(
         protected string $name,
-        protected array $params = [],
+        protected array $constructor = [],
         protected string $method = 'GET',
         protected array $data = [],
         protected array $headers = []
@@ -49,7 +49,7 @@ class Middleware extends AbstractEntity
         $request = generateRequest($this->method, '/', $this->data, $this->headers);
 
         /** @var MiddlewareInterface */
-        $middleware  = app()->make($this->name, $this->params);
+        $middleware  = app()->make($this->name, $this->constructor);
 
         /** @var TestCase */
         $test = test();

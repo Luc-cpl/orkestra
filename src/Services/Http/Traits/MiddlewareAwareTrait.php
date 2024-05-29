@@ -29,8 +29,11 @@ trait MiddlewareAwareTrait
         return $this->middleware;
     }
 
-    public function middleware(MiddlewareInterface|string|array $middleware): self
+    public function middleware(MiddlewareInterface|string $middleware, array $constructor = []): self
     {
+        if (!empty($constructor)) {
+            $middleware = [$middleware, $constructor];
+        }
         $this->middleware[] = $middleware;
         return $this;
     }
