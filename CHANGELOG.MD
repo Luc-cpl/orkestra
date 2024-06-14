@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Get entity factory from app container directly in tests `factory` function.
 - Upgrade Symfony components.
 
+### Fixed
+
+- Allow null values in the `Orkestra\Entities\AbstractEntity::set()` method.
+
 ### Deprecated
 
 - Deprecated the `Orkestra\App::singleton()` method in favor of `Orkestra\App::bind()` only.

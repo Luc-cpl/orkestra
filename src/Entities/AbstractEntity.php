@@ -39,7 +39,7 @@ abstract class AbstractEntity implements JsonSerializable
         foreach ($properties ?? [] as $property) {
             $name = $property->getName();
 
-            if (!isset($args[$name])) {
+            if (!array_key_exists($name, $args)) {
                 continue;
             }
 
