@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatically boot the application during test execution instead of throw an exception.
 - Introduce the `middleware` testing function and `Orkestra\Testing\Middleware` class to ease middleware testing.
 - Separate the test application initialization in the trait `Orkestra\Testing\Traits\HasApplicationTrait` to allow different TestCase's extensions.
+- Add `JsonSerializable` interface to the `Orkestra\Entities\AbstractEntity` class.
 
 ### Changed
 
