@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Orkestra\Testing\Middleware;
 use Laminas\Diactoros\ServerRequestFactory;
+use Orkestra\Providers\HttpProvider;
 
 if (!function_exists('app')) {
     /**
@@ -49,6 +50,11 @@ if (!function_exists('request')) {
     function request(string $method = 'GET', string $uri = '/', array $data = [], array $headers = []): ResponseInterface
     {
         $request = generateRequest($method, $uri, $data, $headers);
+
+        if (!app()->has(RouterInterface::class)) {
+            throw new RuntimeException(sprintf('No router found in container! Did you forget to register the %s in your test?', HttpProvider::class));
+        }
+
         $router = app()->get(RouterInterface::class);
         return $router->dispatch($request);
     }
