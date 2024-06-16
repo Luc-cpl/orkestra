@@ -41,7 +41,7 @@ class EntityFactory
         $entities = [];
         for ($i = 0; $i < $this->times; $i++) {
             if (is_callable($args[0] ?? null)) {
-                $args = $args($i);
+                $args = call_user_func($args[0], $i);
             }
 
             $entities[] = $this->makeEntity($class, ...$args);

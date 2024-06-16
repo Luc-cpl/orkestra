@@ -16,10 +16,12 @@ class EntitiesTestRepository
 #[Repository('testRepository')]
 #[Faker('name', method: 'name')]
 #[Faker('nonConstructProperty', value:'test value')]
-#[Faker('publicValue', value:'public value')]
 class EntityTest extends AbstractEntity
 {
     protected string $nonConstructProperty;
+
+    // Add this as a property attribute to test the attribute use
+    #[Faker('publicValue', value:'public value')]
     public string $publicValue;
 
     public function __construct(
@@ -146,9 +148,16 @@ it('can not create an entity without a repository', function () {
 })->throws(RuntimeException::class);
 
 it('can not create an entity without a persist method', function () {
-    $repository = Mockery::mock(EntitiesTestRepository::class);
+    $repository = Mockery::mock(stdClass::class);
     app()->bind('testRepository', fn () => $repository);
 
     $factory = app()->make(EntityFactory::class, ['useFaker' => true]);
     $factory->create(EntityTest::class);
 })->throws(BadMethodCallException::class);
+
+test('can use a callable in make', function () {
+    $factory = app()->make(EntityFactory::class, ['useFaker' => true]);
+    $entity = $factory->make(EntityTest::class, fn ($i) => ['name' => 'John Doe ' . $i]);
+    expect($entity)->toBeInstanceOf(EntityTest::class);
+    expect($entity->name)->toBe('John Doe 0');
+});
