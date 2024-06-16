@@ -49,7 +49,7 @@ trait ErrorResponseTrait
         $contentType = $request->getHeaderLine('Content-Type');
 
         if (strpos($contentType, 'application/json') === 0) {
-            $response = $this->app->get(JsonResponse::class, [
+            $response = $this->app->make(JsonResponse::class, [
                 'data' => [
                     'status'      => 'error',
                     'code'        => $code,

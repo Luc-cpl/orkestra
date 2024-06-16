@@ -57,9 +57,9 @@ class HttpProvider implements ProviderInterface
             'middleware'  => ['The middleware to load', []],
         ]);
 
-        $app->singleton(Router::class, Router::class);
-        $app->singleton(Validator::class, Validator::class);
-        $app->singleton(RouterInterface::class, Router::class);
+        $app->bind(Router::class, Router::class);
+        $app->bind(Validator::class, Validator::class);
+        $app->bind(RouterInterface::class, Router::class);
 
         $app->bind(ServerRequestInterface::class, function () {
             return ServerRequestFactory::fromGlobals(

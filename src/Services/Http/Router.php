@@ -50,7 +50,7 @@ class Router extends LeagueRouter implements RouterInterface
     public function map(string $method, string $path, $handler): Route
     {
         $path  = sprintf('/%s', ltrim($path, '/'));
-        $route = $this->app->get(Route::class, [
+        $route = $this->app->make(Route::class, [
             'method'  => $method,
             'path'    => $path,
             'handler' => $handler
@@ -63,7 +63,7 @@ class Router extends LeagueRouter implements RouterInterface
 
     public function group(string $prefix, callable $group): RouteGroup
     {
-        $group = $this->app->get(RouteGroup::class, [
+        $group = $this->app->make(RouteGroup::class, [
             'prefix'     => $prefix,
             'callback'   => $group,
             'collection' => $this
@@ -117,11 +117,6 @@ class Router extends LeagueRouter implements RouterInterface
         }
 
         foreach ($this->getMiddlewareStack() as $middleware) {
-            if (is_string($middleware)) {
-                $dispatcher->lazyMiddleware($middleware);
-                continue;
-            }
-
             $dispatcher->middleware($middleware);
         }
 

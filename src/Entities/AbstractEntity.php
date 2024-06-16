@@ -3,9 +3,10 @@
 namespace Orkestra\Entities;
 
 use InvalidArgumentException;
+use JsonSerializable;
 use ReflectionClass;
 
-abstract class AbstractEntity
+abstract class AbstractEntity implements JsonSerializable
 {
     /**
      * Set entity properties defined in constructor or set method
@@ -38,7 +39,7 @@ abstract class AbstractEntity
         foreach ($properties ?? [] as $property) {
             $name = $property->getName();
 
-            if (!isset($args[$name])) {
+            if (!array_key_exists($name, $args)) {
                 continue;
             }
 
@@ -103,5 +104,13 @@ abstract class AbstractEntity
         }
 
         return $data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

@@ -74,8 +74,8 @@ trait RouteDefinitionTrait
     public function getDefinition(): RouteDefinitionFacade
     {
         if (is_string($this->definition)) {
-            $this->definition = $this->app->get(RouteDefinitionFacade::class, [
-                'definition' => $this->app->get($this->definition, $this->definitionParams)
+            $this->definition = $this->app->make(RouteDefinitionFacade::class, [
+                'definition' => $this->app->make($this->definition, $this->definitionParams)
             ]);
         }
 
@@ -83,8 +83,8 @@ trait RouteDefinitionTrait
             $group = method_exists($this, 'getParentGroup') ? $this->getParentGroup() : null;
             $parentDefinition = $group ? $group->getDefinition() : null;
             $definition = array_merge($this->definition, ['parentDefinition' => $parentDefinition]);
-            $this->definition = $this->app->get(RouteDefinitionFacade::class, [
-                'definition' => $this->app->get(RouteDefinition::class, $definition)
+            $this->definition = $this->app->make(RouteDefinitionFacade::class, [
+                'definition' => $this->app->make(RouteDefinition::class, $definition)
             ]);
         }
 

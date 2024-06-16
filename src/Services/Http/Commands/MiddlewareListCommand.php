@@ -27,7 +27,7 @@ class MiddlewareListCommand extends Command
             ->setHelp('This command lists the available middleware stack for the application.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Available middleware options:');
         $output->writeln('');

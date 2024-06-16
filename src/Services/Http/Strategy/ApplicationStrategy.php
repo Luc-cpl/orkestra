@@ -59,7 +59,7 @@ class ApplicationStrategy extends AbstractStrategy implements ContainerAwareInte
             }
             /** @var string */
             $str = is_string($response) ? $response : json_encode($response);
-            $response = $this->app->get(ResponseInterface::class);
+            $response = $this->app->make(ResponseInterface::class);
             $response->getBody()->write($str);
         }
 

@@ -2,19 +2,25 @@
 
 namespace Orkestra;
 
-use DI\Container;
+use Orkestra\Entities\AbstractEntity;
 use DI\Definition\Helper\CreateDefinitionHelper;
+use DI\Container;
 use DI;
 
 use InvalidArgumentException;
 
-class AppBind
+/**
+ * @property-read string $name
+ * @property-read mixed $service
+ * @property-read bool $autowire
+ */
+class AppBind extends AbstractEntity
 {
     public function __construct(
-        protected Container $container,
-        protected string    $name,
-        protected mixed     $service,
-        protected bool      $autowire = true
+        protected string     $name,
+        protected mixed      $service,
+        protected bool       $autowire = true,
+        private   ?Container $container = null,
     ) {
         $isClassString = is_string($service);
 
@@ -26,7 +32,7 @@ class AppBind
             ? ($autowire ? DI\autowire($service) : DI\create($service))
             : $service;
 
-        $this->set();
+        $this->update();
     }
 
     /**
@@ -45,7 +51,7 @@ class AppBind
             throw new InvalidArgumentException('Cannot define constructor parameters for a non-class services');
         }
         $this->service->constructor(...$parameters);
-        return $this->set();
+        return $this->update();
     }
 
     /**
@@ -62,7 +68,7 @@ class AppBind
             throw new InvalidArgumentException('Cannot define property injection for a non-class services');
         }
         $this->service->property($property, $value);
-        return $this->set();
+        return $this->update();
     }
 
     /**
@@ -85,12 +91,14 @@ class AppBind
             throw new InvalidArgumentException('Cannot define method calls for a non-class services');
         }
         $this->service->method($method, ...$parameters);
-        return $this->set();
+        return $this->update();
     }
 
-    protected function set(): self
+    protected function update(): self
     {
-        $this->container->set($this->name, $this->service);
+        if ($this->container) {
+            $this->container->set($this->name, $this->service);
+        }
         return $this;
     }
 }
