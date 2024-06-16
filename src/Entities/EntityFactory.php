@@ -118,7 +118,7 @@ class EntityFactory
             throw new InvalidArgumentException(sprintf('Invalid property passed to make a %s: %s', $class, $key));
         }
 
-        return $entity;        
+        return $entity;
     }
 
     /**
