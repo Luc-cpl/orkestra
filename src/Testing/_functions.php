@@ -63,6 +63,7 @@ if (!function_exists('middleware')) {
      */
     function middleware(string $class, array $constructor = []): Middleware
     {
+        /** @var Middleware */
         return factory()->make(Middleware::class, name: $class, constructor: $constructor);
     }
 }

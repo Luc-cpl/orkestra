@@ -2,8 +2,18 @@
 
 use Orkestra\Entities\AbstractEntity;
 use Orkestra\Entities\Attributes\Faker;
+use Orkestra\Entities\Attributes\Repository;
 use Orkestra\Entities\EntityFactory;
 
+class EntitiesTestRepository
+{
+    public function persist(): void
+    {
+        // Do nothing
+    }
+}
+
+#[Repository('testRepository')]
 #[Faker('name', method: 'name')]
 #[Faker('nonConstructProperty', value:'test value')]
 #[Faker('publicValue', value:'public value')]
@@ -109,3 +119,36 @@ test('can convert entity to array', function () {
         'age' => 10,
     ]);
 });
+
+test('can create a new entity', function () {
+    $repository = Mockery::mock(EntitiesTestRepository::class);
+    $repository->shouldReceive('persist')->once();
+    app()->bind('testRepository', fn () => $repository);
+
+    $factory = app()->make(EntityFactory::class, ['useFaker' => true]);
+    $entity = $factory->create(EntityTest::class);
+    expect($entity)->toBeInstanceOf(EntityTest::class);
+});
+
+test('can create multiple entities', function () {
+    $repository = Mockery::mock(EntitiesTestRepository::class);
+    $repository->shouldReceive('persist')->times(2);
+    app()->bind('testRepository', fn () => $repository);
+
+    $factory = app()->make(EntityFactory::class, ['useFaker' => true]);
+    $entities = $factory->times(2)->create(EntityTest::class);
+    expect($entities)->toBeArray()->toHaveCount(2);
+});
+
+it('can not create an entity without a repository', function () {
+    $factory = app()->make(EntityFactory::class, ['useFaker' => true]);
+    $factory->create(EntityTest::class);
+})->throws(RuntimeException::class);
+
+it('can not create an entity without a persist method', function () {
+    $repository = Mockery::mock(EntitiesTestRepository::class);
+    app()->bind('testRepository', fn () => $repository);
+
+    $factory = app()->make(EntityFactory::class, ['useFaker' => true]);
+    $factory->create(EntityTest::class);
+})->throws(BadMethodCallException::class);

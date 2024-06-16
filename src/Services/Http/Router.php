@@ -117,11 +117,6 @@ class Router extends LeagueRouter implements RouterInterface
         }
 
         foreach ($this->getMiddlewareStack() as $middleware) {
-            if (is_string($middleware)) {
-                $dispatcher->lazyMiddleware($middleware);
-                continue;
-            }
-
             $dispatcher->middleware($middleware);
         }
 

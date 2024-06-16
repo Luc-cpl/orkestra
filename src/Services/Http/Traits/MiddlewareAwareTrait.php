@@ -14,22 +14,12 @@ trait MiddlewareAwareTrait
     #[Inject]
     protected App $app;
 
-    /**
-     * An array with MiddlewareInterface, class-string
-     * or an array with a string as first element and
-     * the rest as parameters.
-     *
-     * @var array<MiddlewareInterface|string|array{string,mixed}>
-     * @phpstan-ignore-next-line
-     */
-    protected $middleware = [];
-
     public function getMiddlewareStack(): iterable
     {
         return $this->middleware;
     }
 
-    public function middleware(MiddlewareInterface|string $middleware, array $constructor = []): self
+    public function middleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self
     {
         if (!empty($constructor)) {
             $middleware = [$middleware, $constructor];
@@ -41,6 +31,10 @@ trait MiddlewareAwareTrait
     public function middlewareStack(array $middlewareStack): self
     {
         foreach ($middlewareStack as $middleware) {
+            if (is_array($middleware)) {
+                $this->middleware(...$middleware);
+                continue;
+            }
             $this->middleware($middleware);
         }
 
@@ -65,7 +59,7 @@ trait MiddlewareAwareTrait
     }
 
     /**
-     * @param MiddlewareInterface|string|array{string,mixed} $middleware
+     * @param MiddlewareInterface|string|array{string,array<string,mixed>} $middleware
      */
     protected function resolveMiddleware($middleware, ?ContainerInterface $container = null): MiddlewareInterface
     {

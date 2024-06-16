@@ -56,6 +56,7 @@ class ParamDefinitionFactory
 
         $args['type'] = $type;
 
+        /** @var ParamDefinition */
         return $this->factory->make(ParamDefinition::class, ...$args);
     }
 }

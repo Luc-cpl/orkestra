@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Introduced the `Orkestra\App::decorate()` method, enabling service decoration during container resolution.
 - Introduced the `Orkestra\App::make()` method for resolving new instances from the container.
+- Introduced the `Orkestra\Entities\EntityFactory::create()` method for creating new entity instances through entity repository.
+- Introduced the `Orkestra\Entities\EntityFactory::times()` method to allow the creation of multiple entity instances.
+- Introduced the `Orkestra\Entities\Attributes\Repository` class attribute to define the entity repository class.
 - Allow the use of `Faker` attribute in class properties to generate fake data.
 - Automatically boot the application during test execution instead of throw an exception.
 - Introduce the `middleware` testing function and `Orkestra\Testing\Middleware` class to ease middleware testing.

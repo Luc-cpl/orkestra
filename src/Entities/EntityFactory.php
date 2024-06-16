@@ -4,18 +4,83 @@ namespace Orkestra\Entities;
 
 use Orkestra\App;
 use Orkestra\Entities\Attributes\Faker;
+use Orkestra\Entities\Attributes\Repository;
 use Faker\Factory;
+use BadMethodCallException;
 use InvalidArgumentException;
 use ReflectionAttribute;
 use ReflectionClass;
+use RuntimeException;
 
 class EntityFactory
 {
+    private int $times = 1;
+
     public function __construct(
         private App $app,
         private bool $useFaker = false,
         private string $locale = Factory::DEFAULT_LOCALE,
     ) {
+    }
+
+    public function times(int $times): self
+    {
+        $clone = clone $this;
+        $clone->times = $times;
+        return $clone;
+    }
+
+    /**
+     * @template T of object
+     * @param class-string<T> $class
+     * @param mixed ...$args
+     * @return T|T[]
+     */
+    public function make(string $class, ...$args): object|array
+    {
+        $entities = [];
+        for ($i = 0; $i < $this->times; $i++) {
+            if (is_callable($args[0] ?? null)) {
+                $args = $args($i);
+            }
+
+            $entities[] = $this->makeEntity($class, ...$args);
+        }
+
+        return $this->times === 1 ? $entities[0] : $entities;
+    }
+
+    /**
+     * Make and persist entities
+     * Very useful for testing
+     *
+     * @template T of object
+     * @param class-string<T> $class
+     * @param mixed ...$args
+     * @return T|T[]
+     */
+    public function create(string $class, ...$args): object|array
+    {
+        // Get the repository from class
+        $reflection = new ReflectionClass($class);
+        $repository = $this->getRepository($reflection);
+
+        if ($repository === null) {
+            throw new RuntimeException(sprintf('No repository found for %s', $class));
+        }
+
+        if (!method_exists($repository, 'persist')) {
+            throw new BadMethodCallException(sprintf('Method persist not found in %s', $repository::class));
+        }
+
+        $entities = $this->make($class, ...$args);
+        $entities = is_array($entities) ? $entities : [$entities];
+
+        foreach ($entities as $entity) {
+            $repository->persist($entity);
+        }
+
+        return $this->times === 1 ? $entities[0] : $entities;
     }
 
     /**
@@ -24,7 +89,7 @@ class EntityFactory
      * @param mixed ...$args
      * @return T
      */
-    public function make(
+    private function makeEntity(
         string $class,
         ...$args
     ): object {
@@ -53,7 +118,7 @@ class EntityFactory
             throw new InvalidArgumentException(sprintf('Invalid property passed to make a %s: %s', $class, $key));
         }
 
-        return $entity;
+        return $entity;        
     }
 
     /**
@@ -110,7 +175,6 @@ class EntityFactory
         $constructor = $reflection->getConstructor()?->getParameters() ?? [];
 
         foreach ($attrs as $key => $attr) {
-            /** @var Faker $instance */
             $instance = $attr->newInstance();
             $instance->setLocale($this->locale);
 
@@ -130,5 +194,26 @@ class EntityFactory
         }
 
         return $attributes;
+    }
+
+    /**
+     * @param ReflectionClass<object> $reflection
+     */
+    private function getRepository(ReflectionClass $reflection): ?object
+    {
+        $attr = $reflection->getAttributes(Repository::class)[0] ?? null;
+
+        if ($attr === null) {
+            return null;
+        }
+
+        $instance = $attr->newInstance();
+        $class = $instance->class;
+
+        if (!$this->app->has($class)) {
+            return null;
+        }
+
+        return $this->app->get($instance->class);
     }
 }
