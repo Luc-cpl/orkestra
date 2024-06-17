@@ -3,7 +3,6 @@
 namespace Orkestra\Services\Http\Commands;
 
 use Orkestra\Interfaces\ConfigurationInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -15,7 +14,6 @@ class MiddlewareListCommand extends Command
 {
     public function __construct(
         private ConfigurationInterface $config,
-        private ContainerInterface $container,
     ) {
         parent::__construct();
     }
@@ -32,10 +30,11 @@ class MiddlewareListCommand extends Command
         $output->writeln('Available middleware options:');
         $output->writeln('');
 
-        /** @var array<string, string> */
-        $middlewareStack = $this->config->get('middleware');
-        /** @var array<string, string> */
-        $middlewareSources = $this->container->get('middleware.sources');
+        /** @var array<string, array<string, string>> */
+        $middleware = $this->config->get('middleware');
+
+        $middlewareSources = $middleware['sources'] ?? [];
+        $middlewareStack   = $middleware['stack'] ?? [];
 
         $definition = array_map(function ($middleware, $alias) use ($middlewareSources) {
             return [$alias, $middleware, $middlewareSources[$alias] ?? ''];

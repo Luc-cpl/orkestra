@@ -31,7 +31,7 @@ class CommandsProvider implements ProviderInterface
      */
     public function register(App $app): void
     {
-        $app->bind(Application::class, function () use ($app) {
+        $app->bind(Application::class, function (App $app) {
             /** @var class-string[] */
             $commands  = $app->config()->get('commands');
             $providers = $app->getProviders();

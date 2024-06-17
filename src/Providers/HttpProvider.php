@@ -73,14 +73,14 @@ class HttpProvider implements ProviderInterface
 
         $app->bind(ResponseInterface::class, Response::class);
         $app->bind(ApplicationStrategy::class, fn (App $app) => (new ApplicationStrategy($app))->setContainer($app));
-        $app->bind(JsonStrategy::class, function () use ($app) {
+        $app->bind(JsonStrategy::class, function (App $app) {
             $isProduction = $app->config()->get('env') === 'production';
             $jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
             $strategy     = new JsonStrategy($app->get(ResponseFactory::class), $jsonMode);
             return ($strategy)->setContainer($app);
         });
 
-        $app->bind(JsonResponse::class, function ($data, int $status = 200, $headers = []) use ($app) {
+        $app->bind(JsonResponse::class, function (App $app, $data, int $status = 200, $headers = []) {
             $isProduction = $app->config()->get('env') === 'production';
             $jsonMode     = $isProduction ? 0 : JSON_PRETTY_PRINT;
             $response     = new JsonResponse($data, $status, $headers, $jsonMode);
@@ -122,9 +122,10 @@ class HttpProvider implements ProviderInterface
             }
         }
 
-        $app->bind('middleware.sources', fn () => $middlewareSources);
-
-        $app->config()->set('middleware', $middlewareStack);
+        $app->config()->set('middleware', [
+            'sources' => $middlewareSources,
+            'stack'   => $middlewareStack
+        ]);
 
         $router = $app->get(RouterInterface::class);
         $router->setStrategy($app->get(ApplicationStrategy::class));

@@ -43,12 +43,17 @@ class App implements AppHooksInterface, AppContainerInterface
                 !empty($value) && !preg_match('/^[a-z0-9-_]+$/', $value)
                     ? "slug \"$value\" is not valid"
                     : true,
+            'enable_compilation' => fn ($value) =>
+                !is_bool($value)
+                    ? 'enable_compilation must be a boolean'
+                    : true,
         ]);
 
         $this->config->set('definition', [
-            'env'  => ['The environment the app is running in (development, production or testing)', 'development'],
-            'root' => ['The root directory of the app', getcwd()],
-            'slug' => ['The app slug', 'app'],
+            'env'                => ['The environment the app is running in (development, production or testing)', 'development'],
+            'root'               => ['The root directory of the app', getcwd()],
+            'slug'               => ['The app slug', 'app'],
+            'enable_compilation' => ['Enable container compilation', false],
         ]);
     }
 
@@ -100,8 +105,6 @@ class App implements AppHooksInterface, AppContainerInterface
              */
             $this->get($provider)->boot($this);
         }
-
-        $this->bind('booted', fn () => true, false);
 
         $this->hookCall('boot.after', $this);
     }

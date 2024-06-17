@@ -64,7 +64,9 @@ trait AppContainerTrait
         $bindDefinitions = array_map(fn (AppBind $bind) => $bind->service, $this->binds);
         $this->builder->addDefinitions($bindDefinitions);
         $this->builder->addDefinitions($this->rootDecorators);
-
+        if ($this->config()->get('enable_compilation') && $this->config()->get('env') === 'production') {
+            $this->builder->enableCompilation($this->config()->get('root') . '/cache/container');
+        }
         $this->container = $this->builder->build();
         $this->booted = true;
     }
