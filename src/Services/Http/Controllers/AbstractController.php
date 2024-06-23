@@ -1,23 +1,17 @@
 <?php
 
-namespace Orkestra\Services\Http\Middleware;
+namespace Orkestra\Services\Http\Controllers;
 
 use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
-use Orkestra\Services\Http\Traits\ErrorResponseTrait;
-use Orkestra\Services\Http\Traits\ResponseTrait;
-
-use Psr\Http\Server\MiddlewareInterface;
 use DI\Attribute\Inject;
 
-abstract class AbstractMiddleware implements
-    MiddlewareInterface,
-    RouteAwareInterface
+/**
+ * AbstractController
+ */
+abstract class AbstractController implements RouteAwareInterface
 {
-    use ErrorResponseTrait;
-    use ResponseTrait;
-
     #[Inject]
     protected App $app;
 
