@@ -27,53 +27,53 @@ class CreateAppKeyCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $appKey = bin2hex(random_bytes(32));
-		$root = $this->config->get('root');
+        $root = $this->config->get('root');
 
-		$file = $root . '/.env';
+        $file = $root . '/.env';
 
-		if (!file_exists($file)) {
-			file_put_contents($file, 'APP_KEY=' . $appKey);
-			$output->writeln('Application key created successfully.');
-			return Command::SUCCESS;
-		}
+        if (!file_exists($file)) {
+            file_put_contents($file, 'APP_KEY=' . $appKey);
+            $output->writeln('Application key created successfully.');
+            return Command::SUCCESS;
+        }
 
-		$env = file_get_contents($root . '/.env');
-		$env = explode(PHP_EOL, $env ? $env : '');
+        $env = file_get_contents($root . '/.env');
+        $env = explode(PHP_EOL, $env ? $env : '');
 
-		$currentKey = null;
-		$hasPrevious = false;
-		foreach ($env as $key => $line) {
-			if (!str_starts_with($line, 'APP_KEY=')) {
-				continue;
-			}
-			$currentKey = ltrim($line, 'APP_KEY=');
-			$env[$key] = 'APP_KEY=' . $appKey;
-			break;
-		}
+        $currentKey = null;
+        $hasPrevious = false;
+        foreach ($env as $key => $line) {
+            if (!str_starts_with($line, 'APP_KEY=')) {
+                continue;
+            }
+            $currentKey = ltrim($line, 'APP_KEY=');
+            $env[$key] = 'APP_KEY=' . $appKey;
+            break;
+        }
 
-		foreach ($env as $key => $line) {
-			if (!str_starts_with($line, 'APP_PREVIOUS_KEYS=')) {
-				continue;
-			}
-			$hasPrevious = true;
-			$env[$key] = 'APP_PREVIOUS_KEYS=' . $currentKey . ',' . ltrim($line, 'APP_PREVIOUS_KEYS=');
-			$env[$key] = implode(',', array_slice(explode(',', $env[$key]), 0, 5));
-			break;
-		}
+        foreach ($env as $key => $line) {
+            if (!str_starts_with($line, 'APP_PREVIOUS_KEYS=')) {
+                continue;
+            }
+            $hasPrevious = true;
+            $env[$key] = 'APP_PREVIOUS_KEYS=' . $currentKey . ',' . ltrim($line, 'APP_PREVIOUS_KEYS=');
+            $env[$key] = implode(',', array_slice(explode(',', $env[$key]), 0, 5));
+            break;
+        }
 
-		if (!$currentKey) {
-			array_unshift($env, 'APP_KEY=' . $appKey);
-		}
+        if (!$currentKey) {
+            array_unshift($env, 'APP_KEY=' . $appKey);
+        }
 
-		if (!$hasPrevious && $currentKey) {
-			array_unshift($env, 'APP_PREVIOUS_KEYS=' . $currentKey);
-		}
+        if (!$hasPrevious && $currentKey) {
+            array_unshift($env, 'APP_PREVIOUS_KEYS=' . $currentKey);
+        }
 
-		file_put_contents($root . '/.env', implode(PHP_EOL, $env));
+        file_put_contents($root . '/.env', implode(PHP_EOL, $env));
 
-		$message = $currentKey ? 'Application key rotated successfully.' : 'Application key created successfully.';
+        $message = $currentKey ? 'Application key rotated successfully.' : 'Application key created successfully.';
 
-		$output->writeln($message);
-		return Command::SUCCESS;
+        $output->writeln($message);
+        return Command::SUCCESS;
     }
 }
