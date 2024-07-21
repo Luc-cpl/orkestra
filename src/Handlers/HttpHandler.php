@@ -5,7 +5,6 @@ namespace Orkestra\Handlers;
 use Orkestra\App;
 use Orkestra\Interfaces\HandlerInterface;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
-use Orkestra\Services\Http\Middleware\JsonMiddleware;
 use Orkestra\Services\Http\Strategy\ApplicationStrategy;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -35,7 +34,6 @@ class HttpHandler implements HandlerInterface
         $emitter  = $this->emitter;
 
         $router->setStrategy($strategy);
-        $router->middleware(JsonMiddleware::class);
 
         /** @var ServerRequestInterface */
         $request = $app->hookQuery('http.router.dispatch', $request, $router);

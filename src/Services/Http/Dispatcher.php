@@ -8,6 +8,7 @@ use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Middleware\ValidationMiddleware;
+use Orkestra\Services\Http\Middleware\JsonMiddleware;
 use League\Route\Dispatcher as LeagueDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -50,6 +51,7 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 
                 if ($this->isExtraConditionMatch($route, $request)) {
                     $this->addValidationMiddleware($route);
+                    $route->prependMiddleware(JsonMiddleware::class);
                     $this->setFoundMiddleware($route);
                     $request = $this->requestWithRouteAttributes($request, $route);
                     break;
@@ -81,6 +83,6 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
             return;
         }
 
-        $this->middleware(ValidationMiddleware::class, ['params' => $params]);
+        $route->prependMiddleware(ValidationMiddleware::class, ['params' => $params]);
     }
 }

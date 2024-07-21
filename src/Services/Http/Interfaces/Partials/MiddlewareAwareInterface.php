@@ -23,10 +23,11 @@ interface MiddlewareAwareInterface
     public function middlewareStack(array $middlewareStack): self;
 
     /**
-     * @param MiddlewareInterface|string|array{class-string|string,mixed[]} $middleware
+     * @param MiddlewareInterface|class-string|string|array{class-string|string,mixed[]} $middleware
+     * @param mixed[] $constructor
      * @return $this
      */
-    public function prependMiddleware(MiddlewareInterface|string|array $middleware): self;
+    public function prependMiddleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self;
 
     public function shiftMiddleware(): MiddlewareInterface;
 }

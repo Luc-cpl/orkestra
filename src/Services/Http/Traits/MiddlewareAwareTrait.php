@@ -41,8 +41,11 @@ trait MiddlewareAwareTrait
         return $this;
     }
 
-    public function prependMiddleware(MiddlewareInterface|string|array $middleware): self
+    public function prependMiddleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self
     {
+        if (!empty($constructor)) {
+            $middleware = [$middleware, $constructor];
+        }
         array_unshift($this->middleware, $middleware);
         return $this;
     }

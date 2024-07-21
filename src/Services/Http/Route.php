@@ -3,7 +3,6 @@
 namespace Orkestra\Services\Http;
 
 use Orkestra\App;
-
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;

@@ -2,7 +2,6 @@
 
 namespace Orkestra\Services\Http\Controllers;
 
-use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\View\Interfaces\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use DI\Attribute\Inject;
@@ -10,7 +9,7 @@ use DI\Attribute\Inject;
 /**
  * AbstractHtmlController
  */
-abstract class AbstractHtmlController extends AbstractController implements RouteAwareInterface
+abstract class AbstractHtmlController extends AbstractController
 {
     #[Inject]
     protected ViewInterface $view;

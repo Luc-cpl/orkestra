@@ -78,7 +78,7 @@ class ViewProvider implements ProviderInterface
         $app->bind(ViewInterface::class, View::class);
         $app->bind(RuntimeLoaderInterface::class, RuntimeLoader::class);
         $app->bind(LoaderInterface::class, FilesystemLoader::class)->constructor(
-            $app->config()->get('root') . '/views',
+            fn (App $app) => $app->config()->get('root') . '/views',
         );
 
         $app->bind(Environment::class, function (
