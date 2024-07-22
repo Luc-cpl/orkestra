@@ -40,7 +40,7 @@ class EntityFactory
             $properties  = array_merge($fakerArgs['properties'], $properties);
         }
 
-        $entity = $this->app->make($class, $constructor);
+        $entity = $this->app->get($class, $constructor);
 
         foreach ($properties as $key => $value) {
             if (method_exists($entity, $method = 'set' . ucfirst($key))) {
