@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Introduced the Encryption service to handle encryption and decryption of data.
+- Introduced the `Orkestra\Services\Http\MiddlewareRegistry` class to manage middleware registration.
 - Introduced the `Orkestra\App::decorate()` method, enabling service decoration during container resolution.
 - Introduced the `Orkestra\App::make()` method for resolving new instances from the container.
 - Introduced the `Orkestra\Entities\EntityFactory::create()` method for creating new entity instances through entity repository.

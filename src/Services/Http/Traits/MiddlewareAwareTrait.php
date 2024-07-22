@@ -2,18 +2,13 @@
 
 namespace Orkestra\Services\Http\Traits;
 
-use Orkestra\App;
+use Orkestra\Services\Http\MiddlewareRegistry;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use DI\Attribute\Inject;
-use InvalidArgumentException;
 use OutOfBoundsException;
 
 trait MiddlewareAwareTrait
 {
-    #[Inject]
-    protected App $app;
-
     public function getMiddlewareStack(): iterable
     {
         return $this->middleware;
@@ -66,38 +61,19 @@ trait MiddlewareAwareTrait
      */
     protected function resolveMiddleware($middleware, ?ContainerInterface $container = null): MiddlewareInterface
     {
-        $handler = is_array($middleware) ? $middleware[0] : $middleware;
-
-        if (is_string($handler) && !class_exists($handler)) {
-            /** @var array<string, string> */
-            $middlewareStack = $this->app->config()->get('middleware');
-            $originalHandler = $handler;
-            $handler = $middlewareStack[$handler] ?? false;
-            $middleware = is_array($middleware) ? [$handler, ...array_slice($middleware, 1)] : $handler;
-            if ($handler === false) {
-                throw new InvalidArgumentException(sprintf('Could not resolve "%s" middleware', $originalHandler));
-            }
-        }
-
-        if ($container === null && is_string($middleware) && class_exists($middleware)) {
-            $middleware = new $middleware();
-        }
-
-        if ($container !== null && is_string($middleware) && $container->has($middleware)) {
-            $middleware = $container->get($middleware);
-        }
-
-        // If the middleware is an array we should resolve from App instance
-        if (is_array($middleware) && $this->app->has($middleware[0])) {
-            // @phpstan-ignore-next-line
-            $middleware = $this->app->make(...$middleware);
-        }
-
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
         }
 
-        /** @var string $handler */
-        throw new InvalidArgumentException(sprintf('Could not resolve "%s" middleware', $handler));
+        $alias = is_array($middleware) ? $middleware[0] : $middleware;
+        $constructor = is_array($middleware) ? $middleware[1] : [];
+
+        if ($container === null) {
+            return new $alias(...$constructor);
+        }
+
+        /** @var MiddlewareRegistry */
+        $registry = $container->get(MiddlewareRegistry::class);
+        return $registry->make($alias, $constructor);
     }
 }

@@ -25,7 +25,7 @@ class Dispatcher extends LeagueDispatcher implements MiddlewareAwareInterface
 
     public function __construct(
         protected App $app,
-        mixed $data
+        mixed $data,
     ) {
         parent::__construct($data);
     }

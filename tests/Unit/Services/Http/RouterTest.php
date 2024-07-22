@@ -146,7 +146,7 @@ test('can throw an exception if middleware is not found', function () {
     $router->map('GET', '/', fn () => 'test');
     $router->middleware('test');
     request();
-})->throws(InvalidArgumentException::class);
+})->throws(RuntimeException::class);
 
 test('can use a invocable controller', function () {
     class Controller

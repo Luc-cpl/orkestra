@@ -2,20 +2,20 @@
 
 namespace Orkestra\Services\Http\Commands;
 
+use Orkestra\Interfaces\AppContainerInterface;
+use Orkestra\Services\Http\MiddlewareRegistry;
 use Orkestra\Interfaces\ConfigurationInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 #[AsCommand(name: 'middleware:list')]
 class MiddlewareListCommand extends Command
 {
     public function __construct(
         private ConfigurationInterface $config,
-        private ContainerInterface $container,
+        private AppContainerInterface $app,
     ) {
         parent::__construct();
     }
@@ -32,13 +32,10 @@ class MiddlewareListCommand extends Command
         $output->writeln('Available middleware options:');
         $output->writeln('');
 
-        /** @var array<string, string> */
-        $middlewareStack = $this->config->get('middleware');
-        /** @var array<string, string> */
-        $middlewareSources = $this->container->get('middleware.sources');
+        $middlewareStack = $this->app->get(MiddlewareRegistry::class)->getRegistry();
 
-        $definition = array_map(function ($middleware, $alias) use ($middlewareSources) {
-            return [$alias, $middleware, $middlewareSources[$alias] ?? ''];
+        $definition = array_map(function ($definition, $alias) {
+            return [$alias, $definition['class'], $definition['origin']];
         }, $middlewareStack, array_keys($middlewareStack));
 
         $table = new Table($output);
