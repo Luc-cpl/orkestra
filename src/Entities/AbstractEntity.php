@@ -65,7 +65,7 @@ abstract class AbstractEntity implements JsonSerializable
         }
 
         if (property_exists($this, $name)) {
-            return $this->{$name};
+            return $this->{$name} ?? null;
         }
 
         throw new InvalidArgumentException(sprintf('Undefined property: %s::$%s', static::class, $name));
