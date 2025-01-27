@@ -19,6 +19,7 @@ class Param
     /**
      * @param ParamType|class-string $type
      * @param string[]|string $validation
+     * @param Param[]|class-string $inner
      */
     public function __construct(
         private string           $name,
@@ -27,6 +28,7 @@ class Param
         private mixed            $default     = null,
         private ?string          $description = null,
         private array|string     $validation  = [],
+        private array|string     $inner       = '',
     ) {
         //
     }
@@ -65,6 +67,14 @@ class Param
             'validation'  => $this->validation,
             'description' => $this->description,
         ]);
+
+        if ($this->inner && is_array($this->inner)) {
+            $inner = array_map(fn ($param) => $param->getParamDefinition($factory, $generator), (array) $this->inner);
+        }
+
+        if ($this->inner && is_string($this->inner)) {
+            $inner = $generator($factory, $this->inner);
+        }
 
         $inner && $definition->setInner($inner);
         return $definition;
