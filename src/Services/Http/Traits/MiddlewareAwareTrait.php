@@ -69,6 +69,7 @@ trait MiddlewareAwareTrait
         $constructor = is_array($middleware) ? $middleware[1] : [];
 
         if ($container === null) {
+            /** @var MiddlewareInterface */
             return new $alias(...$constructor);
         }
 

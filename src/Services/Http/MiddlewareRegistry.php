@@ -9,10 +9,10 @@ use RuntimeException;
 class MiddlewareRegistry
 {
     /**
-     * @var array<string, array{
+     * @param array<string, array{
      * 		class: class-string<MiddlewareInterface>,
      * 		origin: string,
-     * }>
+     * }> $registry
      */
     public function __construct(
         private AppContainerInterface $app,
@@ -29,6 +29,7 @@ class MiddlewareRegistry
     public function make(string $alias, array $constructor = []): MiddlewareInterface
     {
         if ($this->app->has($alias)) {
+            /** @var class-string<MiddlewareInterface> $alias */
             return $this->app->make($alias, $constructor);
         } elseif (isset($this->registry[$alias])) {
             return $this->app->make($this->registry[$alias]['class'], $constructor);

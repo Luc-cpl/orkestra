@@ -15,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MiddlewareListCommand extends Command
 {
     public function __construct(
-        private ConfigurationInterface $config,
         private AppContainerInterface $app,
     ) {
         parent::__construct();

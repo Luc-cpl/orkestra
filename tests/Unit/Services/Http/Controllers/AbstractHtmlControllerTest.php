@@ -4,6 +4,7 @@ use Orkestra\Services\Http\Controllers\AbstractApiController;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 
 test('can set a route in api controller', function () {
+    /** @var RouteInterface $route */
     $route = Mockery::mock(RouteInterface::class);
 
     $class = new class () extends AbstractApiController {

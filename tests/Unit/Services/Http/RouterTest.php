@@ -93,7 +93,8 @@ test('can dispatch a request with a router middleware', function () {
         $response = $handler->handle($request);
         return $response->withHeader('x-test', 'test');
     });
-
+    
+    /** @var middleware MiddlewareInterface */
     $router = app()->get(RouterInterface::class);
     $router->middleware($middleware);
     $router->map('GET', '/', fn () => 'test');

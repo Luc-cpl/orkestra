@@ -27,6 +27,23 @@ class Route extends LeagueRoute implements RouteInterface
         parent::__construct($method, $path, $handler);
     }
 
+    public function getParsedHandler(): array
+    {
+        $handler = $this->handler;
+        if (is_string($handler) && strpos($handler, '::') !== false) {
+            [$class, $method] = explode('::', $handler);
+            /** @var class-string $class */
+            return ['class' => $class, 'method' => $method];
+        }
+
+        if (is_string($handler) && class_exists($handler)) {
+            return ['class' => $handler, 'method' => '__invoke'];
+        }
+
+        /** @var callable $handler */
+        return ['callable' => $handler];
+    }
+
     public function getParentGroup(): ?RouteGroup
     {
         /** @var ?RouteGroup */

@@ -1,9 +1,12 @@
 <?php
 
 use Orkestra\Providers\HttpProvider;
+use Orkestra\Services\Http\Attributes\Entity;
+use Orkestra\Services\Http\Attributes\Param;
 use Orkestra\Services\Http\Enum\ParamType;
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
+use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\RouteDefinition;
 
 beforeEach(function () {
@@ -20,7 +23,7 @@ test('can instantiate a RouteDefinition', function () {
     expect($routeDefinition)->toBeInstanceOf(RouteDefinition::class);
 });
 
-test('can sets the route definition title correctly', function () {
+test('can set the route definition title correctly', function () {
     $routeDefinition = new RouteDefinition(title: 'title');
     expect($routeDefinition->title())->toBe('title');
 
@@ -38,7 +41,7 @@ test('can sets the route definition title correctly', function () {
     expect($routeDefinition->title())->toBe('');
 });
 
-test('can sets the route definition description correctly', function () {
+test('can set the route definition description correctly', function () {
     $routeDefinition = new RouteDefinition(description: 'description');
     expect($routeDefinition->description())->toBe('description');
 
@@ -56,7 +59,7 @@ test('can sets the route definition description correctly', function () {
     expect($routeDefinition->description())->toBe('');
 });
 
-test('can sets the route definition type correctly', function () {
+test('can set the route definition type correctly', function () {
     $routeDefinition = new RouteDefinition(type: 'type');
     expect($routeDefinition->type())->toBe('type');
 
@@ -74,7 +77,7 @@ test('can sets the route definition type correctly', function () {
     expect($routeDefinition->type())->toBe('');
 });
 
-test('can sets the route definition meta correctly', function () {
+test('can set the route definition meta correctly', function () {
     $routeDefinition = new RouteDefinition(meta: ['key' => 'value']);
     expect($routeDefinition->meta('key'))->toBe('value');
     expect($routeDefinition->meta('key2'))->toBeNull();
@@ -85,9 +88,8 @@ test('can sets the route definition meta correctly', function () {
     expect($routeDefinition->meta('key'))->toBeNull();
 });
 
-test('can sets the route definition params correctly', function () {
+test('can set the route definition params correctly', function () {
     $factory = app()->get(ParamDefinitionFactory::class);
-
     $routeDefinition = new RouteDefinition(params: [
         'query' => [
             'type' => 'string',
@@ -165,4 +167,105 @@ test('can set required params', function () {
         ],
     ]);
     expect($routeDefinition->params($factory)[0]->required)->toBeFalse();
+});
+
+test('can set params from PHP attributes', function () {
+    #[Param('entity_value_1', type: 'string', validation: 'required|min:3|max:255')]
+    #[Param('entity_value_2', type: 'string', validation: 'required|min:3|max:255')]
+    class AttributesTestEntity1
+    {
+        #[Param('entity_value_3', type: 'string', validation: 'required|min:3|max:255')]
+        public string $entity_value_3;
+    }
+
+    #[Param('class_param', type: 'string', validation: 'required|min:3|max:255')]
+    class AttributesTestController1
+    {
+        #[Param('title', type: 'string', validation: 'required|min:3|max:255')]
+        #[Param('content', type: 'string', validation: 'required|min:3|max:255')]
+        #[Param('entity', type: AttributesTestEntity1::class)]
+        public function __invoke()
+        {
+            //
+        }
+    }
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('POST', '/', AttributesTestController1::class);
+
+    $routeDefinition = $router->getRoutes()[0]->getDefinition();
+    $factory = app()->get(ParamDefinitionFactory::class);
+    expect($routeDefinition->params($factory)[0]->name)->toBe('class_param');
+    expect($routeDefinition->params($factory)[0]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[1]->name)->toBe('title');
+    expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[2]->name)->toBe('content');
+    expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[3]->name)->toBe('entity');
+    expect($routeDefinition->params($factory)[3]->required)->toBeFalse();
+    expect($routeDefinition->params($factory)[3]->inner[0]->name)->toBe('entity_value_1');
+    expect($routeDefinition->params($factory)[3]->inner[1]->name)->toBe('entity_value_2');
+    expect($routeDefinition->params($factory)[3]->inner[2]->name)->toBe('entity_value_3');
+});
+
+test('can set entity from PHP attribute in class', function () {
+    #[Param('entity_value_1', type: 'string', validation: 'required|min:3|max:255')]
+    #[Param('entity_value_2', type: 'string', validation: 'required|min:3|max:255')]
+    class AttributesTestEntity2
+    {
+        #[Param('entity_value_3', type: 'string', validation: 'required|min:3|max:255')]
+        public string $entity_value_3;
+    }
+
+    #[Entity(AttributesTestEntity2::class)]
+    class AttributesTestController2
+    {
+        public function __invoke()
+        {
+            //
+        }
+    }
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('POST', '/', AttributesTestController2::class);
+
+    $routeDefinition = $router->getRoutes()[0]->getDefinition();
+    $factory = app()->get(ParamDefinitionFactory::class);
+    expect($routeDefinition->params($factory)[0]->name)->toBe('entity_value_1');
+    expect($routeDefinition->params($factory)[0]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[1]->name)->toBe('entity_value_2');
+    expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[2]->name)->toBe('entity_value_3');
+    expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
+});
+
+test('can set entity from PHP attribute in method', function () {
+    #[Param('entity_value_1', type: 'string', validation: 'required|min:3|max:255')]
+    #[Param('entity_value_2', type: 'string', validation: 'required|min:3|max:255')]
+    class AttributesTestEntity3
+    {
+        #[Param('entity_value_3', type: 'string', validation: 'required|min:3|max:255')]
+        public string $entity_value_3;
+    }
+
+    class AttributesTestController3
+    {
+        #[Entity(AttributesTestEntity3::class)]
+        public function __invoke()
+        {
+            //
+        }
+    }
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('POST', '/', AttributesTestController3::class);
+
+    $routeDefinition = $router->getRoutes()[0]->getDefinition();
+    $factory = app()->get(ParamDefinitionFactory::class);
+    expect($routeDefinition->params($factory)[0]->name)->toBe('entity_value_1');
+    expect($routeDefinition->params($factory)[0]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[1]->name)->toBe('entity_value_2');
+    expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[2]->name)->toBe('entity_value_3');
+    expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
 });

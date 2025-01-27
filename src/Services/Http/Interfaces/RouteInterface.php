@@ -19,4 +19,9 @@ interface RouteInterface extends
 {
     public function getParentGroup(): ?RouteGroupInterface;
     public function getPath(): string;
+
+    /**
+     * @return array{class:class-string,method:string}|array{callable:callable}
+     */
+    public function getParsedHandler(): array;
 }

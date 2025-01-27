@@ -107,10 +107,10 @@ test('can check if property is set', function () {
     expect(isset($entity->nonConstructProperty))->toBeTrue();
 });
 
-test('can not access a property before initialization', function () {
+test('can return null if property is not set', function () {
     $entity = new EntityTest('John Doe', 20);
-    $entity->nonConstructProperty;
-})->throws(Error::class);
+    expect($entity->nonConstructProperty)->toBeNull();
+});
 
 test('can convert entity to array', function () {
     $entity = new EntityTest('John Doe', 20);
