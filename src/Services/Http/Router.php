@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
-
 use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;
 use Psr\Http\Message\ResponseInterface;

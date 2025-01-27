@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Orkestra\Services\Hooks\Interfaces\ListenerInterface;
-
 use Orkestra\Services\Hooks\Hooks;
 use Exception;
 

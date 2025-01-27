@@ -4,7 +4,6 @@ namespace Orkestra\Services\Http\Commands;
 
 use Orkestra\Interfaces\AppContainerInterface;
 use Orkestra\Services\Http\MiddlewareRegistry;
-use Orkestra\Interfaces\ConfigurationInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;

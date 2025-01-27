@@ -5,7 +5,6 @@ use Orkestra\Configuration;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Psr\Container\NotFoundExceptionInterface;
-
 use Orkestra\Providers\CommandsProvider;
 use Orkestra\Providers\HooksProvider;
 use Orkestra\Providers\HttpProvider;

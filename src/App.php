@@ -8,7 +8,6 @@ use Orkestra\Interfaces\AppHooksInterface;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Traits\AppContainerTrait;
 use Orkestra\Traits\AppHooksTrait;
-
 use Psr\Container\ContainerInterface;
 
 class App implements AppHooksInterface, AppContainerInterface

@@ -3,7 +3,6 @@
 namespace Orkestra\Traits;
 
 use Orkestra\AppBind;
-
 use Orkestra\Interfaces\ProviderInterface;
 use DI\Container;
 use DI\ContainerBuilder;

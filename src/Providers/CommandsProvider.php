@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Commands\ConfigOptionsCommand;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Commands\StartServerCommand;
-
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 

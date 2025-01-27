@@ -3,7 +3,6 @@
 namespace Orkestra;
 
 use Orkestra\Interfaces\ConfigurationInterface;
-
 use InvalidArgumentException;
 
 class Configuration implements ConfigurationInterface

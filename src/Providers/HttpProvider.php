@@ -5,19 +5,15 @@ namespace Orkestra\Providers;
 use InvalidArgumentException;
 use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
-
 use Orkestra\Services\Http\Router;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
-
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ServerRequestInterface;
-
 use Orkestra\Services\Http\Strategy\ApplicationStrategy;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
-
 use League\Route\Strategy\JsonStrategy;
 use Orkestra\Services\Http\Commands\MiddlewareListCommand;
 use Orkestra\Services\Http\MiddlewareRegistry;

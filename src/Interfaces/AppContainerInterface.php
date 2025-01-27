@@ -3,7 +3,6 @@
 namespace Orkestra\Interfaces;
 
 use Psr\Container\ContainerInterface;
-
 use Orkestra\AppBind;
 use InvalidArgumentException;
 use BadMethodCallException;

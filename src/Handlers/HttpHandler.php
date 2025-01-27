@@ -7,7 +7,6 @@ use Orkestra\Interfaces\HandlerInterface;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\Strategy\ApplicationStrategy;
 use Psr\Http\Message\ServerRequestInterface;
-
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 
 class HttpHandler implements HandlerInterface

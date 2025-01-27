@@ -6,7 +6,6 @@ use Orkestra\Entities\AbstractEntity;
 use DI\Definition\Helper\CreateDefinitionHelper;
 use DI\Container;
 use DI;
-
 use InvalidArgumentException;
 
 /**
@@ -20,7 +19,7 @@ class AppBind extends AbstractEntity
         protected string     $name,
         protected mixed      $service,
         protected bool       $autowire = true,
-        private   ?Container $container = null,
+        private ?Container $container = null,
     ) {
         $isClassString = is_string($service);
 

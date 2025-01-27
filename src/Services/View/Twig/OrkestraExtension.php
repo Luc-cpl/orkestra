@@ -3,7 +3,6 @@
 namespace Orkestra\Services\View\Twig;
 
 use Orkestra\Services\View\HtmlTag;
-
 use InvalidArgumentException;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Twig\Extension\AbstractExtension;

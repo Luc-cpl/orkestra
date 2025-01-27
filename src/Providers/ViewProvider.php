@@ -8,7 +8,6 @@ use Orkestra\Services\View\Interfaces\ViewInterface;
 use Orkestra\Services\View\Twig\OrkestraExtension;
 use Orkestra\Services\View\Twig\RuntimeLoader;
 use Orkestra\Services\View\View;
-
 use Twig\Environment;
 use Twig\Extra\Markdown\DefaultMarkdown;
 use Twig\Extra\Markdown\MarkdownExtension;

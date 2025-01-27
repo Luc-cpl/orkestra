@@ -8,7 +8,6 @@ use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Traits\RouteStrategyTrait;
 use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
-
 use League\Route\Route as LeagueRoute;
 use Psr\Container\ContainerInterface;
 
