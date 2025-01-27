@@ -255,7 +255,7 @@ test('can set entity from PHP attribute in method', function () {
         {
             //
         }
-        
+
         #[Entity(AttributesTestEntity3::class, false)]
         public function show()
         {

@@ -12,7 +12,7 @@ class Entity
      */
     public function __construct(
         public readonly string $class,
-		public readonly bool $request = true,
+        public readonly bool $request = true,
     ) {
         //
     }
