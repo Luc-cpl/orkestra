@@ -189,7 +189,9 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
         $useEntityAttributes = $reflection->getAttributes(Entity::class);
         foreach ($useEntityAttributes as $attribute) {
             $instance = $attribute->newInstance();
-            $definitions = array_merge($definitions, $this->getAttributeParams($factory, $instance->class));
+            if ($instance->request) {
+                $definitions = array_merge($definitions, $this->getAttributeParams($factory, $instance->class));
+            }
         }
 
         // Get params from UseEntity attributes on method if specified
@@ -198,7 +200,9 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
             $useEntityAttributes = $methodReflection->getAttributes(Entity::class);
             foreach ($useEntityAttributes as $attribute) {
                 $instance = $attribute->newInstance();
-                $definitions = array_merge($definitions, $this->getAttributeParams($factory, $instance->class));
+                if ($instance->request) {
+                    $definitions = array_merge($definitions, $this->getAttributeParams($factory, $instance->class));
+                }
             }
         }
 

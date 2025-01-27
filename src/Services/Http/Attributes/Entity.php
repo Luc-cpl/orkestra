@@ -11,7 +11,8 @@ class Entity
      * @param class-string $class
      */
     public function __construct(
-        public readonly string $class
+        public readonly string $class,
+		public readonly bool $request = true,
     ) {
         //
     }

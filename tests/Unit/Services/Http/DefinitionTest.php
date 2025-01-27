@@ -255,10 +255,17 @@ test('can set entity from PHP attribute in method', function () {
         {
             //
         }
+        
+        #[Entity(AttributesTestEntity3::class, false)]
+        public function show()
+        {
+            //
+        }
     }
 
     $router = app()->get(RouterInterface::class);
     $router->map('POST', '/', AttributesTestController3::class);
+    $router->map('GET', '/', AttributesTestController3::class . '::show');
 
     $routeDefinition = $router->getRoutes()[0]->getDefinition();
     $factory = app()->get(ParamDefinitionFactory::class);
@@ -268,4 +275,7 @@ test('can set entity from PHP attribute in method', function () {
     expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
     expect($routeDefinition->params($factory)[2]->name)->toBe('entity_value_3');
     expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
+
+    $routeDefinition = $router->getRoutes()[1]->getDefinition();
+    expect($routeDefinition->params($factory))->toBe([]);
 });
