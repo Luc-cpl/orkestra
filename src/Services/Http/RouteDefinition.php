@@ -264,7 +264,7 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
             return $paramType;
         }
 
-        if (class_exists($paramType)) {
+        if (class_exists($paramType) && !enum_exists($paramType)) {
             return $paramType;
         }
 
