@@ -41,7 +41,7 @@ class RouteGroup extends LeagueRouteGroup implements RouteGroupInterface
         $route->setParentGroup($this);
 
         if ($host = $this->getHost()) {
-            $route->setHost($host);
+            $route->setHost($host); 
         }
 
         if ($scheme = $this->getScheme()) {

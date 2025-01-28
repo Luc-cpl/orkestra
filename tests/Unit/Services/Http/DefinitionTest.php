@@ -174,15 +174,38 @@ test('can set params from PHP attributes', function () {
     #[Param('entity_value_2', type: 'string', validation: 'required|min:3|max:255')]
     class AttributesTestEntity1
     {
-        #[Param('entity_value_3', type: 'string', validation: 'required|min:3|max:255')]
-        public string $entity_value_3;
+        #[Param('entity_value_3')]
+        public float $entity_value_3;
+
+        #[Param('entity_value_4')]
+        public int $entity_value_4;
+
+        #[Param('entity_value_5')]
+        public bool $entity_value_5;
+
+        // Check if the type is overridden correctly
+        #[Param('entity_value_6', type: ParamType::Object)]
+        public bool $entity_value_6;
+
+        // Check if the type is overridden correctly
+        #[Param('entity_value_7')]
+        public AttributesTestEntity1 $entity_value_7; // This also checks for infinite loop handle
+
+        #[Param('entity_value_8', maxLevels: 1)]
+        public AttributesTestEntity1 $entity_value_8; // This also checks for infinite loop handle
+
+        #[Param]
+        public array $entity_value_9;
+
+        #[Param]
+        public $entity_value_10;
     }
 
-    #[Param('class_param', type: 'string', validation: 'required|min:3|max:255')]
+    #[Param('class_param', validation: 'required|min:3|max:255')]
     class AttributesTestController1
     {
-        #[Param('title', type: 'string', validation: 'required|min:3|max:255')]
-        #[Param('content', type: 'string', validation: 'required|min:3|max:255')]
+        #[Param('title', type: ParamType::String, validation: 'required|min:3|max:255')]
+        #[Param('content', validation: 'required|min:3|max:255')]
         #[Param('entity', type: AttributesTestEntity1::class)]
         public function __invoke()
         {
@@ -197,8 +220,11 @@ test('can set params from PHP attributes', function () {
     $factory = app()->get(ParamDefinitionFactory::class);
     expect($routeDefinition->params($factory)[0]->name)->toBe('class_param');
     expect($routeDefinition->params($factory)[0]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[0]->type)->toBe(ParamType::String);
+    expect($routeDefinition->params($factory)[0]->description)->toBe('The class_param of the AttributesTest1');
     expect($routeDefinition->params($factory)[1]->name)->toBe('title');
     expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[1]->type)->toBe(ParamType::String);
     expect($routeDefinition->params($factory)[2]->name)->toBe('content');
     expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
     expect($routeDefinition->params($factory)[3]->name)->toBe('entity');
@@ -206,6 +232,16 @@ test('can set params from PHP attributes', function () {
     expect($routeDefinition->params($factory)[3]->inner[0]->name)->toBe('entity_value_1');
     expect($routeDefinition->params($factory)[3]->inner[1]->name)->toBe('entity_value_2');
     expect($routeDefinition->params($factory)[3]->inner[2]->name)->toBe('entity_value_3');
+    expect($routeDefinition->params($factory)[3]->inner[2]->type)->toBe(ParamType::Number);
+    expect($routeDefinition->params($factory)[3]->inner[3]->type)->toBe(ParamType::Int);
+    expect($routeDefinition->params($factory)[3]->inner[4]->type)->toBe(ParamType::Boolean);
+    expect($routeDefinition->params($factory)[3]->inner[5]->type)->toBe(ParamType::Object);
+    expect($routeDefinition->params($factory)[3]->inner[6]->type)->toBe(ParamType::Object);
+    expect($routeDefinition->params($factory)[3]->inner[6]->inner[0]->name)->toBe('entity_value_1');
+    expect($routeDefinition->params($factory)[3]->inner[7]->inner)->toBe([]);
+    expect($routeDefinition->params($factory)[3]->inner[8]->name)->toBe('entity_value_9');
+    expect($routeDefinition->params($factory)[3]->inner[8]->type)->toBe(ParamType::Array);
+    expect($routeDefinition->params($factory)[3]->inner[9]->type)->toBe(ParamType::String);
 });
 
 test('can set entity from PHP attribute in class', function () {
@@ -213,7 +249,7 @@ test('can set entity from PHP attribute in class', function () {
     #[Param('entity_value_2', type: 'string', validation: 'required|min:3|max:255')]
     class AttributesTestEntity2
     {
-        #[Param('entity_value_3', type: 'string', validation: 'required|min:3|max:255')]
+        #[Param(validation: 'required|min:3|max:255')]
         public string $entity_value_3;
     }
 
@@ -237,6 +273,7 @@ test('can set entity from PHP attribute in class', function () {
     expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
     expect($routeDefinition->params($factory)[2]->name)->toBe('entity_value_3');
     expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[2]->type)->toBe(ParamType::String);
 });
 
 test('can set entity from PHP attribute in method', function () {
@@ -244,7 +281,7 @@ test('can set entity from PHP attribute in method', function () {
     #[Param('entity_value_2', type: 'string', validation: 'required|min:3|max:255')]
     class AttributesTestEntity3
     {
-        #[Param('entity_value_3', type: 'string', validation: 'required|min:3|max:255')]
+        #[Param]
         public string $entity_value_3;
     }
 
@@ -274,7 +311,7 @@ test('can set entity from PHP attribute in method', function () {
     expect($routeDefinition->params($factory)[1]->name)->toBe('entity_value_2');
     expect($routeDefinition->params($factory)[1]->required)->toBeTrue();
     expect($routeDefinition->params($factory)[2]->name)->toBe('entity_value_3');
-    expect($routeDefinition->params($factory)[2]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[2]->required)->toBeFalse();
 
     $routeDefinition = $router->getRoutes()[1]->getDefinition();
     expect($routeDefinition->params($factory))->toBe([]);
@@ -283,7 +320,7 @@ test('can set entity from PHP attribute in method', function () {
 test('can set inner object from PHP attribute', function () {
     class AttributesTestEntity4
     {
-        #[Param('entity_value_1', type: 'string', validation: 'required|min:3|max:255')]
+        #[Param(type: 'string', validation: 'required|min:3|max:255')]
         public string $entity_value_1;
     }
     #[Param('array_of_object', type: ParamType::Object, inner: [
@@ -315,4 +352,47 @@ test('can set inner object from PHP attribute', function () {
     expect($routeDefinition->params($factory)[1]->required)->toBeFalse();
     expect($routeDefinition->params($factory)[1]->inner[0]->name)->toBe('entity_value_1');
     expect($routeDefinition->params($factory)[1]->inner[0]->required)->toBeTrue();
+});
+
+test('can throw exception for invalid type', function () {
+    #[Param('entity_value_1', type: 'invalid')]
+    class AttributesTestEntity5
+    {
+        public string $entity_value_1;
+    }
+
+    #[Entity(AttributesTestEntity5::class)]
+    class AttributesTestController5
+    {
+        public function __invoke()
+        {
+            //
+        }
+    }
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('POST', '/', AttributesTestController5::class);
+
+    $routeDefinition = $router->getRoutes()[0]->getDefinition();
+    $factory = app()->get(ParamDefinitionFactory::class);
+    expect(fn () => $routeDefinition->params($factory))->toThrow(InvalidArgumentException::class);
+});
+
+
+test('can throw exception for invalid name', function () {
+    #[Param]
+    class AttributesTestController6
+    {
+        public function __invoke()
+        {
+            //
+        }
+    }
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('POST', '/', AttributesTestController6::class);
+
+    $routeDefinition = $router->getRoutes()[0]->getDefinition();
+    $factory = app()->get(ParamDefinitionFactory::class);
+    expect(fn () => $routeDefinition->params($factory))->toThrow(InvalidArgumentException::class);
 });

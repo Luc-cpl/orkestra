@@ -7,6 +7,7 @@ use Orkestra\Services\Http\Attributes\Entity;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Entities\ParamDefinition;
+use Orkestra\Services\Http\Enum\ParamType;
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade as DefinitionFacade;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Traits\RouteAwareTrait;
@@ -14,6 +15,16 @@ use Orkestra\Services\Http\Traits\RouteAwareTrait;
 class RouteDefinition implements DefinitionInterface, RouteAwareInterface
 {
     use RouteAwareTrait;
+
+    /**
+     * @var array<string,array{current:int,max:int}>
+     */
+    private array $loopLevels = [];
+
+    /**
+     * @var array<string, ParamDefinition[]>
+     */
+    private array $paramsAttributeCache = [];
 
     /**
      * @param array<string, mixed> $meta
@@ -153,15 +164,31 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
      * @param class-string $class
      * @return ParamDefinition[]
      */
-    protected function getAttributeParams(ParamDefinitionFactory $factory, string $class, string $method = ''): array
+    protected function getAttributeParams(ParamDefinitionFactory $factory, string $class, string $method = '', ?int $levels = null): array
     {
+        if (isset($this->paramsAttributeCache["$class::$method"])) {
+            return $this->paramsAttributeCache["$class::$method"];
+        }
+
         $definitions = [];
         $reflection = new \ReflectionClass($class);
+
+        $classPrettyName = $reflection->getShortName();
+        $classPrettyName = str_replace('Controller', '', $classPrettyName);
+
+        $this->loopLevels[$class] ??= ['current' => 0, 'max' => $levels ?? 10];
+        $this->loopLevels[$class]['current']++;
+
+        // Avoid infinite loops
+        if ($this->loopLevels[$class]['current'] > $this->loopLevels[$class]['max']) {
+            return $definitions;
+        }
 
         // Get params from class attributes
         $classParams = $reflection->getAttributes(Param::class);
         foreach ($classParams as $attribute) {
             $instance = $attribute->newInstance();
+            $instance->description = $instance->description ?? "The {$instance->name} of the {$classPrettyName}";
             $definitions[] = $instance->getParamDefinition($factory, $this->getAttributeParams(...));
         }
 
@@ -171,6 +198,7 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
             $methodParams = $methodReflection->getAttributes(Param::class);
             foreach ($methodParams as $attribute) {
                 $instance = $attribute->newInstance();
+                $instance->description = $instance->description ?? "The {$instance->name} of the {$classPrettyName}";
                 $definitions[] = $instance->getParamDefinition($factory, $this->getAttributeParams(...));
             }
         }
@@ -178,9 +206,14 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
         // Get params from class properties
         $properties = $reflection->getProperties();
         foreach ($properties as $property) {
+            $propertyName = $property->getName();
+            $propertyType = (string) $property->getType();
             $propertyParams = $property->getAttributes(Param::class);
             foreach ($propertyParams as $attribute) {
                 $instance = $attribute->newInstance();
+                $instance->name = $instance->name ?? $propertyName;
+                $instance->type = $instance->type ?? $this->parseType($propertyType);
+                $instance->description = $instance->description ?? "The {$instance->name} of the {$classPrettyName}";
                 $definitions[] = $instance->getParamDefinition($factory, $this->getAttributeParams(...));
             }
         }
@@ -206,6 +239,35 @@ class RouteDefinition implements DefinitionInterface, RouteAwareInterface
             }
         }
 
+        if ($method) {
+            $this->paramsAttributeCache["$class::$method"] = $definitions;
+        }
+
         return $definitions;
+    }
+
+    /**
+     * @return class-string|ParamType
+     */
+    private function parseType(string $type): string|ParamType
+    {
+        $paramType = match ($type) {
+            'string' => ParamType::String,
+            'int'    => ParamType::Int,
+            'float'  => ParamType::Number,
+            'bool'   => ParamType::Boolean,
+            'array'  => ParamType::Array,
+            default  => $type,
+        };
+
+        if ($paramType instanceof ParamType) {
+            return $paramType;
+        }
+
+        if (class_exists($paramType)) {
+            return $paramType;
+        }
+
+        return ParamType::String;
     }
 }
