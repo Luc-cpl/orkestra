@@ -25,12 +25,12 @@ class Param
     public function __construct(
         public ?string               $name        = null,
         public null|ParamType|string $type        = null,
-        private ?string               $title       = null,
-        private mixed                 $default     = null,
+        private ?string              $title       = null,
+        private mixed                $default     = null,
         public ?string               $description = null,
-        private array|string          $validation  = [],
-        private array|string          $inner       = [],
-        private ?int				  $maxLevels   = null,
+        private array|string         $validation  = [],
+        private array|string         $inner       = [],
+        private ?int				 $maxLevels   = null,
     ) {
         //
     }
