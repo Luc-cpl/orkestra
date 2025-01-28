@@ -199,6 +199,18 @@ test('can set params from PHP attributes', function () {
 
         #[Param]
         public $entity_value_10;
+
+        #[Param(enum: ['value1', 'value2'])]
+        public string $entity_value_11;
+
+        #[Param(enum: [1, 2])]
+        public int $entity_value_12;
+
+        #[Param(enum: [1.1, 2.2])]
+        public float $entity_value_13;
+
+        #[Param(validation: 'required', enum: ParamType::class)]
+        public string $entity_value_14;
     }
 
     #[Param('class_param', validation: 'required|min:3|max:255')]
@@ -242,6 +254,11 @@ test('can set params from PHP attributes', function () {
     expect($routeDefinition->params($factory)[3]->inner[8]->name)->toBe('entity_value_9');
     expect($routeDefinition->params($factory)[3]->inner[8]->type)->toBe(ParamType::Array);
     expect($routeDefinition->params($factory)[3]->inner[9]->type)->toBe(ParamType::String);
+    expect($routeDefinition->params($factory)[3]->inner[10]->validation[0])->toBe('in:value1,value2');
+    expect($routeDefinition->params($factory)[3]->inner[11]->validation[0])->toBe('in:1,2');
+    expect($routeDefinition->params($factory)[3]->inner[12]->validation[0])->toBe('in:1.1,2.2');
+    expect($routeDefinition->params($factory)[3]->inner[13]->required)->toBeTrue();
+    expect($routeDefinition->params($factory)[3]->inner[13]->validation[1])->toBe('in:string,int,number,boolean,array,object');
 });
 
 test('can set entity from PHP attribute in class', function () {
@@ -396,3 +413,21 @@ test('can throw exception for invalid name', function () {
     $factory = app()->get(ParamDefinitionFactory::class);
     expect(fn () => $routeDefinition->params($factory))->toThrow(InvalidArgumentException::class);
 });
+
+test('can throw exception for invalid enum class', function () {
+    #[Param('entity_value_1', enum: AttributesTestController7::class)]
+    class AttributesTestController7
+    {
+        public function __invoke()
+        {
+            //
+        }
+    }
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('POST', '/', AttributesTestController7::class);
+
+    $routeDefinition = $router->getRoutes()[0]->getDefinition();
+    $factory = app()->get(ParamDefinitionFactory::class);
+    $routeDefinition->params($factory);
+})->throws(InvalidArgumentException::class);

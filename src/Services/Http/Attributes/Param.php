@@ -20,17 +20,19 @@ class Param
      * @param ParamType|class-string $type
      * @param string[]|string $validation
      * @param Param[]|class-string $inner
+	 * @param int[]|string[]|float[]|class-string $enum
      * @param int|null $maxLevels Prevent infinite recursion by limiting the number of nested levels (default: 10)
      */
     public function __construct(
         public ?string               $name        = null,
         public null|ParamType|string $type        = null,
-        private ?string               $title       = null,
-        private mixed                 $default     = null,
+        public ?string               $title       = null,
+        public mixed                 $default     = null,
         public ?string               $description = null,
-        private array|string          $validation  = [],
-        private array|string          $inner       = [],
-        private ?int				  $maxLevels   = null,
+        public array|string          $validation  = [],
+        public array|string          $inner       = [],
+		public array|string          $enum        = [],
+        public ?int				     $maxLevels   = null,
     ) {
         //
     }
@@ -70,6 +72,7 @@ class Param
             'default'     => $this->default,
             'validation'  => $this->validation,
             'description' => $this->description,
+			'enum'        => $this->enum,
         ]);
 
         if ($this->inner && is_array($this->inner)) {
@@ -80,7 +83,7 @@ class Param
             $inner = $generator($factory, $this->inner, levels: $this->maxLevels);
         }
 
-        $inner && $definition->setInner($inner);
+        $inner && $definition->set(inner: $inner);
         return $definition;
     }
 }

@@ -24,7 +24,9 @@ abstract class AbstractEntity implements JsonSerializable
                     $key
                 ));
             }
-            if (method_exists($this, $method = 'set' . ucfirst($key))) {
+
+            $method = 'set' . str_replace('_', '', ucwords($key, '_'));
+            if (method_exists($this, $method)) {
                 $this->{$method}($value);
                 unset($args[$key]);
             }
@@ -60,7 +62,8 @@ abstract class AbstractEntity implements JsonSerializable
 
     public function __get(string $name): mixed
     {
-        if (method_exists($this, $method = 'get' . ucfirst($name))) {
+        $method = 'get' . str_replace('_', '', ucwords($name, '_'));
+        if (method_exists($this, $method)) {
             return $this->{$method}();
         }
 
@@ -73,7 +76,8 @@ abstract class AbstractEntity implements JsonSerializable
 
     public function __isset(string $name)
     {
-        if (method_exists($this, 'get' . ucfirst($name))) {
+        $method = 'get' . str_replace('_', '', ucwords($name, '_'));
+        if (method_exists($this, $method)) {
             return true;
         }
 
