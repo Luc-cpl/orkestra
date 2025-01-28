@@ -23,14 +23,14 @@ class Param
      * @param int|null $maxLevels Prevent infinite recursion by limiting the number of nested levels (default: 10)
      */
     public function __construct(
-        public ?string               $name        = null,
-        public null|ParamType|string $type        = null,
-        private ?string              $title       = null,
-        private mixed                $default     = null,
-        public ?string               $description = null,
-        private array|string         $validation  = [],
-        private array|string         $inner       = [],
-        private ?int				 $maxLevels   = null,
+        public  ?string               $name        = null,
+        public  null|ParamType|string $type        = null,
+        private ?string               $title       = null,
+        private mixed                 $default     = null,
+        public  ?string               $description = null,
+        private array|string          $validation  = [],
+        private array|string          $inner       = [],
+        private ?int				  $maxLevels   = null,
     ) {
         //
     }
