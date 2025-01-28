@@ -20,17 +20,17 @@ class Param
      * @param ParamType|class-string $type
      * @param string[]|string $validation
      * @param Param[]|class-string $inner
-	 * @param int|null $maxLevels Prevent infinite recursion by limiting the number of nested levels (default: 10)
+     * @param int|null $maxLevels Prevent infinite recursion by limiting the number of nested levels (default: 10)
      */
     public function __construct(
-        public  ?string               $name        = null,
-        public  null|ParamType|string $type        = null,
+        public ?string               $name        = null,
+        public null|ParamType|string $type        = null,
         private ?string               $title       = null,
         private mixed                 $default     = null,
-        public  ?string               $description = null,
+        public ?string               $description = null,
         private array|string          $validation  = [],
         private array|string          $inner       = [],
-		private ?int				  $maxLevels   = null,
+        private ?int				  $maxLevels   = null,
     ) {
         //
     }
@@ -38,11 +38,11 @@ class Param
     public function getParamDefinition(ParamDefinitionFactory $factory, callable $generator): ParamDefinition
     {
         $inner = null;
-		$this->type = $this->type ?? ParamType::String;
+        $this->type = $this->type ?? ParamType::String;
 
-		if (!$this->name) {
-			throw new InvalidArgumentException('Param name is required');
-		}
+        if (!$this->name) {
+            throw new InvalidArgumentException('Param name is required');
+        }
 
         if (is_string($this->type)) {
             try {
