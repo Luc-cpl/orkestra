@@ -105,6 +105,16 @@ abstract class AbstractEntity implements JsonSerializable
             }
 
             $data[$name] = $this->__get($name);
+
+            if (is_object($data[$name]) && method_exists($data[$name], 'toArray')) {
+                $data[$name] = $data[$name]->toArray();
+            }
+
+            if (is_array($data[$name])) {
+                $data[$name] = array_map(function ($value) {
+                    return is_object($value) && method_exists($value, 'toArray') ? $value->toArray() : $value;
+                }, $data[$name]);
+            }
         }
 
         return $data;
