@@ -5,6 +5,8 @@ namespace Orkestra\Entities;
 use InvalidArgumentException;
 use JsonSerializable;
 use ReflectionClass;
+use DateTimeInterface;
+use DateTime;
 
 abstract class AbstractEntity implements JsonSerializable
 {
@@ -16,6 +18,10 @@ abstract class AbstractEntity implements JsonSerializable
      */
     public function set(...$args): self
     {
+        if (($args[0] ?? null) && is_array($args[0]) && count($args) === 1) {
+            $args = $args[0];
+        }
+
         foreach ($args as $key => $value) {
             if (is_int($key)) {
                 throw new InvalidArgumentException(sprintf(
@@ -114,6 +120,10 @@ abstract class AbstractEntity implements JsonSerializable
                 $data[$name] = array_map(function ($value) {
                     return is_object($value) && method_exists($value, 'toArray') ? $value->toArray() : $value;
                 }, $data[$name]);
+            }
+
+            if ($data[$name] instanceof DateTimeInterface) {
+                $data[$name] = $data[$name]->format(DateTime::ATOM);
             }
         }
 
