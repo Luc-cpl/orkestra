@@ -139,9 +139,9 @@ abstract class AbstractEntity implements JsonSerializable
                 }
             }
 
-            if (is_object($data[$name]) && 
-                !($data[$name] instanceof DateTimeInterface) && 
-                !method_exists($data[$name], 'toArray') && 
+            if (is_object($data[$name]) &&
+                !($data[$name] instanceof DateTimeInterface) &&
+                !method_exists($data[$name], 'toArray') &&
                 $data[$name] instanceof \Traversable) {
                 $array = iterator_to_array($data[$name]);
                 $array = array_map(function ($value) {
