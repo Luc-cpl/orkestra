@@ -125,6 +125,38 @@ abstract class AbstractEntity implements JsonSerializable
             if ($data[$name] instanceof DateTimeInterface) {
                 $data[$name] = $data[$name]->format(DateTime::ATOM);
             }
+
+            if (is_array($data[$name]) && !empty($data[$name])) {
+                $allNumeric = true;
+                foreach (array_keys($data[$name]) as $key) {
+                    if (!is_int($key)) {
+                        $allNumeric = false;
+                        break;
+                    }
+                }
+                if ($allNumeric) {
+                    $data[$name] = array_values($data[$name]);
+                }
+            }
+
+            if (is_object($data[$name]) && 
+                !($data[$name] instanceof DateTimeInterface) && 
+                !method_exists($data[$name], 'toArray') && 
+                $data[$name] instanceof \Traversable) {
+                $array = iterator_to_array($data[$name]);
+                $array = array_map(function ($value) {
+                    return is_object($value) && method_exists($value, 'toArray') ? $value->toArray() : $value;
+                }, $array);
+
+                $allNumeric = !empty($array);
+                foreach (array_keys($array) as $key) {
+                    if (!is_int($key)) {
+                        $allNumeric = false;
+                        break;
+                    }
+                }
+                $data[$name] = $allNumeric ? array_values($array) : $array;
+            }
         }
 
         return $data;
