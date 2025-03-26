@@ -106,7 +106,7 @@ abstract class AbstractEntity implements JsonSerializable
         foreach ($properties as $property) {
             $name = $property->getName();
 
-            if ($property->isPrivate() || !isset($this->{$name})) {
+            if ($property->isPrivate()) {
                 continue;
             }
 
