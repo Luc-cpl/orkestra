@@ -13,10 +13,9 @@ abstract class AbstractEntity implements JsonSerializable
     /**
      * Set entity properties defined in constructor or set method
      *
-     * @param array<string, mixed> $args
      * @return $this
      */
-    public function set(...$args): self
+    public function set(mixed ...$args): self
     {
         if (($args[0] ?? null) && is_array($args[0]) && count($args) === 1) {
             $args = $args[0];

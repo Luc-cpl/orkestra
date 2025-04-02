@@ -162,3 +162,106 @@ test('can use a callable in make', function () {
     expect($entity)->toBeInstanceOf(EntityTest::class);
     expect($entity->name)->toBe('John Doe 0');
 });
+
+// Class without extending AbstractEntity for testing
+class SimpleClass
+{
+    public string $name;
+    protected string $age;
+
+    public function __construct(
+        string $name = '',
+        string $age = ''
+    ) {
+        $this->name = $name;
+        $this->age = $age;
+    }
+
+    public function getAge(): string
+    {
+        return $this->age;
+    }
+}
+
+// Class with repository attribute but not extending AbstractEntity
+#[Repository('testRepository')]
+class SimpleClassWithRepository
+{
+    public string $name;
+
+    public function __construct(string $name = '')
+    {
+        $this->name = $name;
+    }
+}
+
+// Add this at the end
+test('can make a non-AbstractEntity class', function () {
+    $app = app();
+    $factory = $app->get(EntityFactory::class);
+
+    $simpleObj = $factory->make(SimpleClass::class, name: 'John Doe', age: '30');
+
+    expect($simpleObj)->toBeInstanceOf(SimpleClass::class);
+    expect($simpleObj->name)->toBe('John Doe');
+    expect($simpleObj->getAge())->toBe('30');
+});
+
+test('can set public properties for non-AbstractEntity classes', function () {
+    $app = app();
+    $factory = $app->get(EntityFactory::class);
+
+    $simpleObj = $factory->make(
+        SimpleClass::class,
+        name: 'John Doe',
+        age: '25',
+    );
+
+    expect($simpleObj->name)->toBe('John Doe');
+    expect($simpleObj->getAge())->toBe('25');
+});
+
+test('cannot set protected properties directly for non-AbstractEntity classes', function () {
+    $app = app();
+    $factory = $app->get(EntityFactory::class);
+
+    // This should still work because setAge method exists
+    $simpleObj = $factory->make(SimpleClass::class, age: '30');
+    expect($simpleObj->getAge())->toBe('30');
+
+    // This would throw an exception if we tried to set a non-existent property
+    $factory->make(SimpleClass::class, nonExistent: 'value');
+})->throws(InvalidArgumentException::class);
+
+test('can create a non-AbstractEntity class with repository', function () {
+    $repository = Mockery::mock(EntitiesTestRepository::class);
+    $repository->shouldReceive('persist')->once();
+    app()->bind('testRepository', fn () => $repository);
+
+    $factory = app()->get(EntityFactory::class);
+    $simpleObj = $factory->create(SimpleClassWithRepository::class, name: 'John Doe');
+
+    expect($simpleObj)->toBeInstanceOf(SimpleClassWithRepository::class);
+    expect($simpleObj->name)->toBe('John Doe');
+});
+
+test('can use faker with non-AbstractEntity classes', function () {
+    $app = app();
+    $factory = $app->make(EntityFactory::class, ['useFaker' => true]);
+
+    // Create a class with Faker attribute on the fly
+    $className = 'FakerTestClass_' . uniqid();
+    eval('
+        #[\\Orkestra\\Entities\\Attributes\\Faker("name", method: "name")]
+        class ' . $className . ' {
+            public string $name;
+            
+            public function __construct(string $name = "") {
+                $this->name = $name;
+            }
+        }
+    ');
+
+    $obj = $factory->make($className);
+    expect($obj->name)->toBeString()->not->toBeEmpty();
+});

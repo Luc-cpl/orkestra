@@ -106,16 +106,36 @@ class EntityFactory
 
         $entity = $this->app->make($class, $constructor);
 
-        foreach ($properties as $key => $value) {
-            if (method_exists($entity, $method = 'set' . ucfirst($key))) {
-                $entity->{$method}($value);
-                continue;
+        if ($entity instanceof AbstractEntity) {
+            // For AbstractEntity, we can use the set method or public/protected properties
+            foreach ($properties as $key => $value) {
+                if (method_exists($entity, $method = 'set' . ucfirst($key))) {
+                    $entity->{$method}($value);
+                    continue;
+                }
+                if (property_exists($entity, $key)) {
+                    $entity->{$key} = $value;
+                    continue;
+                }
+                throw new InvalidArgumentException(sprintf('Invalid property passed to make a %s: %s', $class, $key));
             }
-            if (property_exists($entity, $key)) {
-                $entity->{$key} = $value;
-                continue;
+        } else {
+            // For non-AbstractEntity objects, we'll only set public properties
+            foreach ($properties as $key => $value) {
+                $propertyExists = false;
+                try {
+                    $property = $reflection->getProperty($key);
+                    $propertyExists = true;
+                    if ($property->isPublic()) {
+                        $entity->{$key} = $value;
+                        continue;
+                    }
+                } catch (\ReflectionException $e) {
+                    // Property doesn't exist
+                }
+
+                throw new InvalidArgumentException(sprintf('Invalid property passed to make a %s: %s', $class, $key));
             }
-            throw new InvalidArgumentException(sprintf('Invalid property passed to make a %s: %s', $class, $key));
         }
 
         return $entity;
