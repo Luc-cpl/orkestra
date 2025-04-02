@@ -117,6 +117,7 @@ test('can convert entity to array', function () {
     $entity->set(nonConstructProperty: 'test');
     expect($entity->toArray())->toBe([
         'nonConstructProperty' => 'test',
+        'publicValue' => null,
         'name' => 'John Doe',
         'age' => 10,
     ]);
