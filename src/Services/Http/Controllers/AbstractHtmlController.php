@@ -14,9 +14,6 @@ abstract class AbstractHtmlController extends AbstractController
     #[Inject]
     protected ViewInterface $view;
 
-    #[Inject]
-    protected ResponseInterface $response;
-
     /**
      * Render a view
      *
