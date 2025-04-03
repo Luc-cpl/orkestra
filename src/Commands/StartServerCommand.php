@@ -30,12 +30,21 @@ class StartServerCommand extends Command
         $output->writeln("Starting the test server on port $port...");
         $output->writeln("Press Ctrl+C to stop." . PHP_EOL);
 
-        $process = new Process(['php', '-S', 'localhost:' . $port, '-t', 'public']);
+        $process = $this->createProcess($port);
         $process->setTimeout(null);
         $process->run(function ($type, $buffer) use ($output) {
             $output->write($buffer);
         });
 
         return Command::SUCCESS;
+    }
+    
+    /**
+     * Create a process to run the PHP server
+     * This method can be overridden in tests
+     */
+    protected function createProcess(string $port): Process
+    {
+        return new Process(['php', '-S', 'localhost:' . $port, '-t', 'public']);
     }
 }

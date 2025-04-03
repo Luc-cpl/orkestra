@@ -265,3 +265,154 @@ test('can use faker with non-AbstractEntity classes', function () {
     $obj = $factory->make($className);
     expect($obj->name)->toBeString()->not->toBeEmpty();
 });
+
+// Entity with Traversable property for testing
+class EntityWithTraversable extends AbstractEntity
+{
+    protected \ArrayIterator $traversableWithNumericKeys;
+    protected \ArrayIterator $traversableWithStringKeys;
+
+    public function __construct()
+    {
+        $this->traversableWithNumericKeys = new \ArrayIterator([1, 2, 3]);
+        $this->traversableWithStringKeys = new \ArrayIterator(['key1' => 'value1', 'key2' => 'value2']);
+    }
+}
+
+// Entity with nested objects for testing
+class NestedEntity extends AbstractEntity
+{
+    public function __construct(
+        protected string $name
+    ) {
+    }
+
+    public function toArray(): array
+    {
+        return ['custom' => 'array'];
+    }
+}
+
+class EntityWithNestedObjects extends AbstractEntity
+{
+    protected NestedEntity $nestedEntity;
+    protected array $arrayOfObjects;
+    protected \DateTime $dateTime;
+
+    public function __construct()
+    {
+        $this->nestedEntity = new NestedEntity('test');
+        $this->arrayOfObjects = [new NestedEntity('test1'), new NestedEntity('test2')];
+        $this->dateTime = new \DateTime('2021-01-01');
+    }
+}
+
+// Tests for AbstractEntity toArray
+test('can convert entity with Traversable properties to array', function () {
+    $entity = new EntityWithTraversable();
+    $array = $entity->toArray();
+    
+    expect($array)->toHaveKey('traversableWithNumericKeys');
+    expect($array['traversableWithNumericKeys'])->toBe([1, 2, 3]);
+    
+    expect($array)->toHaveKey('traversableWithStringKeys');
+    expect($array['traversableWithStringKeys'])->toBe(['key1' => 'value1', 'key2' => 'value2']);
+});
+
+test('can convert entity with nested objects to array', function () {
+    $entity = new EntityWithNestedObjects();
+    $array = $entity->toArray();
+    
+    expect($array)->toHaveKey('nestedEntity');
+    expect($array['nestedEntity'])->toBe(['custom' => 'array']);
+    
+    expect($array)->toHaveKey('arrayOfObjects');
+    expect($array['arrayOfObjects'])->toBe([['custom' => 'array'], ['custom' => 'array']]);
+    
+    expect($array)->toHaveKey('dateTime');
+    expect($array['dateTime'])->toBeString();
+});
+
+test('can serialize entity to JSON', function () {
+    $entity = new EntityTest('John Doe', 20);
+    $entity->set(nonConstructProperty: 'test');
+    
+    // Test JsonSerializable interface
+    $json = json_encode($entity);
+    $decoded = json_decode($json, true);
+    
+    expect($decoded)->toBe([
+        'nonConstructProperty' => 'test',
+        'publicValue' => null,
+        'name' => 'John Doe',
+        'age' => 10,
+    ]);
+});
+
+// Test for EntityFactory with different locale and repository handling
+test('can create entity factory with custom locale', function () {
+    $app = app();
+    $factory = $app->make(EntityFactory::class, [
+        'useFaker' => true,
+        'locale' => 'es_ES'
+    ]);
+    
+    $entity = $factory->make(EntityTest::class);
+    expect($entity)->toBeInstanceOf(EntityTest::class);
+});
+
+// Test for no repository case
+class EntityWithNoRepository extends AbstractEntity
+{
+    public function __construct(
+        protected string $name = 'test'
+    ) {
+    }
+}
+
+test('repository is null when class has no repository attribute', function () {
+    $app = app();
+    $factory = $app->get(EntityFactory::class);
+    
+    // Using reflection to test private method
+    $reflection = new \ReflectionClass($factory);
+    $method = $reflection->getMethod('getRepository');
+    $method->setAccessible(true);
+    
+    $entityReflection = new \ReflectionClass(EntityWithNoRepository::class);
+    $result = $method->invoke($factory, $entityReflection);
+    
+    expect($result)->toBeNull();
+});
+
+test('repository is null when repository class is not in container', function () {
+    #[Repository('nonExistentRepository')]
+    class EntityWithNonExistentRepository extends AbstractEntity
+    {
+        public function __construct(
+            protected string $name = 'test'
+        ) {
+        }
+    }
+    
+    $app = app();
+    $factory = $app->get(EntityFactory::class);
+    
+    // Using reflection to test private method
+    $reflection = new \ReflectionClass($factory);
+    $method = $reflection->getMethod('getRepository');
+    $method->setAccessible(true);
+    
+    $entityReflection = new \ReflectionClass(EntityWithNonExistentRepository::class);
+    $result = $method->invoke($factory, $entityReflection);
+    
+    expect($result)->toBeNull();
+});
+
+// Testing passing an array as first arg to set()
+test('can set entity values with array argument', function () {
+    $entity = new EntityTest('John Doe', 20);
+    $entity->set(['name' => 'Jane Doe', 'nonConstructProperty' => 'test']);
+    expect($entity->name)->toBe('Jane Doe');
+    expect($entity->nonConstructProperty)->toBe('test');
+});

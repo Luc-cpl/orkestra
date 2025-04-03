@@ -22,7 +22,7 @@ class Encrypt implements EncryptInterface
 
     public function encrypt(array $data): string
     {
-        $algorithm = openssl_cipher_iv_length($this->algorithm);
+        $algorithm = $this->silentCipherIvLength($this->algorithm);
         if ($algorithm === false) {
             throw new RuntimeException('The encryption algorithm is not supported.');
         }
@@ -70,21 +70,74 @@ class Encrypt implements EncryptInterface
      */
     private function singleDecrypt(string $data, string $key): array|false
     {
-        [$iv, $encrypted] = explode(':', base64_decode($data), 2);
-        $decrypted = openssl_decrypt(
+        // First check the format
+        if (!str_contains($data, ':')) {
+            return false;
+        }
+        
+        // Split the data into IV and encrypted
+        [$ivBase64, $encryptedBase64] = explode(':', $data, 2);
+
+        // Decode the components
+        $iv = base64_decode($ivBase64);
+        $encrypted = base64_decode($encryptedBase64);
+        
+        if ($iv === false || $encrypted === false) {
+            return false;
+        }
+
+        $decrypted = $this->silentDecrypt(
             data: $encrypted,
             cipher_algo: $this->algorithm,
             passphrase: $key,
             options: 0,
-            iv: base64_decode($iv),
+            iv: $iv,
         );
 
-        if ($decrypted !== false) {
-            $decrypted = empty($decrypted) ? '{}' : $decrypted;
-            /** @var mixed[]|null */
-            $data = json_decode($decrypted, true);
-            return $data ?? false;
+        if ($decrypted === false) {
+            return false;
         }
-        return false;
+
+        $decrypted = empty($decrypted) ? '{}' : $decrypted;
+        /** @var mixed[]|null */
+        $data = json_decode($decrypted, true);
+        return $data ?? false;
+    }
+    
+    /**
+     * Silent wrapper for openssl_cipher_iv_length to suppress warnings
+     */
+    private function silentCipherIvLength(string $algorithm): int|false
+    {
+        set_error_handler(function () {
+            return true;
+        });
+        
+        try {
+            return openssl_cipher_iv_length($algorithm);
+        } finally {
+            restore_error_handler();
+        }
+    }
+    
+    /**
+     * Silent wrapper for openssl_decrypt to suppress warnings
+     */
+    private function silentDecrypt(
+        string $data,
+        string $cipher_algo,
+        string $passphrase,
+        int $options,
+        string $iv
+    ): string|false {
+        set_error_handler(function () {
+            return true;
+        });
+        
+        try {
+            return openssl_decrypt($data, $cipher_algo, $passphrase, $options, $iv);
+        } finally {
+            restore_error_handler();
+        }
     }
 }

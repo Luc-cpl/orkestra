@@ -8,6 +8,7 @@ use Orkestra\Services\Http\Enum\ParamType;
 use Orkestra\Entities\EntityFactory;
 
 /**
+ * @todo set all supported args in magic method
  * @method ParamDefinition string(string $title, string $name, mixed $default = null, string|array|null $validation = '', ?string $description = null)
  * @method ParamDefinition int(string $title, string $name, mixed $default = null, string|array|null $validation = '', ?string $description = null)
  * @method ParamDefinition number(string $title, string $name, mixed $default = null, string|array|null $validation = '', ?string $description = null)
@@ -50,7 +51,8 @@ class ParamDefinitionFactory
                 'default'      => $args[2] ?? null,
                 'validation'   => $args[3] ?? null,
                 'description'  => $args[4] ?? null,
-                'enum'         => $args[6] ?? null,
+                'enum'         => $args[5] ?? null,
+                'inner'        => $args[6] ?? null,
             ];
         }
 
