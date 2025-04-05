@@ -38,7 +38,7 @@ class StartServerCommand extends Command
 
         return Command::SUCCESS;
     }
-    
+
     /**
      * Create a process to run the PHP server
      * This method can be overridden in tests

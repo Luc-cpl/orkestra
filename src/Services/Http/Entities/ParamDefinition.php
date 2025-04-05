@@ -86,7 +86,7 @@ class ParamDefinition extends AbstractEntity
         if ($enum === null) {
             return $this;
         }
-        
+
         if (is_string($enum)) {
             if (!enum_exists($enum)) {
                 throw new InvalidArgumentException("Invalid enum class: {$enum}");
@@ -106,7 +106,7 @@ class ParamDefinition extends AbstractEntity
         if ($inner === null) {
             return $this;
         }
-        
+
         if ($this->type->name !== 'Array' && $this->type->name !== 'Object') {
             throw new BadMethodCallException('Cannot set inner on non-array or non-object param');
         }

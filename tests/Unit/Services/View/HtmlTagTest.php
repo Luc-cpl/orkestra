@@ -38,7 +38,7 @@ test('can get an attribute', function () {
     $tag = new HtmlTag('div', ['class' => 'container', 'id' => 'main']);
     expect($tag->getAttribute('class'))->toBe('container');
     expect($tag->getAttribute('id'))->toBe('main');
-    
+
     // Test for non-existent attribute (linha 21)
     expect($tag->getAttribute('nonexistent'))->toBeNull();
 });
@@ -46,10 +46,10 @@ test('can get an attribute', function () {
 test('can set attributes', function () {
     $tag = new HtmlTag('div', ['class' => 'container']);
     $newTag = $tag->setAttributes(['id' => 'main', 'data-test' => 'value']);
-    
+
     // Original tag should be unchanged
     expect($tag->attributes)->toBe(['class' => 'container']);
-    
+
     // New tag should have new attributes
     expect($newTag->attributes)->toBe(['id' => 'main', 'data-test' => 'value']);
     expect($newTag->tag)->toBe('div');
@@ -59,10 +59,10 @@ test('can set attributes', function () {
 test('can set content', function () {
     $tag = new HtmlTag('div', ['class' => 'container'], 'Original content');
     $newTag = $tag->setContent('New content');
-    
+
     // Original tag should be unchanged
     expect($tag->content)->toBe('Original content');
-    
+
     // New tag should have new content
     expect($newTag->content)->toBe('New content');
     expect($newTag->tag)->toBe('div');
@@ -86,12 +86,12 @@ test('renders void tags correctly', function () {
         'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
         'link', 'meta', 'param', 'source', 'track', 'wbr',
     ];
-    
+
     foreach ($voidTags as $tag) {
         $htmlTag = new HtmlTag($tag);
         expect((string) $htmlTag)->toBe("<{$tag} />");
     }
-    
+
     // Test with attributes
     $tag = new HtmlTag('img', ['src' => 'image.jpg', 'alt' => 'An image']);
     expect((string) $tag)->toBe('<img src="image.jpg" alt="An image" />');
@@ -100,7 +100,7 @@ test('renders void tags correctly', function () {
 test('renders non-void tags correctly', function () {
     $tag = new HtmlTag('div');
     expect((string) $tag)->toBe('<div></div>');
-    
+
     $tag = new HtmlTag('span', [], 'Content');
     expect((string) $tag)->toBe('<span>Content</span>');
-}); 
+});

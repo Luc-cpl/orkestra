@@ -74,14 +74,14 @@ class Encrypt implements EncryptInterface
         if (!str_contains($data, ':')) {
             return false;
         }
-        
+
         // Split the data into IV and encrypted
         [$ivBase64, $encryptedBase64] = explode(':', $data, 2);
 
         // Decode the components
         $iv = base64_decode($ivBase64);
         $encrypted = base64_decode($encryptedBase64);
-        
+
         if ($iv === false || $encrypted === false) {
             return false;
         }
@@ -103,7 +103,7 @@ class Encrypt implements EncryptInterface
         $data = json_decode($decrypted, true);
         return $data ?? false;
     }
-    
+
     /**
      * Silent wrapper for openssl_cipher_iv_length to suppress warnings
      */
@@ -112,14 +112,14 @@ class Encrypt implements EncryptInterface
         set_error_handler(function () {
             return true;
         });
-        
+
         try {
             return openssl_cipher_iv_length($algorithm);
         } finally {
             restore_error_handler();
         }
     }
-    
+
     /**
      * Silent wrapper for openssl_decrypt to suppress warnings
      */
@@ -133,7 +133,7 @@ class Encrypt implements EncryptInterface
         set_error_handler(function () {
             return true;
         });
-        
+
         try {
             return openssl_decrypt($data, $cipher_algo, $passphrase, $options, $iv);
         } finally {

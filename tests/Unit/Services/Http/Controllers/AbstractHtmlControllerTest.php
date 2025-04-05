@@ -8,7 +8,6 @@ use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\View\Interfaces\ViewInterface;
-use Orkestra\Services\View\View;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -27,9 +26,9 @@ test('can set a route in html controller', function () {
     $view = Mockery::mock(ViewInterface::class);
     app()->provider(HttpProvider::class);
     app()->provider(ViewProvider::class);
-    app()->bind(ViewInterface::class, fn() => $view);
+    app()->bind(ViewInterface::class, fn () => $view);
     app()->bind(AbstractHtmlController::class, $class::class);
-    
+
     $controller = app()->get(AbstractHtmlController::class);
     $controller->setRoute($route);
     expect($controller->getRoute())->toBe($route);
@@ -71,31 +70,31 @@ test('can render a view without route', function () {
     // Configure the app
     app()->provider(HttpProvider::class);
     app()->provider(ViewProvider::class);
-    app()->bind(ViewInterface::class, fn() => $view);
-    app()->bind(ResponseInterface::class, fn() => $response);
+    app()->bind(ViewInterface::class, fn () => $view);
+    app()->bind(ResponseInterface::class, fn () => $response);
     app()->bind(AbstractHtmlController::class, $class::class);
-    
+
     // Execute the test
     $controller = app()->get(AbstractHtmlController::class);
     $result = $controller->testRender('test-view', ['key' => 'value']);
-    
+
     expect($result)->toBe($response);
 });
 
 test('can render a view with route', function () {
     // Mock the DefinitionInterface
     $definition = Mockery::mock(DefinitionInterface::class);
-    
+
     // Create a real RouteDefinitionFacade with a mock DefinitionInterface
     $paramFactory = Mockery::mock(ParamDefinitionFactory::class);
     $routeDefinition = new RouteDefinitionFacade($paramFactory, $definition);
-    
+
     // Mock the Route
     $route = Mockery::mock(RouteInterface::class);
     $route->shouldReceive('getDefinition')
         ->once()
         ->andReturn($routeDefinition);
-    
+
     // Mock the ViewInterface
     $view = Mockery::mock(ViewInterface::class);
     $view->shouldReceive('render')
@@ -131,14 +130,14 @@ test('can render a view with route', function () {
     // Configure the app
     app()->provider(HttpProvider::class);
     app()->provider(ViewProvider::class);
-    app()->bind(ViewInterface::class, fn() => $view);
-    app()->bind(ResponseInterface::class, fn() => $response);
+    app()->bind(ViewInterface::class, fn () => $view);
+    app()->bind(ResponseInterface::class, fn () => $response);
     app()->bind(AbstractHtmlController::class, $class::class);
-    
+
     // Execute the test
     $controller = app()->get(AbstractHtmlController::class);
     $controller->setRoute($route);
     $result = $controller->testRender('test-view', ['key' => 'value'], 201);
-    
+
     expect($result)->toBe($response);
 });

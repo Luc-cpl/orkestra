@@ -311,10 +311,10 @@ class EntityWithNestedObjects extends AbstractEntity
 test('can convert entity with Traversable properties to array', function () {
     $entity = new EntityWithTraversable();
     $array = $entity->toArray();
-    
+
     expect($array)->toHaveKey('traversableWithNumericKeys');
     expect($array['traversableWithNumericKeys'])->toBe([1, 2, 3]);
-    
+
     expect($array)->toHaveKey('traversableWithStringKeys');
     expect($array['traversableWithStringKeys'])->toBe(['key1' => 'value1', 'key2' => 'value2']);
 });
@@ -322,13 +322,13 @@ test('can convert entity with Traversable properties to array', function () {
 test('can convert entity with nested objects to array', function () {
     $entity = new EntityWithNestedObjects();
     $array = $entity->toArray();
-    
+
     expect($array)->toHaveKey('nestedEntity');
     expect($array['nestedEntity'])->toBe(['custom' => 'array']);
-    
+
     expect($array)->toHaveKey('arrayOfObjects');
     expect($array['arrayOfObjects'])->toBe([['custom' => 'array'], ['custom' => 'array']]);
-    
+
     expect($array)->toHaveKey('dateTime');
     expect($array['dateTime'])->toBeString();
 });
@@ -336,11 +336,11 @@ test('can convert entity with nested objects to array', function () {
 test('can serialize entity to JSON', function () {
     $entity = new EntityTest('John Doe', 20);
     $entity->set(nonConstructProperty: 'test');
-    
+
     // Test JsonSerializable interface
     $json = json_encode($entity);
     $decoded = json_decode($json, true);
-    
+
     expect($decoded)->toBe([
         'nonConstructProperty' => 'test',
         'publicValue' => null,
@@ -356,7 +356,7 @@ test('can create entity factory with custom locale', function () {
         'useFaker' => true,
         'locale' => 'es_ES'
     ]);
-    
+
     $entity = $factory->make(EntityTest::class);
     expect($entity)->toBeInstanceOf(EntityTest::class);
 });
@@ -373,15 +373,15 @@ class EntityWithNoRepository extends AbstractEntity
 test('repository is null when class has no repository attribute', function () {
     $app = app();
     $factory = $app->get(EntityFactory::class);
-    
+
     // Using reflection to test private method
     $reflection = new \ReflectionClass($factory);
     $method = $reflection->getMethod('getRepository');
     $method->setAccessible(true);
-    
+
     $entityReflection = new \ReflectionClass(EntityWithNoRepository::class);
     $result = $method->invoke($factory, $entityReflection);
-    
+
     expect($result)->toBeNull();
 });
 
@@ -394,18 +394,18 @@ test('repository is null when repository class is not in container', function ()
         ) {
         }
     }
-    
+
     $app = app();
     $factory = $app->get(EntityFactory::class);
-    
+
     // Using reflection to test private method
     $reflection = new \ReflectionClass($factory);
     $method = $reflection->getMethod('getRepository');
     $method->setAccessible(true);
-    
+
     $entityReflection = new \ReflectionClass(EntityWithNonExistentRepository::class);
     $result = $method->invoke($factory, $entityReflection);
-    
+
     expect($result)->toBeNull();
 });
 
@@ -433,11 +433,11 @@ class EntityWithPrivateProps extends AbstractEntity
 test('toArray handles private properties correctly', function () {
     $entity = new EntityWithPrivateProps();
     $array = $entity->toArray();
-    
+
     // Verifique que as propriedades públicas e protegidas estão incluídas
     expect($array)->toHaveKey('publicProp');
     expect($array)->toHaveKey('protectedProp');
-    
+
     // Verifique que as propriedades privadas são excluídas
     expect($array)->not->toHaveKey('privateProp');
 });
@@ -457,7 +457,7 @@ class EntityWithDateTime extends AbstractEntity
 test('toArray correctly formats DateTime objects', function () {
     $entity = new EntityWithDateTime();
     $array = $entity->toArray();
-    
+
     // Verifique que o DateTime é convertido para string no formato ATOM
     expect($array['date'])->toBe('2023-01-01T12:00:00+00:00');
     expect($array['nullableDate'])->toBeNull();
@@ -480,16 +480,16 @@ class EntityWithArrays extends AbstractEntity
 test('toArray preserves array keys correctly', function () {
     $entity = new EntityWithArrays();
     $array = $entity->toArray();
-    
+
     // Arrays numéricos permanecem como arrays indexados
     expect(array_keys($array['numericArray']))->toBe([0, 1, 2]);
-    
+
     // Arrays associativos mantêm suas chaves
     expect($array['assocArray'])->toBe(['a' => 1, 'b' => 2]);
-    
+
     // Arrays mistos retêm suas chaves não-numéricas
     expect($array['mixedArray'])->toHaveKey('key');
-    
+
     // Arrays vazios são preservados
     expect($array['emptyArray'])->toBe([]);
 });
@@ -513,12 +513,12 @@ class DeepNestedEntity extends AbstractEntity
 test('toArray handles deeply nested objects', function () {
     $entity = new DeepNestedEntity();
     $array = $entity->toArray();
-    
+
     // Verifica se os objetos aninhados são convertidos corretamente
     expect($array['level1'])->toBeArray();
     // A classe NestedEntity tem um método toArray personalizado que retorna ['custom' => 'array']
     expect($array['level1'])->toBe(['custom' => 'array']);
-    
+
     // Verifica se os arrays de objetos são convertidos corretamente
     expect($array['arrayOfObjects'])->toBeArray();
     expect($array['arrayOfObjects'][0])->toBe(['custom' => 'array']);
@@ -528,14 +528,14 @@ test('toArray handles deeply nested objects', function () {
 // Add tests for Faker attribute
 test('Faker attribute with method creates valid instance', function () {
     $faker = new Faker('testKey', null, 'name', []);
-    
+
     expect($faker->key)->toBe('testKey');
     expect($faker->getValue())->toBeString();
 });
 
 test('Faker attribute with value creates valid instance', function () {
     $faker = new Faker('testKey', 'Test Value');
-    
+
     expect($faker->key)->toBe('testKey');
     expect($faker->getValue())->toBe('Test Value');
 });
@@ -543,14 +543,14 @@ test('Faker attribute with value creates valid instance', function () {
 test('Faker attribute setLocale works correctly', function () {
     $faker = new Faker('testKey', null, 'name', []);
     $faker->setLocale('fr_FR');
-    
+
     $value = $faker->getValue();
     expect($value)->toBeString();
 });
 
 test('Faker attribute with method and arguments works', function () {
     $faker = new Faker('testKey', null, 'numberBetween', [10, 20]);
-    
+
     $value = $faker->getValue();
     expect($value)->toBeNumeric();
     expect($value)->toBeGreaterThanOrEqual(10);
@@ -564,21 +564,21 @@ test('Faker attribute throws exception when neither method nor value is provided
 test('Faker attribute handles default locale when null is passed to setLocale', function () {
     $faker = new Faker('testKey', null, 'name', []);
     $faker->setLocale(null);
-    
+
     expect($faker->getValue())->toBeString();
 });
 
 test('Faker attribute locale affects the generated values', function () {
     $faker = new Faker('testKey', null, 'name', []);
-    
+
     // First get a name with the default locale
     $faker->setLocale('en_US');
     $nameEnglish = $faker->getValue();
-    
+
     // Then get a name with a different locale
     $faker->setLocale('fr_FR');
     $nameFrench = $faker->getValue();
-    
+
     // The names should be different due to different locales
     expect($nameEnglish)->not->toBe($nameFrench);
 });
