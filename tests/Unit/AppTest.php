@@ -302,3 +302,34 @@ test('can register an app hook', function () {
     app()->get(HooksInterface::class)->call('app.test');
     expect($value)->toBeTrue();
 });
+
+test('can use deprecated singleton method with warning', function () {
+    // Setup error handler to catch deprecated warnings
+    $deprecatedCalled = false;
+    set_error_handler(function ($errno, $errstr) use (&$deprecatedCalled) {
+        if ($errno === E_USER_DEPRECATED && strpos($errstr, 'singleton') !== false) {
+            $deprecatedCalled = true;
+        }
+        // Don't execute PHP's internal error handler
+        return true;
+    });
+    
+    // Call the deprecated method
+    $class = new class () {
+        public function test() {
+            return 'testValue';
+        }
+    };
+    
+    app()->singleton('testSingleton', fn () => $class);
+    
+    // Check that the service is bound correctly despite being called via deprecated method
+    expect(app()->get('testSingleton'))->toBeInstanceOf(get_class($class));
+    expect(app()->get('testSingleton')->test())->toBe('testValue');
+    
+    // Verify that the deprecated warning was triggered
+    expect($deprecatedCalled)->toBeTrue();
+    
+    // Restore the error handler
+    restore_error_handler();
+});

@@ -87,4 +87,115 @@ test('correctly formats the configuration table', function () {
     expect($output)->toContain('A boolean option');
     expect($output)->toContain('An array option');
     expect($output)->toContain('A required option');
+});
+
+test('displays empty configuration definitions correctly', function () {
+    // Create a mock configuration with empty definitions
+    $config = Mockery::mock(ConfigurationInterface::class);
+    
+    // Set up the mock to return an empty definition
+    $config->shouldReceive('get')
+        ->with('definition')
+        ->andReturn([]);
+    
+    // Create the command with our mock config
+    $command = new ConfigOptionsCommand($config);
+    
+    // Use CommandTester to test the command
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
+    
+    // Get the output
+    $output = $commandTester->getDisplay();
+    
+    // Check that the command executed successfully
+    expect($commandTester->getStatusCode())->toBe(0);
+    
+    // Check that the output shows the header but no options
+    expect($output)->toContain('Available configuration options');
+    expect($output)->toContain('Key');
+    expect($output)->toContain('Required');
+    expect($output)->toContain('Description');
+});
+
+test('handles complex default values correctly', function () {
+    // Create a mock configuration
+    $config = Mockery::mock(ConfigurationInterface::class);
+    
+    // Function to be used as a default value
+    $callableDefault = fn() => 'calculated value';
+    
+    // Complex array as default value
+    $complexArray = ['key1' => 'value1', 'key2' => ['nested' => 'value']];
+    
+    // Define a sample definition with complex default values
+    $sampleDefinition = [
+        'callable_default' => ['Option with callable default', $callableDefault],
+        'complex_array' => ['Option with complex array', $complexArray],
+        'object_default' => ['Option with object', new stdClass()],
+    ];
+    
+    // Set up the mock
+    $config->shouldReceive('get')
+        ->with('definition')
+        ->andReturn($sampleDefinition);
+    
+    // Create the command with our mock config
+    $command = new ConfigOptionsCommand($config);
+    
+    // Use CommandTester to test the command
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
+    
+    // Get the output
+    $output = $commandTester->getDisplay();
+    
+    // Check the command executed successfully
+    expect($commandTester->getStatusCode())->toBe(0);
+    
+    // Check that each option is displayed correctly
+    expect($output)->toContain('callable_default');
+    expect($output)->toContain('complex_array');
+    expect($output)->toContain('object_default');
+    
+    // All these have default values, so they should be marked as not required
+    expect(substr_count($output, 'No'))->toBe(3);
+});
+
+test('handles special characters in option names and descriptions', function () {
+    // Create a mock configuration
+    $config = Mockery::mock(ConfigurationInterface::class);
+    
+    // Define a sample definition with special characters
+    $sampleDefinition = [
+        'option-with-dash' => ['Description with special chars: @#$%^&*()'],
+        'option_with_underscore' => ['Another description with <html> tags'],
+        'option.with.dots' => ['Description with line\nbreak'],
+    ];
+    
+    // Set up the mock
+    $config->shouldReceive('get')
+        ->with('definition')
+        ->andReturn($sampleDefinition);
+    
+    // Create the command with our mock config
+    $command = new ConfigOptionsCommand($config);
+    
+    // Use CommandTester to test the command
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
+    
+    // Get the output
+    $output = $commandTester->getDisplay();
+    
+    // Check the command executed successfully
+    expect($commandTester->getStatusCode())->toBe(0);
+    
+    // Check that special characters are handled correctly
+    expect($output)->toContain('option-with-dash');
+    expect($output)->toContain('option_with_underscore');
+    expect($output)->toContain('option.with.dots');
+    expect($output)->toContain('Description with special chars: @#$%^&*()');
+    expect($output)->toContain('Another description with <html> tags');
+    expect($output)->toContain('Description with line\nbreak');
 }); 
