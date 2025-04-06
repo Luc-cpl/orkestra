@@ -182,17 +182,17 @@ test('handles base64 decoding failures', function () {
 
 test('handles base64 decoding failures for IV', function () {
     $encrypt = new Encrypt('test_key_12345678901234567890123456789012');
-    
+
     // Use reflection to access the private singleDecrypt method
     $reflection = new ReflectionClass($encrypt);
     $method = $reflection->getMethod('singleDecrypt');
     $method->setAccessible(true);
-    
+
     // Create a payload that will trigger line 86 - invalid base64 in IV part
     $invalidBase64IV = 'invalid-base64-string:validBase64==';
     $result = $method->invokeArgs($encrypt, [$invalidBase64IV, 'test_key_12345678901234567890123456789012']);
     expect($result)->toBeFalse();
-    
+
     // Create a payload with valid IV but invalid encrypted part
     $validIvInvalidEncrypted = base64_encode('validIV') . ':invalid-base64-string';
     $result2 = $method->invokeArgs($encrypt, [$validIvInvalidEncrypted, 'test_key_12345678901234567890123456789012']);
@@ -244,14 +244,14 @@ test('throws exception when json_encode fails', function () {
 test('throws exception when openssl_encrypt fails', function () {
     $encrypt = Mockery::mock(Encrypt::class, ['test_key_12345678901234567890123456789012'])
         ->makePartial();
-    
+
     // Mock the openssl_encrypt call to return false
     $encrypt->shouldReceive('encrypt')
         ->once()
         ->andReturnUsing(function () {
             throw new RuntimeException('The data could not be encrypted.');
         });
-    
+
     expect(fn () => $encrypt->encrypt(['test' => 'data']))
         ->toThrow(RuntimeException::class, 'The data could not be encrypted.');
 });
@@ -266,15 +266,16 @@ test('handles encryption error explicitly', function () {
     // Instead of skipping, we'll create a simplified version of the test
     // that still contributes to coverage
     $encrypt = new Encrypt('test_key_12345678901234567890123456789012');
-    
+
     // Use an anonymous class to extend Encrypt and test the specific scenario
-    $testEncrypt = new class('test_key_12345678901234567890123456789012') extends Encrypt {
-        public function testEncryptionFailure(): void {
+    $testEncrypt = new class ('test_key_12345678901234567890123456789012') extends Encrypt {
+        public function testEncryptionFailure(): void
+        {
             try {
                 // Directly call the code that would be used in encrypt()
                 $iv = openssl_random_pseudo_bytes(16);
                 $encrypted = false; // Simulate encryption failure
-                
+
                 if ($encrypted === false) {
                     throw new RuntimeException('The data could not be encrypted.');
                 }
@@ -285,20 +286,20 @@ test('handles encryption error explicitly', function () {
             }
         }
     };
-    
+
     // Test that the method throws the expected exception
-    expect(fn() => $testEncrypt->testEncryptionFailure())
+    expect(fn () => $testEncrypt->testEncryptionFailure())
         ->toThrow(RuntimeException::class, 'The data could not be encrypted.');
 });
 
 test('handles empty string decryption in specific method', function () {
     $encrypt = new Encrypt('test_key_12345678901234567890123456789012');
-    
+
     // Use reflection to test singleDecrypt directly
     $reflection = new ReflectionClass($encrypt);
     $method = $reflection->getMethod('singleDecrypt');
     $method->setAccessible(true);
-    
+
     $result = $method->invoke($encrypt, '', 'test_key_12345678901234567890123456789012');
     expect($result)->toBeFalse();
 });
@@ -339,28 +340,30 @@ test('throws exception when encryption fails', function () {
 
 test('handles openssl_encrypt failure directly', function () {
     // Create a custom class that extends Encrypt and allows us to test the specific line
-    $encrypt = new class('test_key_12345678901234567890123456789012') extends Encrypt {
-        public function customEncrypt(array $data): string {
+    $encrypt = new class ('test_key_12345678901234567890123456789012') extends Encrypt {
+        public function customEncrypt(array $data): string
+        {
             // This recreates the path to line 45 but forces openssl_encrypt to return false
             $algorithm = 16; // Valid algorithm length
-            
+
             $data = json_encode($data);
             $iv = openssl_random_pseudo_bytes($algorithm);
-            
+
             // Mock openssl_encrypt by replacing it with our own implementation in this context
             // This will test line 45 where $encrypted === false
             return $this->handleEncryption($iv, $data, false);
         }
-        
-        public function handleEncryption($iv, $data, $encryptResult) {
+
+        public function handleEncryption($iv, $data, $encryptResult)
+        {
             if ($encryptResult === false) {
                 throw new \RuntimeException('The data could not be encrypted.');
             }
-            
+
             return base64_encode($iv) . ':' . base64_encode($encryptResult);
         }
     };
-    
+
     // Test that the exception is thrown as expected
     expect(fn () => $encrypt->customEncrypt(['test' => 'data']))
         ->toThrow(\RuntimeException::class, 'The data could not be encrypted.');
@@ -368,21 +371,17 @@ test('handles openssl_encrypt failure directly', function () {
 
 test('tests base64_decode failing specifically', function () {
     $encrypt = new Encrypt('test_key_12345678901234567890123456789012');
-    
+
     // Use reflection to directly access the singleDecrypt method
     $reflection = new ReflectionClass($encrypt);
     $method = $reflection->getMethod('singleDecrypt');
     $method->setAccessible(true);
-    
-    // Create crafted data that will make the specific condition at line 86 to be hit
-    // by using reflection to test the behavior without relying on external functions
-    // We'll test multiple scenarios to ensure coverage
-    
+
     // Scenario 1: Split the data but make the IV base64_decode return false
     $customData = 'invalid@base64:validBase64=='; // The first part will fail base64_decode
     $result = $method->invokeArgs($encrypt, [$customData, 'test_key_12345678901234567890123456789012']);
     expect($result)->toBeFalse();
-    
+
     // Scenario 2: Split the data but make the encrypted base64_decode return false
     $customData = base64_encode('validIV') . ':invalid@base64'; // The second part will fail base64_decode
     $result = $method->invokeArgs($encrypt, [$customData, 'test_key_12345678901234567890123456789012']);
@@ -393,11 +392,11 @@ test('directly tests openssl_encrypt returning false', function () {
     // Create a mock of Encrypt that will simulate openssl_encrypt returning false
     $encrypt = Mockery::mock(Encrypt::class . '[encrypt]', ['test_key_12345678901234567890123456789012'])
         ->makePartial();
-    
+
     // Make encrypt throw the specific exception we want to test
     $encrypt->shouldReceive('encrypt')
         ->andThrow(new RuntimeException('The data could not be encrypted.'));
-    
+
     // Test that the exception is thrown when encryption fails
     expect(fn () => $encrypt->encrypt(['test' => 'data']))
         ->toThrow(RuntimeException::class, 'The data could not be encrypted.');
@@ -405,17 +404,17 @@ test('directly tests openssl_encrypt returning false', function () {
 
 test('directly tests base64_decode failures in singleDecrypt', function () {
     $encrypt = new Encrypt('test_key_12345678901234567890123456789012');
-    
+
     // Use reflection to access the private method
     $reflection = new ReflectionClass($encrypt);
     $method = $reflection->getMethod('singleDecrypt');
     $method->setAccessible(true);
-    
+
     // Create a payload that will trigger line 86 - invalid base64 in both parts
     $invalidBase64IV = 'invalid-base64-string:validBase64==';
     $result1 = $method->invokeArgs($encrypt, [$invalidBase64IV, 'test_key_12345678901234567890123456789012']);
     expect($result1)->toBeFalse();
-    
+
     // Create a payload with valid IV but invalid encrypted part
     $validIvInvalidEncrypted = base64_encode('validIV') . ':invalid-base64-string';
     $result2 = $method->invokeArgs($encrypt, [$validIvInvalidEncrypted, 'test_key_12345678901234567890123456789012']);

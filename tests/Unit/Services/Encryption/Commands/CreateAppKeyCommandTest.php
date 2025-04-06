@@ -1,6 +1,7 @@
 <?php
 
 use Orkestra\Services\Encryption\Commands\CreateAppKeyCommand;
+use Orkestra\Interfaces\ConfigurationInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 beforeEach(function () {
@@ -9,7 +10,7 @@ beforeEach(function () {
     mkdir($this->tempDir);
 
     // Mock the configuration interface
-    $this->config = Mockery::mock(\Orkestra\Interfaces\ConfigurationInterface::class);
+    $this->config = Mockery::mock(ConfigurationInterface::class);
     $this->config->shouldReceive('get')->with('root')->andReturn($this->tempDir);
 
     // Create the command

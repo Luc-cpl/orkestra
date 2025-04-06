@@ -15,11 +15,7 @@ test('can handle command execution', function () {
 
     // Create the handler with our mock console
     $handler = new CommandsHandler($console);
-
-    // Call the handle method
     $handler->handle();
-
-    // Mockery will automatically verify expectations when the test ends
 });
 
 test('command handler implements HandlerInterface', function () {

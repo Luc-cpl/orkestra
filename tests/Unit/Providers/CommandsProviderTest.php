@@ -73,13 +73,6 @@ class ProviderWithoutCommands implements ProviderInterface
 }
 
 beforeEach(function () {
-    // Create a fresh app instance for each test
-    $this->app = app([
-        'slug' => 'test-app',
-        'env' => 'testing',
-        'root' => dirname(__DIR__, 3),
-    ]);
-
     // Create a new provider instance
     $this->provider = new CommandsProvider();
 });
@@ -90,15 +83,15 @@ test('provider implements provider interface', function () {
 
 test('can register and validate commands provider configuration', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Verify config setup
-    expect($this->app->config()->has('commands'))->toBeTrue();
-    expect($this->app->config()->get('definition'))->toHaveKey('commands');
-    expect($this->app->config()->get('validation'))->toHaveKey('commands');
+    expect(app()->config()->has('commands'))->toBeTrue();
+    expect(app()->config()->get('definition'))->toHaveKey('commands');
+    expect(app()->config()->get('validation'))->toHaveKey('commands');
 
     // Get the validator callback and test it
-    $validator = $this->app->config()->get('validation')['commands'];
+    $validator = app()->config()->get('validation')['commands'];
 
     // Non-array should fail
     $result = $validator('not-an-array');
@@ -122,7 +115,7 @@ test('can register and validate commands provider configuration', function () {
 
 test('can boot commands provider without side effects', function () {
     // Boot should be a no-op for this provider
-    $this->provider->boot($this->app);
+    $this->provider->boot(app());
 
     // Add an assertion to make the test not risky
     expect($this->provider)->toBeInstanceOf(CommandsProvider::class);
@@ -148,27 +141,27 @@ test('provider has default commands defined', function () {
 
 test('binds application to container during registration', function () {
     // Register provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Boot app to resolve bindings
-    $this->app->boot();
+    app()->boot();
 
     // Check that the Application class was bound to the container
-    expect($this->app->has(Application::class))->toBeTrue();
+    expect(app()->has(Application::class))->toBeTrue();
 
     // Get the console application
-    $console = $this->app->get(Application::class);
+    $console = app()->get(Application::class);
 
     // Verify it's an Application instance
     expect($console)->toBeInstanceOf(Application::class);
 
     // Verify the app has the expected name
-    expect($console->getName())->toBe($this->app->slug());
+    expect($console->getName())->toBe(app()->slug());
 });
 
 test('integrates commands from config and providers', function () {
     // Mock an App and provider for testing
-    $app = $this->app;
+    $app = app();
 
     // Configure the config with custom commands
     $app->config()->set('commands', [TestCommand::class]);
@@ -203,7 +196,7 @@ test('integrates commands from config and providers', function () {
 
 test('handles providers without commands property correctly', function () {
     // Configure app
-    $app = $this->app;
+    $app = app();
 
     // Register provider without commands
     $app->provider(ProviderWithoutCommands::class);
@@ -224,7 +217,7 @@ test('handles providers without commands property correctly', function () {
 
 test('ensures unique command registration', function () {
     // Configure app
-    $app = $this->app;
+    $app = app();
 
     // Set duplicated commands
     $app->config()->set('commands', [

@@ -8,13 +8,6 @@ use Orkestra\Services\Encryption\Encrypt;
 use Orkestra\Services\Encryption\Interfaces\EncryptInterface;
 
 beforeEach(function () {
-    // Create a fresh app instance for each test
-    $this->app = app([
-        'slug' => 'test-app',
-        'env' => 'testing',
-        'root' => dirname(__DIR__, 3),
-    ]);
-
     // Create a new provider instance
     $this->provider = new EncryptionServiceProvider();
 });
@@ -25,25 +18,25 @@ test('encryption provider implements provider interface', function () {
 
 test('can register encryption provider', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Verify that validation and definition were set
-    expect($this->app->config()->get('validation'))->toHaveKey('app_key');
-    expect($this->app->config()->get('validation'))->toHaveKey('app_previous_keys');
-    expect($this->app->config()->get('definition'))->toHaveKey('app_key');
-    expect($this->app->config()->get('definition'))->toHaveKey('app_previous_keys');
+    expect(app()->config()->get('validation'))->toHaveKey('app_key');
+    expect(app()->config()->get('validation'))->toHaveKey('app_previous_keys');
+    expect(app()->config()->get('definition'))->toHaveKey('app_key');
+    expect(app()->config()->get('definition'))->toHaveKey('app_previous_keys');
 
     // Check the default values in definition
-    expect($this->app->config()->get('definition')['app_key'][1])->toBe('');
-    expect($this->app->config()->get('definition')['app_previous_keys'][1])->toBe([]);
+    expect(app()->config()->get('definition')['app_key'][1])->toBe('');
+    expect(app()->config()->get('definition')['app_previous_keys'][1])->toBe([]);
 });
 
 test('validates app_key correctly', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Get the validation callback
-    $appKeyValidation = $this->app->config()->get('validation')['app_key'];
+    $appKeyValidation = app()->config()->get('validation')['app_key'];
 
     // String validation for app_key
     expect($appKeyValidation('valid-key'))->toBe(true);
@@ -58,10 +51,10 @@ test('validates app_key correctly', function () {
 
 test('validates app_previous_keys correctly', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Get the validation callback
-    $appPreviousKeysValidation = $this->app->config()->get('validation')['app_previous_keys'];
+    $appPreviousKeysValidation = app()->config()->get('validation')['app_previous_keys'];
 
     // Array validation for app_previous_keys
     expect($appPreviousKeysValidation([]))->toBe(true);
@@ -76,20 +69,20 @@ test('validates app_previous_keys correctly', function () {
 
 test('binds encrypt service correctly', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Set configuration values
-    $this->app->config()->set('app_key', 'test-app-key');
-    $this->app->config()->set('app_previous_keys', ['old-key-1', 'old-key-2']);
+    app()->config()->set('app_key', 'test-app-key');
+    app()->config()->set('app_previous_keys', ['old-key-1', 'old-key-2']);
 
     // Boot the app to resolve bindings
-    $this->app->boot();
+    app()->boot();
 
     // Check that encrypt service is properly registered
-    expect($this->app->has('encrypt'))->toBeTrue();
+    expect(app()->has('encrypt'))->toBeTrue();
 
     // Get the encrypt service
-    $encrypt = $this->app->get('encrypt');
+    $encrypt = app()->get('encrypt');
     expect($encrypt)->toBeInstanceOf(Encrypt::class);
     expect($encrypt)->toBeInstanceOf(EncryptInterface::class);
 
@@ -106,23 +99,23 @@ test('binds encrypt service correctly', function () {
 
 test('throws exception with empty app_key during usage', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Set empty app_key
-    $this->app->config()->set('app_key', '');
+    app()->config()->set('app_key', '');
 
     // Boot the app to resolve bindings
-    $this->app->boot();
+    app()->boot();
 
     // Attempt to get the encrypt service (should throw exception)
     expect(function () {
-        $this->app->get('encrypt');
+        app()->get('encrypt');
     })->toThrow(\RuntimeException::class, 'The app key must not be empty');
 });
 
 test('encrypt service handles previous keys correctly', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Create an encrypt service with a different key to simulate previous encryption
     $oldKey = 'old-app-key';
@@ -135,14 +128,14 @@ test('encrypt service handles previous keys correctly', function () {
     $encryptedWithOldKey = $oldEncrypt->encrypt($data);
 
     // Now set up the app with the current key and the old key as previous
-    $this->app->config()->set('app_key', $currentKey);
-    $this->app->config()->set('app_previous_keys', [$oldKey]);
+    app()->config()->set('app_key', $currentKey);
+    app()->config()->set('app_previous_keys', [$oldKey]);
 
     // Boot the app to resolve bindings
-    $this->app->boot();
+    app()->boot();
 
     // Get the encrypt service
-    $currentEncrypt = $this->app->get('encrypt');
+    $currentEncrypt = app()->get('encrypt');
 
     // The current encrypt service should be able to decrypt data encrypted with the old key
     $decrypted = $currentEncrypt->decrypt($encryptedWithOldKey);
@@ -163,17 +156,17 @@ test('has correct commands registered', function () {
     expect($this->provider->commands)->toContain(CreateAppKeyCommand::class);
 
     // Additional checks to verify the command is properly defined
-    $this->provider->register($this->app);
-    $this->app->boot();
+    $this->provider->register(app());
+    app()->boot();
 
     // Check if the command class is registered and accessible
-    $command = $this->app->get(CreateAppKeyCommand::class);
+    $command = app()->get(CreateAppKeyCommand::class);
     expect($command)->toBeInstanceOf(CreateAppKeyCommand::class);
 });
 
 test('can boot encryption provider', function () {
     // Boot should be a no-op for this provider
-    $this->provider->boot($this->app);
+    $this->provider->boot(app());
 
     // Just make sure it doesn't throw exceptions
     expect(true)->toBeTrue();
@@ -181,11 +174,11 @@ test('can boot encryption provider', function () {
 
 test('can create multiple instances of encrypt service with different keys', function () {
     // Register the provider
-    $this->provider->register($this->app);
+    $this->provider->register(app());
 
     // Create first instance with a specific key
     $key1 = 'first-key';
-    $this->app->config()->set('app_key', $key1);
+    app()->config()->set('app_key', $key1);
     $encrypt1 = new Encrypt($key1);
 
     // Create second instance with different key
