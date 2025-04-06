@@ -8,9 +8,7 @@ use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 use Orkestra\Services\Http\Traits\RouteStrategyTrait;
 use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
-
 use League\Route\RouteGroup as LeagueRouteGroup;
-
 use League\Route\RouteCollectionInterface;
 
 class RouteGroup extends LeagueRouteGroup implements RouteGroupInterface

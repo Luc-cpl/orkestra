@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Orkestra\Services\Hooks\Interfaces\ListenerInterface;
-
 use Orkestra\Services\Hooks\Hooks;
 use Exception;
 
@@ -33,7 +32,7 @@ class HooksProvider implements ProviderInterface
             'listeners'  => ['The hook listeners to register with the app', []],
         ]);
 
-        $app->singleton(HooksInterface::class, Hooks::class);
+        $app->bind(HooksInterface::class, Hooks::class);
     }
 
     /**
@@ -65,8 +64,7 @@ class HooksProvider implements ProviderInterface
     protected function registerListeners(App $app, HooksInterface $hooks, array $listeners): void
     {
         foreach ($listeners as $listener) {
-            // Set listeners as singletons
-            $app->singleton($listener, $listener);
+            $app->bind($listener, $listener);
             /** @var ListenerInterface */
             $listener = $app->get($listener);
             $listenerHooks = $listener->hook();

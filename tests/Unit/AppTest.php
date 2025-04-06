@@ -3,42 +3,54 @@
 use Orkestra\App;
 use Orkestra\Configuration;
 use Orkestra\Interfaces\ProviderInterface;
+use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Psr\Container\NotFoundExceptionInterface;
-
 use Orkestra\Providers\CommandsProvider;
 use Orkestra\Providers\HooksProvider;
 use Orkestra\Providers\HttpProvider;
 use Orkestra\Providers\ViewProvider;
 
-beforeEach(function () {
-    $this->config = new Configuration();
-    $this->app = new App($this->config);
-});
-
 test('can get slug', function () {
-    expect($this->app->slug())->toEqual('app');
-    $this->config->set('slug', 'testSlug');
-    expect($this->app->slug())->toEqual('testSlug');
-});
-
-test('can get configuration', function () {
-    expect($this->app->config())->toBe($this->config);
+    expect(app()->slug())->toEqual('app');
+    app()->config()->set('slug', 'testSlug');
+    expect(app()->slug())->toEqual('testSlug');
 });
 
 test('can get from container', function () {
-    $this->app->bind('test', fn () => 'testValue');
-    expect($this->app->get('test'))->toEqual('testValue');
+    app()->bind('test', fn () => 'testValue');
+    expect(app()->get('test'))->toEqual('testValue');
 });
 
 test('can not get from container with non existent key', function () {
-    $this->expectException(NotFoundExceptionInterface::class);
-    $this->app->get('nonExistentKey');
+    app()->get('nonExistentKey');
+})->expectException(NotFoundExceptionInterface::class);
+
+test('can make from container with constructor parameters', function () {
+    app()->bind('test', fn ($param) => $param);
+    expect(app()->make('test', ['param' => 'testValue']))->toEqual('testValue');
 });
 
-test('can get from container with constructor parameters', function () {
-    $this->app->bind('test', fn ($param) => $param);
-    expect($this->app->get('test', ['param' => 'testValue']))->toEqual('testValue');
-});
+test('can not use a invalid env config', function () {
+    app()->config()->set('env', 'invalidEnv');
+    app()->boot();
+})->expectException(InvalidArgumentException::class);
+
+test('can not use a invalid root config', function () {
+    app()->config()->set('root', 'invalidRoot');
+    app()->boot();
+})->expectException(InvalidArgumentException::class);
+
+test('can not use a invalid slug config', function (string $slug) {
+    app()->config()->set('slug', $slug);
+    app()->boot();
+})->with([
+    'invalid slug',
+    'invalidSlug',
+    'invalid slug!',
+    'invalidSlug!',
+    'invalid-slug!',
+    'invalid_slug!',
+])->expectException(InvalidArgumentException::class);
 
 test('can register a provider', function () {
     $providerClass = new class () implements ProviderInterface {
@@ -50,31 +62,29 @@ test('can register a provider', function () {
         {
         }
     };
-    $this->app->provider($providerClass::class);
-    $provider = $this->app->get($providerClass::class);
+    app()->provider($providerClass::class);
+    $provider = app()->get($providerClass::class);
     $provider->test = 'testValue';
-    expect($this->app->get($providerClass::class))->toEqual($provider);
+    expect(app()->get($providerClass::class))->toEqual($provider);
 });
 
 test('can not register provider with non existent class', function () {
-    $this->expectException(InvalidArgumentException::class);
-    $this->app->provider('testProvider');
-});
+    app()->provider('testProvider');
+})->expectException(InvalidArgumentException::class);
 
 test('can not register a provider with non provider class', function () {
     $nonProviderClass = new class () {};
-    $this->app->provider($nonProviderClass::class);
+    app()->provider($nonProviderClass::class);
 })->throws(InvalidArgumentException::class);
 
 test('can not bind a value in container', function () {
-    $value = 'testValue';
-    $this->app->bind('test', $value);
+    app()->bind('test', 'testValue');
 })->throws(InvalidArgumentException::class);
 
 test('can bind a closure in container', function () {
     $callback = fn () => 'testValue';
-    $this->app->bind('test', $callback);
-    expect($this->app->get('test'))->toEqual('testValue');
+    app()->bind('test', $callback);
+    expect(app()->get('test'))->toEqual('testValue');
 });
 
 test('can bind a class in container by name', function () {
@@ -82,57 +92,56 @@ test('can bind a class in container by name', function () {
         public string $value;
     };
 
-    $this->app->bind('testClassString', $class::class);
-    expect($this->app->get('testClassString'))->toBeInstanceOf(get_class($class));
-    $instance = $this->app->get('testClassString');
+    app()->bind('testClassString', $class::class);
+    expect(app()->get('testClassString'))->toBeInstanceOf(get_class($class));
+    expect(app()->make('testClassString'))->toBeInstanceOf(get_class($class));
+    $instance = app()->make('testClassString');
     $instance->value = 'testValue2';
-    $this->assertNotEquals($instance, $this->app->get('testClassString'));
+    expect(app()->make('testClassString'))->not->toEqual($instance);
 });
 
 test('can bind a class instance in container', function () {
     $class = new class () {
     };
 
-    $this->app->bind('testClass', $class);
-    expect($this->app->get('testClass'))->toBeInstanceOf(get_class($class));
-    expect($this->app->get('testClass'))->toEqual($class);
+    app()->bind('testClass', $class);
+    expect(app()->get('testClass'))->toBeInstanceOf(get_class($class));
+    expect(app()->get('testClass'))->toEqual($class);
 });
 
-test('can instantiate a singleton in the container', function () {
+test('can get same instance in container', function () {
     $class = new class () {
         public string $value;
     };
 
-    $this->app->singleton('testClassString', $class::class);
-    expect($this->app->get('testClassString'))->toBeInstanceOf(get_class($class));
-    $instance = $this->app->get('testClassString');
+    app()->bind('testClassString', $class::class);
+    expect(app()->get('testClassString'))->toBeInstanceOf(get_class($class));
+    $instance = app()->get('testClassString');
     $instance->value = 'testValue2';
-    expect($this->app->get('testClassString'))->toEqual($instance);
+    expect(app()->get('testClassString'))->toEqual($instance);
 });
 
 test('can run if available with existing class', function () {
     $class = new class () {
     };
-    $value = $this->app->runIfAvailable($class::class, fn ($instance) => $instance);
+    $value = app()->runIfAvailable($class::class, fn ($instance) => $instance);
     expect($value)->toBeInstanceOf(get_class($class));
 });
 
 test('can not run if available with non existent class', function () {
-    $value = $this->app->runIfAvailable('notExistClass', fn () => 'testValue');
+    $value = app()->runIfAvailable('notExistClass', fn () => 'testValue');
     expect($value)->toBeNull();
 });
 
 test('can check if container has service', function () {
-    expect($this->app->has('test'))->toBeFalse();
-    $this->app->bind('test', fn () => 'testValue');
-    expect($this->app->has('test'))->toBeTrue();
+    expect(app()->has('test'))->toBeFalse();
+    app()->bind('test', fn () => 'testValue');
+    expect(app()->has('test'))->toBeTrue();
 });
 
 test('can throw exception when booting twice', function () {
-    $this->config->set('env', 'development');
-    $this->config->set('root', './');
-    $this->app->boot();
-    $this->app->boot();
+    app()->boot();
+    app()->boot();
 })->throws(Exception::class);
 
 test('can boot', function () {
@@ -146,29 +155,182 @@ test('can boot', function () {
             $this->test = 'testValue';
         }
     };
-    $this->app->provider($providerClass::class);
-    $provider = $this->app->get($providerClass::class);
-    expect($provider->test)->toEqual(null);
-    $this->config->set('env', 'development');
-    $this->config->set('root', './');
-    $this->app->boot();
+
+    app()->provider($providerClass::class);
+    app()->config()->set('env', 'development');
+    app()->config()->set('root', './');
+    app()->boot();
+
+    $provider = app()->get($providerClass::class);
     expect($provider->test)->toEqual('testValue');
 });
 
 test('can boot all existing providers', function () {
-    $this->config->set('env', 'development');
-    $this->config->set('root', './');
+    app()->provider(CommandsProvider::class);
+    app()->provider(HooksProvider::class);
+    app()->provider(HttpProvider::class);
+    app()->provider(ViewProvider::class);
 
-    $this->app->provider(CommandsProvider::class);
-    $this->app->provider(HooksProvider::class);
-    $this->app->provider(HttpProvider::class);
-    $this->app->provider(ViewProvider::class);
-
-    $this->app->boot();
+    app()->boot();
 
     /**
      * Do not run any assertions as we are only testing if the boot method runs without errors.
      * We should add assertions to test the providers individually while testing the related services.
      */
     expect(true)->toBeTrue();
+});
+
+test('can not get a service from container before booting', function () {
+    $app = new App(new Configuration());
+    $app->get('test');
+})->throws(BadMethodCallException::class);
+
+test('can decorate a service', function () {
+    $mock = Mockery::mock();
+    $mock->shouldReceive('test')->andReturn('testValue');
+
+    $mock2 = Mockery::mock();
+    $mock2->shouldReceive('test')->andReturn('testValueDecorated');
+
+    $mock3 = Mockery::mock();
+    $mock3->shouldReceive('test')->andReturn('testValueDecoratedDecorated');
+
+    $callbackMock = Mockery::mock();
+    $callbackMock->shouldReceive('run')->once()->andReturn($mock2);
+
+    app()->bind($mock::class, fn () => $mock);
+    app()->decorate($mock::class, fn ($service) => $callbackMock->run());
+    app()->decorate($mock::class, fn ($service) => $mock3);
+    expect(app()->get($mock::class)->test())->toEqual('testValueDecoratedDecorated');
+});
+
+test('can decorate a service before add to container', function () {
+    $class = new class () {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+
+    $mock2 = Mockery::mock();
+    $mock2->shouldReceive('test')->andReturn('testValueDecorated');
+
+    app()->decorate($class::class, fn ($service) => $mock2);
+    app()->bind($class::class, fn () => $class);
+    expect(app()->get($class::class)->test())->toEqual('testValueDecorated');
+});
+
+test('can decorate a bind interface', function () {
+    interface TestInterface
+    {
+        public function test();
+    }
+
+    $class = new class () implements TestInterface {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+
+    $class2 = new class () implements TestInterface {
+        public function test()
+        {
+            return 'testValueDecorated';
+        }
+    };
+
+    app()->bind(TestInterface::class, $class::class);
+    app()->decorate(TestInterface::class, fn ($service) => $class2);
+    expect(app()->get(TestInterface::class)->test())->toEqual('testValueDecorated');
+});
+
+test('can decorate a service without bind the class', function () {
+    $class = new class () {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+    $mock2 = Mockery::mock();
+    $mock2->shouldReceive('test')->andReturn('testValueDecorated');
+
+    app()->decorate($class::class, fn ($service) => $mock2);
+    app()->boot();
+    expect(app()->get($class::class)->test())->toEqual('testValueDecorated');
+});
+
+test('can not decorate a service after booting', function () {
+    app()->boot();
+    app()->decorate('test', fn ($service) => $service);
+})->throws(Exception::class);
+
+test('can decorate a value in container', function () {
+    app()->bind('test', fn () => 'testValue');
+    app()->decorate('test', fn ($value) => $value . 'Decorated');
+    expect(app()->get('test'))->toEqual('testValueDecorated');
+});
+
+test('can query a app hook', function () {
+    app()->provider(HooksProvider::class);
+    app()->get(HooksInterface::class)->register('app.test', fn () => 'testValue');
+    expect(app()->hookQuery('test', null))->toEqual('testValue');
+});
+
+test('can call a app hook', function () {
+    app()->provider(HooksProvider::class);
+
+    $value = false;
+    $callback = function () use (&$value) {
+        $value = true;
+    };
+
+    app()->get(HooksInterface::class)->register('app.test', $callback);
+    app()->hookCall('test');
+    expect($value)->toBeTrue();
+});
+
+test('can register an app hook', function () {
+    app()->provider(HooksProvider::class);
+
+    $value = false;
+    $callback = function () use (&$value) {
+        $value = true;
+    };
+
+    app()->hookRegister('test', $callback);
+    app()->get(HooksInterface::class)->call('app.test');
+    expect($value)->toBeTrue();
+});
+
+test('can use deprecated singleton method with warning', function () {
+    // Setup error handler to catch deprecated warnings
+    $deprecatedCalled = false;
+    set_error_handler(function ($errno, $errstr) use (&$deprecatedCalled) {
+        if ($errno === E_USER_DEPRECATED && strpos($errstr, 'singleton') !== false) {
+            $deprecatedCalled = true;
+        }
+        // Don't execute PHP's internal error handler
+        return true;
+    });
+
+    // Call the deprecated method
+    $class = new class () {
+        public function test()
+        {
+            return 'testValue';
+        }
+    };
+
+    app()->singleton('testSingleton', fn () => $class);
+
+    // Check that the service is bound correctly despite being called via deprecated method
+    expect(app()->get('testSingleton'))->toBeInstanceOf(get_class($class));
+    expect(app()->get('testSingleton')->test())->toBe('testValue');
+
+    // Verify that the deprecated warning was triggered
+    expect($deprecatedCalled)->toBeTrue();
+
+    // Restore the error handler
+    restore_error_handler();
 });

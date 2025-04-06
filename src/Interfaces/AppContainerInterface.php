@@ -3,9 +3,9 @@
 namespace Orkestra\Interfaces;
 
 use Psr\Container\ContainerInterface;
-
 use Orkestra\AppBind;
 use InvalidArgumentException;
+use BadMethodCallException;
 
 interface AppContainerInterface extends ContainerInterface
 {
@@ -39,27 +39,42 @@ interface AppContainerInterface extends ContainerInterface
     public function bind(string $name, mixed $service, bool $useAutowire = true): AppBind;
 
     /**
-     * Add a service to the container as a singleton
+     * Decorate a service in the container
      *
-     * @param string $name
-     * @param mixed  $service
-     * @param bool   $useAutowire
-     * @return AppBind A bind instance that allows manage the service constructor and properties
-     * @throws InvalidArgumentException If the class specified in $service does not exist
+     * The $decorator function should receive the original service as the
+     * first argument and return the new service.
+     * You can resolve other services in the container using other arguments.
+     *
+     * Example:
+     * $container->decorate(Service::class, function (Service $service, OtherService $otherService) {
+     *    return new ServiceDecorator($service, $otherService);
+     * });
+     *
+     * @param class-string $name      Name of the service
+     * @param callable     $decorator Decorator function
+     * @throws BadMethodCallException   If the application is already booted this modification should not be allowed
+     * @throws InvalidArgumentException If the class does not exist
      */
-    public function singleton(string $name, mixed $service, bool $useAutowire = true): ?AppBind;
+    public function decorate(string $name, callable $decorator): void;
 
     /**
      * Returns an entry of the container by its name.
-     * If the entry is a singleton, it will return the same instance,
-     * otherwise, it will create a new instance.
+     *
+     * @template T of object
+     * @param class-string<T> $name   Entry name or a class name.
+     * @return T
+     */
+    public function get(string $name): mixed;
+
+    /**
+     * Resolves the given entry from the container.
      *
      * @template T of object
      * @param class-string<T> $name   Entry name or a class name.
      * @param mixed[]         $params Optional parameters to use to build the entry.
      * @return T
      */
-    public function get(string $name, array $params = []): mixed;
+    public function make(string $name, array $params = []): mixed;
 
     /**
      * Call the given function using the given parameters.

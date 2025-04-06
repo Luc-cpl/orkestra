@@ -64,9 +64,9 @@ test('can list the available middleware', function () {
     expect($outputLines[4]) ->toBe('+-------------+-------------+---------------+');
     expect($outputLines[5]) ->toBe('| middleware1 | Middleware1 | configuration |');
     expect($outputLines[6]) ->toBe('| middleware2 | Middleware2 | configuration |');
-    expect($outputLines[7]) ->toBe('| middleware3 | Middleware3 | TestProvider1 |');
-    expect($outputLines[8]) ->toBe('| middleware4 | Middleware4 | TestProvider1 |');
-    expect($outputLines[9]) ->toBe('| middleware5 | Middleware5 | TestProvider2 |');
+    expect($outputLines[7]) ->toBe('| middleware4 | Middleware4 | TestProvider2 |');
+    expect($outputLines[8]) ->toBe('| middleware5 | Middleware5 | TestProvider2 |');
+    expect($outputLines[9]) ->toBe('| middleware3 | Middleware3 | TestProvider1 |');
     expect($outputLines[10])->toBe('+-------------+-------------+---------------+');
     expect($outputLines[11])->toBe('');
 });

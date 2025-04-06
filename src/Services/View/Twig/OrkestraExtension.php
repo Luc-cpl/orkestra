@@ -3,7 +3,6 @@
 namespace Orkestra\Services\View\Twig;
 
 use Orkestra\Services\View\HtmlTag;
-
 use InvalidArgumentException;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Twig\Extension\AbstractExtension;
@@ -126,7 +125,7 @@ class OrkestraExtension extends AbstractExtension
         $this->footerTags[] = $tag;
     }
 
-    public function enqueueStyle(string $href): void
+    protected function enqueueStyle(string $href): void
     {
         // If is relative we should get our settings url
         if (strpos($href, 'http') === false) {

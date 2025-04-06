@@ -3,7 +3,7 @@
     "description": "Orchestration for PHP applications",
     "type": "project",
     "license": "MIT",
-    "version": "v1.0.1",
+    "version": "v1.1.0",
     "keywords": [
         "orkestra"
     ],
@@ -43,8 +43,8 @@
     "require": {
         "php": "^8.2",
         "php-di/php-di": "^7.0",
-        "symfony/console": "^6.3",
-        "symfony/process": "^6.3",
+        "symfony/console": "^7.0",
+        "symfony/process": "^7.0",
         "league/route": "^5.1",
         "laminas/laminas-diactoros": "^3.3",
         "laminas/laminas-httphandlerrunner": "^2.9",

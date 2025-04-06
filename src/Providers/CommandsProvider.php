@@ -6,7 +6,6 @@ use Orkestra\App;
 use Orkestra\Commands\ConfigOptionsCommand;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Commands\StartServerCommand;
-
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
@@ -31,7 +30,7 @@ class CommandsProvider implements ProviderInterface
      */
     public function register(App $app): void
     {
-        $app->singleton(Application::class, function () use ($app) {
+        $app->bind(Application::class, function () use ($app) {
             /** @var class-string[] */
             $commands  = $app->config()->get('commands');
             $providers = $app->getProviders();
