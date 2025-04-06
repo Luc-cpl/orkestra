@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: website/package-lock.json
 
       - name: Initialize Docusaurus if not exists
         run: |
