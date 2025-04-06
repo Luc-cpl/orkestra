@@ -9,8 +9,7 @@ The initial idea is to cerate a behavior as Property Hooks and Asymmetric Visibi
 
 ## Basic Entity
 
-This entity bellow is a good example of a basic usage. The properties in protected visibility are public-read, allowing us to read and 
-
+This entity below is a good example of a basic usage. The properties in protected visibility are public-read, allowing us to read and
 ```php
 use Orkestra\Entities\AbstractEntity;
 
