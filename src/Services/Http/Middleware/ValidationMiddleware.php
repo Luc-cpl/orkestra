@@ -2,6 +2,7 @@
 
 namespace Orkestra\Services\Http\Middleware;
 
+use League\Route\Http\Exception\BadRequestException;
 use Orkestra\Services\Http\Entities\ParamDefinition;
 use Orkestra\Services\Http\Enum\ParamType;
 use Psr\Http\Message\ServerRequestInterface;
@@ -158,14 +159,7 @@ class ValidationMiddleware extends AbstractMiddleware
 
         if ($validation->fails()) {
             $this->app->hookCall('middleware.validation.fail', $validation);
-
-            return $this->errorResponse(
-                $request,
-                'validation_failed',
-                'Validation failed',
-                'Theres one or more errors in your request data',
-                $validation->errors()->toArray(),
-            );
+            throw new BadRequestException('Theres one or more errors in your request data');
         }
 
         $this->app->hookCall('middleware.validation.success', $validation);

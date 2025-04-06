@@ -3,7 +3,6 @@
 namespace Orkestra\Services\Http\Interfaces;
 
 use Orkestra\Services\Http\Route;
-
 use Orkestra\Services\Http\Interfaces\Partials\RouteCollectionInterface;
 use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use League\Route\RouteConditionHandlerInterface;

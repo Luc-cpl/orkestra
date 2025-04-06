@@ -8,7 +8,6 @@ use Orkestra\Services\View\Interfaces\ViewInterface;
 use Orkestra\Services\View\Twig\OrkestraExtension;
 use Orkestra\Services\View\Twig\RuntimeLoader;
 use Orkestra\Services\View\View;
-
 use Twig\Environment;
 use Twig\Extra\Markdown\DefaultMarkdown;
 use Twig\Extra\Markdown\MarkdownExtension;
@@ -78,10 +77,10 @@ class ViewProvider implements ProviderInterface
         $app->bind(ViewInterface::class, View::class);
         $app->bind(RuntimeLoaderInterface::class, RuntimeLoader::class);
         $app->bind(LoaderInterface::class, FilesystemLoader::class)->constructor(
-            $app->config()->get('root') . '/views',
+            fn (App $app) => $app->config()->get('root') . '/views',
         );
 
-        $app->singleton(Environment::class, function (
+        $app->bind(Environment::class, function (
             RuntimeLoaderInterface $runtimeLoader,
             LoaderInterface        $loader,
         ) use ($app) {

@@ -6,8 +6,10 @@ use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\RouteGroup;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 beforeEach(function () {
     app()->provider(HttpProvider::class);
@@ -92,6 +94,7 @@ test('can dispatch a request with a router middleware', function () {
         return $response->withHeader('x-test', 'test');
     });
 
+    /** @var middleware MiddlewareInterface */
     $router = app()->get(RouterInterface::class);
     $router->middleware($middleware);
     $router->map('GET', '/', fn () => 'test');
@@ -120,12 +123,31 @@ test('can dispatch a request with a router lazy middleware', function () {
     expect($response->getHeaderLine('x-test'))->toBe('test');
 });
 
+test('can dispatch a request with a route middleware with constructor', function () {
+    $middleware = new class ('') implements MiddlewareInterface {
+        public function __construct(private string $test)
+        {
+        }
+
+        public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+        {
+            return $handler->handle($request)->withHeader('x-test', $this->test);
+        }
+    };
+
+    $router = app()->get(RouterInterface::class);
+    $router->map('GET', '/', fn () => '')->middleware($middleware::class, ['test' => 'test']);
+    $router->map('GET', '/test', fn () => '')->middleware([$middleware::class, ['test' => 'test2']]);
+    expect(request()->getHeaderLine('x-test'))->toBe('test');
+    expect(request(uri: '/test')->getHeaderLine('x-test'))->toBe('test2');
+});
+
 test('can throw an exception if middleware is not found', function () {
     $router = app()->get(RouterInterface::class);
     $router->map('GET', '/', fn () => 'test');
     $router->middleware('test');
     request();
-})->throws(InvalidArgumentException::class);
+})->throws(RuntimeException::class);
 
 test('can use a invocable controller', function () {
     class Controller

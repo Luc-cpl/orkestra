@@ -2,13 +2,15 @@
 
 namespace Orkestra\Services\Http\Traits;
 
-use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
-use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
-use Orkestra\Services\Http\Interfaces\DefinitionInterface;
-use Orkestra\Services\Http\RouteDefinition;
-use DI\Attribute\Inject;
-use InvalidArgumentException;
 use Orkestra\App;
+use DI\Attribute\Inject;
+use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
+use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
+use Orkestra\Services\Http\Interfaces\DefinitionInterface;
+use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
+use Orkestra\Services\Http\Interfaces\RouteInterface;
+use Orkestra\Services\Http\RouteDefinition;
+use InvalidArgumentException;
 
 trait RouteDefinitionTrait
 {
@@ -73,20 +75,30 @@ trait RouteDefinitionTrait
 
     public function getDefinition(): RouteDefinitionFacade
     {
+        if ($this->definition instanceof RouteDefinitionFacade) {
+            return $this->definition;
+        }
+
+        $instance = null;
+
         if (is_string($this->definition)) {
-            $this->definition = $this->app->get(RouteDefinitionFacade::class, [
-                'definition' => $this->app->get($this->definition, $this->definitionParams)
-            ]);
+            $instance = $this->app->make($this->definition, $this->definitionParams);
         }
 
         if (is_array($this->definition)) {
             $group = method_exists($this, 'getParentGroup') ? $this->getParentGroup() : null;
             $parentDefinition = $group ? $group->getDefinition() : null;
             $definition = array_merge($this->definition, ['parentDefinition' => $parentDefinition]);
-            $this->definition = $this->app->get(RouteDefinitionFacade::class, [
-                'definition' => $this->app->get(RouteDefinition::class, $definition)
-            ]);
+            $instance = $this->app->make(RouteDefinition::class, $definition);
         }
+
+        if ($this instanceof RouteInterface && $instance instanceof RouteAwareInterface) {
+            $instance->setRoute($this);
+        }
+
+        $this->definition = $this->app->make(RouteDefinitionFacade::class, [
+            'definition' => $instance
+        ]);
 
         return $this->definition;
     }

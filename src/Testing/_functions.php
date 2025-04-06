@@ -6,6 +6,9 @@ use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Pest\Support\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Orkestra\Testing\Middleware;
+use Laminas\Diactoros\ServerRequestFactory;
+use Orkestra\Providers\HttpProvider;
 
 if (!function_exists('app')) {
     /**
@@ -30,7 +33,7 @@ if (!function_exists('factory')) {
     function factory(): EntityFactory
     {
         /** @var EntityFactory */
-        return Container::getInstance()->get(EntityFactory::class);
+        return app()->make(EntityFactory::class, ['useFaker' => true]);
     }
 }
 
@@ -46,8 +49,44 @@ if (!function_exists('request')) {
      */
     function request(string $method = 'GET', string $uri = '/', array $data = [], array $headers = []): ResponseInterface
     {
-        /** @var ServerRequestInterface */
-        $request = app()->get(ServerRequestInterface::class);
+        $request = generateRequest($method, $uri, $data, $headers);
+
+        if (!app()->has(RouterInterface::class)) {
+            throw new RuntimeException(sprintf('No router found in container! Did you forget to register the %s in your test?', HttpProvider::class));
+        }
+
+        $router = app()->get(RouterInterface::class);
+        return $router->dispatch($request);
+    }
+}
+
+if (!function_exists('middleware')) {
+    /**
+     * Create a middleware testing instance
+     *
+     * @param string $class
+     * @param mixed[] $constructor
+     */
+    function middleware(string $class, array $constructor = []): Middleware
+    {
+        /** @var Middleware */
+        return factory()->make(Middleware::class, name: $class, constructor: $constructor);
+    }
+}
+
+if (!function_exists('generateRequest')) {
+    /**
+     * Generate a request
+     *
+     * @param string $method
+     * @param string $uri
+     * @param mixed[] $data
+     * @param array<string, string> $headers
+     * @return ServerRequestInterface
+     */
+    function generateRequest(string $method = 'GET', string $uri = '/', array $data = [], array $headers = []): ServerRequestInterface
+    {
+        $request = ServerRequestFactory::fromGlobals();
 
         foreach ($headers as $key => $value) {
             $request = $request->withHeader($key, $value);
@@ -58,12 +97,9 @@ if (!function_exists('request')) {
             $data = [];
         }
 
-        $request = $request
+        return $request
             ->withMethod($method)
             ->withUri($request->getUri()->withPath($uri))
             ->withParsedBody($data);
-
-        $router = app()->get(RouterInterface::class);
-        return $router->dispatch($request);
     }
 }
