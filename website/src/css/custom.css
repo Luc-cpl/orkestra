@@ -4,27 +4,39 @@
  * work well for content-centric websites.
  */
 
+@import "tailwindcss";
+
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #3E3069;
+  --ifm-color-primary-dark: #37295E;
+  --ifm-color-primary-darker: #302353;
+  --ifm-color-primary-darkest: #291D48;
+  --ifm-color-primary-light: #4A3980;
+  --ifm-color-primary-lighter: #564397;
+  --ifm-color-primary-lightest: #624CAE;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #AA53A4;
+  --ifm-color-primary-dark: #9E4B99;
+  --ifm-color-primary-darker: #8F4D9C;
+  --ifm-color-primary-darkest: #7A4389;
+  --ifm-color-primary-light: #B66AB1;
+  --ifm-color-primary-lighter: #C282BE;
+  --ifm-color-primary-lightest: #CE4895;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-background-color: #2A2344;
+}
+
+/* Add custom Tailwind theme colors */
+@theme {
+  --color-primary: #3E3069;
+  --color-primary-dark: #302353;
+  --color-accent: #AA53A4;
+  --color-accent-light: #CE4895;
+  --color-light: #F6F3EE;
 }

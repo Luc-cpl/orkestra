@@ -453,13 +453,13 @@ $app->boot(); // Throws InvalidArgumentException
 
 ```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│  Initialization │ ──▶  │  Configuration  │ ──▶  │    Provider     │
+│  Initialization │ ──▶  │  Configuration  │ ──▶  │    Provider    │
 │                 │      │                 │      │  Registration   │
 └─────────────────┘      └─────────────────┘      └─────────────────┘
          │                                                 │
          │                                                 ▼
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│   Termination   │ ◀──  │    Execution    │ ◀──  │    Provider     │
+│   Termination   │ ◀──  │    Execution    │ ◀── │    Provider     │
 │                 │      │                 │      │  Bootstrapping  │
 └─────────────────┘      └─────────────────┘      └─────────────────┘
 ```

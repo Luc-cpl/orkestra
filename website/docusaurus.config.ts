@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Orkestra',
   tagline: 'A PHP workflow orchestration framework',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/fav.svg',
 
   // Set the production url of your site here
   url: 'https://luc-cpl.github.io',
@@ -31,6 +31,8 @@ const config: Config = {
     locales: ['en'],
   },
 
+  plugins: ["./tailwind-config.js"],
+
   presets: [
     [
       'classic',
@@ -52,12 +54,13 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/orkestra-logo.png',
     navbar: {
       title: 'Orkestra',
       logo: {
         alt: 'Orkestra Logo',
         src: 'img/logo.svg',
+        srcDark: 'img/logo-dark.svg',
       },
       items: [
         {
@@ -111,6 +114,7 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Orkestra. Built with Docusaurus.`,
     },
     prism: {
+      additionalLanguages: ['php', 'json', 'bash'],
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
