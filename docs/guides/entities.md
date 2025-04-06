@@ -23,7 +23,7 @@ class User extends AbstractEntity
 }
 
 $user = new User(
-    name'Joe Doe',
+    name: 'Joe Doe',
     email: 'joe@email.com',
     password: '12345',
 );
