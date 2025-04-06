@@ -10,10 +10,10 @@ const config: Config = {
   favicon: 'img/fav.svg',
 
   // Set the production url of your site here
-  url: 'https://luc-cpl.github.io',
+  url: 'https://orkestra.lucascarvalho.site',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/orkestra',
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
