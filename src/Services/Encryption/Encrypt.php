@@ -82,10 +82,6 @@ class Encrypt implements EncryptInterface
         $iv = base64_decode($ivBase64);
         $encrypted = base64_decode($encryptedBase64);
 
-        if ($iv === false || $encrypted === false) {
-            return false;
-        }
-
         $decrypted = $this->silentDecrypt(
             data: $encrypted,
             cipher_algo: $this->algorithm,
