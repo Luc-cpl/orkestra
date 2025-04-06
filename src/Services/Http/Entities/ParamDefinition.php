@@ -79,10 +79,14 @@ class ParamDefinition extends AbstractEntity
     }
 
     /**
-     * @param int[]|string[]|float[]|class-string $enum
+     * @param int[]|string[]|float[]|class-string|null $enum
      */
-    public function setEnum(array|string $enum): self
+    public function setEnum(array|string|null $enum): self
     {
+        if ($enum === null) {
+            return $this;
+        }
+
         if (is_string($enum)) {
             if (!enum_exists($enum)) {
                 throw new InvalidArgumentException("Invalid enum class: {$enum}");
@@ -95,10 +99,14 @@ class ParamDefinition extends AbstractEntity
     }
 
     /**
-     * @param ParamDefinition[] $inner
+     * @param ParamDefinition[]|null $inner
      */
-    public function setInner(array $inner): self
+    public function setInner(array|null $inner): self
     {
+        if ($inner === null) {
+            return $this;
+        }
+
         if ($this->type->name !== 'Array' && $this->type->name !== 'Object') {
             throw new BadMethodCallException('Cannot set inner on non-array or non-object param');
         }
