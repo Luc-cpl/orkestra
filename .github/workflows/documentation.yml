@@ -10,6 +10,7 @@ on:
       - 'website/**'
   repository_dispatch:
     types: [update-docs]
+  workflow_dispatch:
 
 jobs:
   build_and_deploy:
