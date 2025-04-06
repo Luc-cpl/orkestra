@@ -1,8 +1,0 @@
-vendor/
-.env
-.phpunit.cache/
-coverage/
-.DS_Store
-tests/app-test/cache/
-clover.xml
-coverage-report/
