@@ -202,4 +202,3 @@ class User
 
 - [Routing](/docs/guides/routing) - Define routes for controllers
 - [API Development](/docs/guides/api) - Build APIs with controllers
-- [HTTP Service](/docs/services/http) - Learn about the HTTP service

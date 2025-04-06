@@ -122,5 +122,3 @@ class UserController extends AbstractController
 
 - [Controllers](/docs/guides/controllers) - Learn about controllers
 - [Routing](/docs/guides/routing) - Define API routes
-- [HTTP Service](/docs/services/http) - Learn about the HTTP service
-- [View Service](/docs/services/view) - Learn about the view service 
