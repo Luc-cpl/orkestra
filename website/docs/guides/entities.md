@@ -115,10 +115,3 @@ class User
 6. Document entity properties
 7. Use type hints
 8. Follow immutability when possible
-
-## Related Topics
-
-- [Validation](/docs/guides/validation) - Validate entity data
-- [Repositories](/docs/guides/repositories) - Store and retrieve entities
-- [Testing](/docs/guides/testing) - Test entities
-- [Database](/docs/guides/database) - Store entities in a database 

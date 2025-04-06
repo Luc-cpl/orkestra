@@ -259,4 +259,3 @@ The `validate` method ensures all required configuration values are present and 
 
 - [Service Providers](/docs/guides/providers) - Learn how to register configuration in providers
 - [Application Structure](/docs/getting-started/installation) - Understand the application structure
-- [Service Container](/docs/guides/service-container) - Learn about dependency injection

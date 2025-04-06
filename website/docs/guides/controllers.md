@@ -201,7 +201,5 @@ class User
 ## Related Topics
 
 - [Routing](/docs/guides/routing) - Define routes for controllers
-- [Middleware](/docs/guides/middleware) - Add middleware to controllers
-- [Validation](/docs/guides/validation) - Validate controller input
 - [API Development](/docs/guides/api) - Build APIs with controllers
 - [HTTP Service](/docs/services/http) - Learn about the HTTP service

@@ -310,11 +310,10 @@ $config->set('definition', [
 
 3. **Group Related Settings**: Use arrays for complex values but keep the definitions at the top level.
 
-4. **Use Environment Variables**: Load sensitive values from environment variables rather than hardcoding them.
+4. **Use Environment Variables**: Load sensitive values from environment variables or secrets managers rather than hardcoding them.
 
 5. **Document Validation Rules**: Include clear documentation about validation rules in your definitions.
 
 ## Related Topics
 
 - [Application Lifecycle](/docs/core-concepts/app-lifecycle) - How configuration integrates into the application lifecycle
-- [Environment Setup](/docs/getting-started/environment) - Setting up environment-specific configuration 

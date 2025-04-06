@@ -84,5 +84,4 @@ This will start a development server, typically at `http://localhost:8000`. You 
 - [Configuration](/docs/getting-started/configuration) - Learn how to configure your Orkestra application
 - [Routing](/docs/guides/routing) - Define routes for your application
 - [Controllers](/docs/guides/controllers) - Create controllers for your application
-- [Views](/docs/guides/views) - Create views for your application
 - [Service Providers](/docs/guides/providers) - Register services for your application 
