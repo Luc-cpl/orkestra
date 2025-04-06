@@ -1,0 +1,56 @@
+name: Deploy Documentation
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  repository_dispatch:
+    types: [update-docs]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Initialize Docusaurus if not exists
+        run: |
+          if [ ! -f "website/package.json" ]; then
+            npx create-docusaurus@latest website classic --typescript
+            cd website
+            rm -rf docs blog
+            ln -s ../docs .
+            npm install
+          fi
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build website
+        working-directory: website
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'repository_dispatch'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/build
+          publish_branch: gh-pages
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'docs: update documentation [skip ci]' 
