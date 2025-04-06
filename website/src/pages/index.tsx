@@ -106,7 +106,7 @@ php maestro app:serve`}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl font-bold text-primary dark:text-white mb-6">
+            <h2 className="text-4xl font-bold text-primary text-white! mb-6">
               A Framework That Works with You
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-300">
@@ -115,7 +115,7 @@ php maestro app:serve`}
           </motion.div>
 
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 text-white!"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -163,14 +163,14 @@ php maestro app:serve`}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl font-bold text-primary dark:text-white mb-6">Built-In Power</h2>
+            <h2 className="text-4xl font-bold text-primary text-white! mb-6">Built-In Power</h2>
             <p className="text-lg text-slate-600 dark:text-slate-300">
               Everything you need to go from idea to production.
             </p>
           </motion.div>
 
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-white!"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -220,7 +220,7 @@ php maestro app:serve`}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl font-bold text-primary dark:text-white mb-6">Code That Makes Sense</h2>
+            <h2 className="text-4xl font-bold text-primary text-white! mb-6">Code That Makes Sense</h2>
             <p className="text-lg text-slate-600 dark:text-slate-300">
               Write clean, powerful controllers using modern PHP features and Orkestra's expressive syntax.
             </p>
@@ -262,7 +262,7 @@ class CreatePostController extends AbstractController
             </motion.div>
 
             <motion.div 
-              className="space-y-8"
+              className="space-y-8 text-white!"
               variants={fadeIn}
             >
               {[

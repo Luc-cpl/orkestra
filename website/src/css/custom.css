@@ -40,3 +40,17 @@
   --color-accent-light: #CE4895;
   --color-light: #F6F3EE;
 }
+
+@media (min-width: 997px) {
+  .navbar__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.footer__link-item {
+  display: flex!important;
+  align-items: center;
+  gap: 4px;
+}

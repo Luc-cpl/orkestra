@@ -111,7 +111,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Orkestra. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Orkestra.`,
     },
     prism: {
       additionalLanguages: ['php', 'json', 'bash'],
