@@ -159,7 +159,7 @@ class ValidationMiddleware extends AbstractMiddleware
 
         if ($validation->fails()) {
             $this->app->hookCall('middleware.validation.fail', $validation);
-            throw new BadRequestException('Theres one or more errors in your request data');
+            throw new BadRequestException(implode(', ', $validation->errors()->all()));
         }
 
         $this->app->hookCall('middleware.validation.success', $validation);
