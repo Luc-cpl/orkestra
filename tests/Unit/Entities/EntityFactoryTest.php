@@ -230,46 +230,23 @@ test('make sets properties via setter methods', function () {
 });
 
 test('make creates entities using callback for dynamic arguments', function () {
-    // Create a new app mock for this test
-    $app = Mockery::mock(App::class);
-
-    // We'll collect the entities created
-    $entities = [];
-
-    // Mock the make method to record entities
-    $app->shouldReceive('make')
-        ->withAnyArgs()
-        ->andReturnUsing(function ($class, $args) use (&$entities) {
-            $entity = new TestEntity($args['name'] ?? '');
-            $entities[] = $entity;
-            return $entity;
-        });
-
-    // Apparently, the callback is only called once even for multiple entities
-    // This matches the actual implementation in EntityFactory
-    $callbackCalled = false;
-
-    $factory = new EntityFactory($app);
+    $factory = new EntityFactory(app());
 
     // Make 3 entities using a callback
-    $result = $factory->times(3)->make(TestEntity::class, function ($index) use (&$callbackCalled) {
-        $callbackCalled = true;
-        return ['name' => 'Generated Entity'];
+    $result = $factory->times(3)->make(TestEntity::class, function ($index) {
+        return ['name' => "Generated Entity {$index}"];
     });
 
     // Verify we got 3 entities
     expect($result)->toBeArray();
     expect($result)->toHaveCount(3);
 
-    // Verify the callback was called
-    expect($callbackCalled)->toBeTrue();
-
     // Verify the entities were created
-    expect($entities)->toHaveCount(3);
+    expect($result)->toHaveCount(3);
 
-    // All entities should have the same name since the callback is only called once
-    foreach ($entities as $entity) {
-        expect($entity->name)->toBe('Generated Entity');
+    // All entities should have a different name since the callback is called for each entity
+    foreach ($result as $index => $entity) {
+        expect($entity->name)->toBe("Generated Entity {$index}");
     }
 });
 

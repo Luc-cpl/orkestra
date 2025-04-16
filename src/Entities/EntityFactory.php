@@ -41,7 +41,9 @@ class EntityFactory
         $entities = [];
         for ($i = 0; $i < $this->times; $i++) {
             if (is_callable($args[0] ?? null)) {
-                $args = call_user_func($args[0], $i);
+                $processedArgs = call_user_func($args[0], $i);
+                $entities[] = $this->makeEntity($class, ...$processedArgs);
+                continue;
             }
 
             $entities[] = $this->makeEntity($class, ...$args);
@@ -104,7 +106,7 @@ class EntityFactory
             $properties  = array_merge($fakerArgs['properties'], $properties);
         }
 
-        $entity = $this->app->make($class, $constructor);
+        $entity = new $class(...$constructor);
 
         if ($entity instanceof AbstractEntity) {
             // For AbstractEntity, we can use the set method
