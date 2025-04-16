@@ -93,6 +93,11 @@ abstract class AbstractEntity implements JsonSerializable
             return $this->{$method}();
         }
 
+        $method2 = "get_{$name}";
+        if (method_exists($this, $method2)) {
+            return $this->{$method2}();
+        }
+
         if (property_exists($this, $name)) {
             return $this->{$name} ?? null;
         }

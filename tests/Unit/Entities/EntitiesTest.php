@@ -582,3 +582,25 @@ test('Faker attribute locale affects the generated values', function () {
     // The names should be different due to different locales
     expect($nameEnglish)->not->toBe($nameFrench);
 });
+
+// Class to test set_snake_case_props pattern
+class EntityWithUnderscoreMethods extends AbstractEntity
+{
+    private string $snake_case_prop;
+
+    public function set_snake_case_prop(string $value): void
+    {
+        $this->snake_case_prop = "set_by_method: " . $value;
+    }
+
+    public function get_snake_case_prop(): string
+    {
+        return $this->snake_case_prop;
+    }
+}
+
+test('can set entity values using set_snake_case method', function () {
+    $entity = new EntityWithUnderscoreMethods();
+    $entity->set(snake_case_prop: 'test value');
+    expect($entity->snake_case_prop)->toBe('set_by_method: test value');
+});
