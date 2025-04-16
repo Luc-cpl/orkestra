@@ -30,9 +30,17 @@ abstract class AbstractEntity implements JsonSerializable
                 ));
             }
 
+            // Check for setter methods first
             $method = 'set' . str_replace('_', '', ucwords($key, '_'));
             if (method_exists($this, $method)) {
                 $this->{$method}($value);
+                unset($args[$key]);
+            }
+
+            // Check for setter methods with underscores
+            $method2 = "set_{$key}";
+            if (method_exists($this, $method2)) {
+                $this->{$method2}($value);
                 unset($args[$key]);
             }
         }
@@ -41,8 +49,10 @@ abstract class AbstractEntity implements JsonSerializable
             return $this;
         }
 
-        $properties = (new ReflectionClass($this))->getConstructor()?->getParameters();
+        $reflectionClass = new ReflectionClass($this);
 
+        // Check constructor parameters
+        $properties = $reflectionClass->getConstructor()?->getParameters();
         foreach ($properties ?? [] as $property) {
             $name = $property->getName();
 
@@ -52,6 +62,17 @@ abstract class AbstractEntity implements JsonSerializable
 
             $this->{$name} = $args[$name];
             unset($args[$name]);
+        }
+
+        // Check public properties
+        foreach ($args as $key => $value) {
+            if ($reflectionClass->hasProperty($key)) {
+                $property = $reflectionClass->getProperty($key);
+                if ($property->isPublic()) {
+                    $this->{$key} = $value;
+                    unset($args[$key]);
+                }
+            }
         }
 
         if (!empty($args)) {
