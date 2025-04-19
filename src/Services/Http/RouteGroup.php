@@ -31,7 +31,7 @@ class RouteGroup extends LeagueRouteGroup implements RouteGroupInterface
      * {@inheritdoc}
      * @param callable $handler
      */
-    public function map(string $method, string $path, $handler): Route
+    public function map(array|string $method, string $path, $handler): Route
     {
         $path = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
 

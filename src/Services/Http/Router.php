@@ -23,17 +23,17 @@ class Router extends LeagueRouter implements RouterInterface
     /**
      * @var RouteGroup[]
      */
-    protected $groups = [];
+    protected array $groups = [];
 
     /**
      * @var Route[]
      */
-    protected $namedRoutes = [];
+    protected array $namedRoutes = [];
 
     /**
      * @var Route[]
      */
-    protected $routes = [];
+    protected array $routes = [];
 
     public function __construct(
         protected App $app,
@@ -46,7 +46,7 @@ class Router extends LeagueRouter implements RouterInterface
      * {@inheritdoc}
      * @param callable $handler
      */
-    public function map(string $method, string $path, $handler): Route
+    public function map(array|string $method, string $path, $handler): Route
     {
         $path  = sprintf('/%s', ltrim($path, '/'));
         $route = $this->app->make(Route::class, [

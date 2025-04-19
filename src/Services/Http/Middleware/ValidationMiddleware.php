@@ -37,7 +37,6 @@ class ValidationMiddleware extends AbstractMiddleware
         $type = $param->type->value;
 
         $typeValidation = match ($type) {
-            // 'string'  => 'string', // Todo: add this type
             'int'     => 'integer',
             'number'  => 'numeric',
             'boolean' => 'boolean',
