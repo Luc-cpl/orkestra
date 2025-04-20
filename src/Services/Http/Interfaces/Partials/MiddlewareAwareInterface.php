@@ -2,9 +2,10 @@
 
 namespace Orkestra\Services\Http\Interfaces\Partials;
 
+use League\Route\Middleware\MiddlewareAwareInterface as LeagueMiddlewareAwareInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-interface MiddlewareAwareInterface
+interface MiddlewareAwareInterface extends LeagueMiddlewareAwareInterface
 {
     /**
      * @param MiddlewareInterface|class-string|string|array{class-string|string,mixed[]} $middleware

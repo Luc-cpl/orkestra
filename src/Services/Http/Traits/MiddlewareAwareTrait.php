@@ -2,6 +2,7 @@
 
 namespace Orkestra\Services\Http\Traits;
 
+use Orkestra\Services\Http\Interfaces\Partials\MiddlewareAwareInterface;
 use Orkestra\Services\Http\MiddlewareRegistry;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -17,7 +18,7 @@ trait MiddlewareAwareTrait
     /**
      * @return $this
      */
-    public function middleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self
+    public function middleware(MiddlewareInterface|string|array $middleware, array $constructor = []): MiddlewareAwareInterface
     {
         if (!empty($constructor)) {
             $middleware = [$middleware, $constructor];
@@ -29,7 +30,7 @@ trait MiddlewareAwareTrait
     /**
      * @return $this
      */
-    public function middlewareStack(array $middlewareStack): self
+    public function middlewareStack(array $middlewareStack): MiddlewareAwareInterface
     {
         foreach ($middlewareStack as $middleware) {
             if (is_array($middleware)) {
@@ -45,7 +46,7 @@ trait MiddlewareAwareTrait
     /**
      * @return $this
      */
-    public function prependMiddleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self
+    public function prependMiddleware(MiddlewareInterface|string|array $middleware, array $constructor = []): MiddlewareAwareInterface
     {
         if (!empty($constructor)) {
             $middleware = [$middleware, $constructor];
@@ -63,6 +64,46 @@ trait MiddlewareAwareTrait
         }
 
         return $middleware;
+    }
+
+    /**
+     * Only for backwards compatibility with League\Route
+     * @deprecated Use middleware() instead
+     */
+    public function lazyMiddleware(string $middleware): MiddlewareAwareInterface
+    {
+        return $this->middleware($middleware);
+    }
+
+    /**
+     * Only for backwards compatibility with League\Route
+     * @param array<MiddlewareInterface|class-string|string|array{class-string|string,mixed[]}> $middlewares
+     * @return $this
+     * @deprecated Use middlewareStack() instead
+     */
+    public function lazyMiddlewares(array $middlewares): MiddlewareAwareInterface
+    {
+        return $this->middlewareStack($middlewares);
+    }
+
+    /**
+     * Only for backwards compatibility with League\Route
+     * @deprecated Use prependMiddleware() instead
+     */
+    public function lazyPrependMiddleware(string $middleware): MiddlewareAwareInterface
+    {
+        return $this->prependMiddleware($middleware);
+    }
+
+    /**
+     * Only for backwards compatibility with League\Route
+     * @param array<MiddlewareInterface|class-string|string|array{class-string|string,mixed[]}> $middlewares
+     * @return $this
+     * @deprecated Use middlewareStack() instead
+     */
+    public function middlewares(array $middlewares): MiddlewareAwareInterface
+    {
+        return $this->middlewareStack($middlewares);
     }
 
     /**
