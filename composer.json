@@ -36,7 +36,7 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^1.10",
-        "pestphp/pest": "^2.34",
+        "pestphp/pest": "^3.0",
         "mockery/mockery": "^1.6",
         "laravel/pint": "^1.15"
     },
