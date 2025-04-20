@@ -5,6 +5,8 @@ use Orkestra\Handlers\HttpHandler;
 use Orkestra\Providers\HttpProvider;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 
+covers(HttpHandler::class);
+
 beforeEach(function () {
     app()->provider(HttpProvider::class);
 });

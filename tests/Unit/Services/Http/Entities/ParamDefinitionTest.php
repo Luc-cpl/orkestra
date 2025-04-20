@@ -7,6 +7,8 @@ use InvalidArgumentException;
 use Orkestra\Services\Http\Entities\ParamDefinition;
 use Orkestra\Services\Http\Enum\ParamType;
 
+covers(ParamDefinition::class);
+
 test('can create a parameter definition with basic properties', function () {
     $param = new ParamDefinition(
         type: ParamType::String,

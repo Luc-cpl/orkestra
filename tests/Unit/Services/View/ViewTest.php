@@ -3,9 +3,12 @@
 use Orkestra\App;
 use Orkestra\Providers\ViewProvider;
 use Orkestra\Services\View\Interfaces\ViewInterface;
-use Twig\Environment;
+use Orkestra\Services\View\View;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
+use Twig\Environment;
+
+covers(View::class);
 
 beforeEach(function () {
     app()->provider(ViewProvider::class);

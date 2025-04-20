@@ -15,6 +15,8 @@ use League\Route\RouteCollectionInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Mockery;
 
+covers(RouteGroup::class);
+
 beforeEach(function () {
     // Ensure the App and HttpProvider are available for all tests
     app()->provider(HttpProvider::class);

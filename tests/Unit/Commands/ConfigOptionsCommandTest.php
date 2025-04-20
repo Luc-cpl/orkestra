@@ -4,6 +4,8 @@ use Orkestra\Commands\ConfigOptionsCommand;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
+covers(ConfigOptionsCommand::class);
+
 test('can list configuration options', function () {
     // Create a mock configuration
     $config = Mockery::mock(ConfigurationInterface::class);

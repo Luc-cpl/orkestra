@@ -5,6 +5,8 @@ use League\Route\Http\Exception\{MethodNotAllowedException, NotFoundException};
 use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 
+covers(ApplicationStrategy::class);
+
 test('can get method not allowed decorator', function () {
     $app = app();
     $strategy = new ApplicationStrategy($app);

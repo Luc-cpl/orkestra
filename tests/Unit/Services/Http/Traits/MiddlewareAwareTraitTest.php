@@ -14,6 +14,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionClass;
 
+covers(MiddlewareAwareTrait::class);
+
 // Create a concrete middleware for testing
 class TestMiddleware implements MiddlewareInterface
 {

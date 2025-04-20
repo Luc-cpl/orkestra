@@ -5,6 +5,8 @@ use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Entities\ParamDefinition;
 
+covers(RouteDefinitionFacade::class);
+
 test('RouteDefinitionFacade delegates title method to the definition', function () {
     // Create mock ParamDefinitionFactory
     $factory = Mockery::mock(ParamDefinitionFactory::class);

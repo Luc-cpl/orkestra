@@ -16,6 +16,8 @@ use Orkestra\Services\Http\Strategy\ApplicationStrategy;
 use Laminas\Diactoros\Response\JsonResponse;
 use ReflectionClass;
 
+covers(HttpProvider::class, MiddlewareRegistry::class);
+
 test('HttpProvider implements ProviderInterface', function () {
     $provider = new HttpProvider();
     expect($provider)->toBeInstanceOf(ProviderInterface::class);

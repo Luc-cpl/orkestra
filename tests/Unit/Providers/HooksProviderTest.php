@@ -6,6 +6,8 @@ use Orkestra\Services\Hooks\Hooks;
 use Orkestra\Services\Hooks\Interfaces\HooksInterface;
 use Orkestra\Services\Hooks\Interfaces\ListenerInterface;
 
+covers(HooksProvider::class);
+
 // Create a sample listener for testing
 class TestListener implements ListenerInterface
 {

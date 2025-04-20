@@ -7,6 +7,8 @@ use Orkestra\Providers\HttpProvider;
 use Orkestra\Services\Http\Commands\MiddlewareListCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
+covers(MiddlewareListCommand::class);
+
 class TestProvider1 implements ProviderInterface
 {
     public array $middleware = [

@@ -8,6 +8,8 @@ use Orkestra\Providers\CommandsProvider;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
+covers(CommandsProvider::class);
+
 // Let's define our command classes properly
 class TestCommand extends Command
 {

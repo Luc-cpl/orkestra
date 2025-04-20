@@ -7,6 +7,8 @@ use Orkestra\Services\View\Twig\RuntimeLoader;
 use Psr\Container\ContainerInterface;
 use Twig\RuntimeLoader\RuntimeLoaderInterface;
 
+covers(RuntimeLoader::class);
+
 test('RuntimeLoader can be instantiated with a container', function () {
     $container = Mockery::mock(ContainerInterface::class);
 

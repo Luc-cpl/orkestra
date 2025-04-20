@@ -1,11 +1,12 @@
 <?php
 
-use Orkestra\App;
 use Orkestra\Interfaces\ProviderInterface;
 use Orkestra\Providers\EncryptionServiceProvider;
 use Orkestra\Services\Encryption\Commands\CreateAppKeyCommand;
 use Orkestra\Services\Encryption\Encrypt;
 use Orkestra\Services\Encryption\Interfaces\EncryptInterface;
+
+covers(EncryptionServiceProvider::class);
 
 beforeEach(function () {
     // Create a new provider instance

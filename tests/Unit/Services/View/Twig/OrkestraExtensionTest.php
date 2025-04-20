@@ -4,6 +4,8 @@ use Orkestra\Interfaces\ConfigurationInterface;
 use Orkestra\Services\View\HtmlTag;
 use Orkestra\Services\View\Twig\OrkestraExtension;
 
+covers(OrkestraExtension::class);
+
 test('can get twig functions', function () {
     $config = Mockery::mock(ConfigurationInterface::class);
     $extension = new OrkestraExtension($config);

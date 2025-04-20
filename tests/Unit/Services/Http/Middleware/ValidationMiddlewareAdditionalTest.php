@@ -11,6 +11,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Rakit\Validation\Validator;
 use Rakit\Validation\Validation;
 
+covers(ValidationMiddleware::class);
+
 test('validates int parameter type correctly', function () {
     // Test specifically line 41
     $app = app();

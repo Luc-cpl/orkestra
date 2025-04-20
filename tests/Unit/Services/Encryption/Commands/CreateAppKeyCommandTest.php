@@ -4,6 +4,8 @@ use Orkestra\Services\Encryption\Commands\CreateAppKeyCommand;
 use Orkestra\Interfaces\ConfigurationInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
+covers(CreateAppKeyCommand::class);
+
 beforeEach(function () {
     // Create a temporary directory for testing
     $this->tempDir = sys_get_temp_dir() . '/orkestra_key_test_' . uniqid();

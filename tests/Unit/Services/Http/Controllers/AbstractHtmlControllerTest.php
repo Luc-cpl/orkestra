@@ -11,6 +11,8 @@ use Orkestra\Services\View\Interfaces\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
+covers(AbstractHtmlController::class);
+
 test('can set a route in html controller', function () {
     /** @var RouteInterface $route */
     $route = Mockery::mock(RouteInterface::class);

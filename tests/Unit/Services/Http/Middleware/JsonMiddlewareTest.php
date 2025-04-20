@@ -7,6 +7,8 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use League\Route\Http\Exception\BadRequestException;
 
+covers(JsonMiddleware::class);
+
 test('can process request with JSON content type', function () {
     $middleware = new JsonMiddleware();
 

@@ -5,6 +5,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Process\Process;
 use Mockery as m;
 
+covers(StartServerCommand::class);
+
 test('can start server on default port', function () {
     // Mock the Process
     $mockProcess = m::mock(Process::class);

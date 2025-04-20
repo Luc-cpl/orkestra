@@ -9,6 +9,8 @@ use Orkestra\Services\Http\Entities\ParamDefinition;
 use Orkestra\Services\Http\Enum\ParamType;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 
+covers(ParamDefinitionFactory::class);
+
 test('factory throws exception for invalid method', function () {
     $entityFactory = app()->get(EntityFactory::class);
     $factory = new ParamDefinitionFactory($entityFactory);

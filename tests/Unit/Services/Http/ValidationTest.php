@@ -5,6 +5,9 @@ use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\Route;
+use Orkestra\Services\Http\RouteDefinition;
+
+covers(RouteDefinition::class);
 
 beforeEach(function () {
     app()->provider(HttpProvider::class);

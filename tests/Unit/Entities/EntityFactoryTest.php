@@ -13,6 +13,8 @@ use Orkestra\Entities\EntityFactory;
 use ReflectionClass;
 use RuntimeException;
 
+covers(EntityFactory::class);
+
 /**
  * Repository class used for testing persistence
  */

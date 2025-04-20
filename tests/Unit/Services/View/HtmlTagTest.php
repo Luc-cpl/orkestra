@@ -2,6 +2,8 @@
 
 use Orkestra\Services\View\HtmlTag;
 
+covers(HtmlTag::class);
+
 test('can create an HtmlTag with tag only', function () {
     $tag = new HtmlTag('div');
     expect($tag->tag)->toBe('div');

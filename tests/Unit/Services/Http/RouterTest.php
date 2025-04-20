@@ -6,10 +6,13 @@ use Orkestra\Services\Http\Interfaces\RouteGroupInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Interfaces\RouterInterface;
 use Orkestra\Services\Http\RouteGroup;
+use Orkestra\Services\Http\Router;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+covers(Router::class);
 
 beforeEach(function () {
     app()->provider(HttpProvider::class);

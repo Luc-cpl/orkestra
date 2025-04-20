@@ -10,6 +10,8 @@ use Orkestra\Providers\HooksProvider;
 use Orkestra\Providers\HttpProvider;
 use Orkestra\Providers\ViewProvider;
 
+covers(App::class);
+
 test('can get slug', function () {
     expect(app()->slug())->toEqual('app');
     app()->config()->set('slug', 'testSlug');

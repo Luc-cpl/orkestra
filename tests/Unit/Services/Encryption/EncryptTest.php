@@ -7,6 +7,8 @@ use RuntimeException;
 use Mockery;
 use ReflectionClass;
 
+covers(Encrypt::class);
+
 test('cannot create encrypt service with empty app key', function () {
     expect(fn () => new Encrypt(''))
         ->toThrow(RuntimeException::class, 'The app key must not be empty. Please run the `app:key:create` command to generate a new application key.');

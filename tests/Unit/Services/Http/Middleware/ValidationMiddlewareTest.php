@@ -7,6 +7,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+covers(ValidationMiddleware::class);
+
 test('can validate request with body parameters', function () {
     $app = app();
     $factory = $app->get(ParamDefinitionFactory::class);

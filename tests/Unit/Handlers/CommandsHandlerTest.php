@@ -4,6 +4,8 @@ use Orkestra\Handlers\CommandsHandler;
 use Symfony\Component\Console\Application;
 use Mockery as m;
 
+covers(CommandsHandler::class);
+
 test('can handle command execution', function () {
     // Create a mock console application
     $console = m::mock(Application::class);

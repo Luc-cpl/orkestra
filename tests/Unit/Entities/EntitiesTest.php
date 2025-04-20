@@ -5,6 +5,8 @@ use Orkestra\Entities\Attributes\Faker;
 use Orkestra\Entities\Attributes\Repository;
 use Orkestra\Entities\EntityFactory;
 
+covers(AbstractEntity::class);
+
 class EntitiesTestRepository
 {
     public function persist(): void

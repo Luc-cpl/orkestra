@@ -6,6 +6,8 @@ use Orkestra\Services\Http\Route;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
 use Psr\Http\Server\RequestHandlerInterface;
 
+covers(RouteCollectionTrait::class);
+
 // Create a test class that uses the trait
 class RouteCollectionTraitTest
 {

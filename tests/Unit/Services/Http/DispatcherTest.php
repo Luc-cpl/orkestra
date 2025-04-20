@@ -15,6 +15,8 @@ use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\Uri;
 use FastRoute\Dispatcher as FastRoute;
 
+covers(Dispatcher::class);
+
 // Create a simple subclass to expose protected methods
 class TestDispatcher extends Dispatcher
 {

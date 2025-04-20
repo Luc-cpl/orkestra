@@ -4,6 +4,8 @@ use Orkestra\AppBind;
 use DI\Container;
 use DI\Definition\Helper\CreateDefinitionHelper;
 
+covers(AppBind::class);
+
 test('can create a bind with class name', function () {
     $container = $this->createMock(Container::class);
     $container->expects($this->once())->method('set')->with(

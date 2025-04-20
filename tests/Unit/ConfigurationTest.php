@@ -2,6 +2,8 @@
 
 use Orkestra\Configuration;
 
+covers(Configuration::class);
+
 test('can instantiate the Configuration class', function () {
     $config = new Configuration([]);
     expect($config)->toBeInstanceOf(Configuration::class);

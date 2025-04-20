@@ -2,6 +2,8 @@
 
 use Orkestra\Services\Hooks\Hooks;
 
+covers(Hooks::class);
+
 beforeEach(function () {
     $this->hooks = new Hooks();
 });
