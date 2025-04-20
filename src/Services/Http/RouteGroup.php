@@ -10,6 +10,7 @@ use Orkestra\Services\Http\Traits\MiddlewareAwareTrait;
 use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
 use League\Route\RouteGroup as LeagueRouteGroup;
 use League\Route\RouteCollectionInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class RouteGroup extends LeagueRouteGroup implements RouteGroupInterface
 {
@@ -29,10 +30,14 @@ class RouteGroup extends LeagueRouteGroup implements RouteGroupInterface
 
     /**
      * {@inheritdoc}
-     * @param callable $handler
+     * @param array<string>|string $method
+     * @param callable|array<string>|class-string|RequestHandlerInterface $handler
      */
-    public function map(string $method, string $path, $handler): Route
-    {
+    public function map(
+        string|array $method,
+        string $path,
+        callable|array|string|RequestHandlerInterface $handler
+    ): Route {
         $path = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
 
         /** @var Route $route */

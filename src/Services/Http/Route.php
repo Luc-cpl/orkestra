@@ -10,6 +10,7 @@ use Orkestra\Services\Http\Traits\RouteStrategyTrait;
 use Orkestra\Services\Http\Traits\RouteDefinitionTrait;
 use League\Route\Route as LeagueRoute;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class Route extends LeagueRoute implements RouteInterface
 {
@@ -17,13 +18,25 @@ class Route extends LeagueRoute implements RouteInterface
     use RouteStrategyTrait;
     use RouteDefinitionTrait;
 
+    /**
+     * {@inheritDoc}
+     * @param callable|array<string>|class-string|RequestHandlerInterface $handler
+     */
     public function __construct(
         protected App $app,
-        string          $method,
-        string          $path,
-        string|callable $handler,
+        string|array $method,
+        string $path,
+        callable|array|string|RequestHandlerInterface $handler,
+        ?RouteGroup $group = null,
+        array $vars = []
     ) {
-        parent::__construct($method, $path, $handler);
+        parent::__construct(
+            method: $method,
+            path: $path,
+            handler: $handler,
+            group: $group,
+            vars: $vars
+        );
     }
 
     public function getParsedHandler(): array

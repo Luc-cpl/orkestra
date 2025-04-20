@@ -4,6 +4,7 @@ use Orkestra\App;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
 use Orkestra\Services\Http\Route;
 use Orkestra\Services\Http\Traits\RouteCollectionTrait;
+use Psr\Http\Server\RequestHandlerInterface;
 
 // Create a test class that uses the trait
 class RouteCollectionTraitTest
@@ -17,8 +18,11 @@ class RouteCollectionTraitTest
     }
 
     // Implement the required abstract method
-    public function map(string $method, string $path, $handler): Route
-    {
+    public function map(
+        string|array $method,
+        string $path,
+        callable|array|string|RequestHandlerInterface $handler
+    ): Route {
         // Create a route
         $route = new Route($this->app, $method, $path, $handler);
         $this->routes[] = $route;

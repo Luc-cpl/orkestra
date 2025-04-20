@@ -239,3 +239,45 @@ test('can resolve middleware through registry with container', function () {
 
     expect($result)->toBe($middleware);
 });
+
+test('lazyMiddleware delegates to middleware', function () {
+    $middlewareAware = new MiddlewareAwareClass();
+    $result = $middlewareAware->lazyMiddleware(TestMiddleware::class);
+    expect($result)->toBe($middlewareAware);
+    $stack = $middlewareAware->getMiddlewareStack();
+    expect($stack)->toHaveCount(1);
+    expect($stack[0])->toBe(TestMiddleware::class);
+});
+
+test('lazyMiddlewares delegates to middlewareStack', function () {
+    $middlewareAware = new MiddlewareAwareClass();
+    $middlewares = [TestMiddleware::class, AnotherMiddleware::class];
+    $result = $middlewareAware->lazyMiddlewares($middlewares);
+    expect($result)->toBe($middlewareAware);
+    $stack = $middlewareAware->getMiddlewareStack();
+    expect($stack)->toHaveCount(2);
+    expect($stack[0])->toBe(TestMiddleware::class);
+    expect($stack[1])->toBe(AnotherMiddleware::class);
+});
+
+test('lazyPrependMiddleware delegates to prependMiddleware', function () {
+    $middlewareAware = new MiddlewareAwareClass();
+    $middlewareAware->middleware(TestMiddleware::class);
+    $result = $middlewareAware->lazyPrependMiddleware(AnotherMiddleware::class);
+    expect($result)->toBe($middlewareAware);
+    $stack = $middlewareAware->getMiddlewareStack();
+    expect($stack)->toHaveCount(2);
+    expect($stack[0])->toBe(AnotherMiddleware::class);
+    expect($stack[1])->toBe(TestMiddleware::class);
+});
+
+test('middlewares delegates to middlewareStack', function () {
+    $middlewareAware = new MiddlewareAwareClass();
+    $middlewares = [TestMiddleware::class, AnotherMiddleware::class];
+    $result = $middlewareAware->middlewares($middlewares);
+    expect($result)->toBe($middlewareAware);
+    $stack = $middlewareAware->getMiddlewareStack();
+    expect($stack)->toHaveCount(2);
+    expect($stack[0])->toBe(TestMiddleware::class);
+    expect($stack[1])->toBe(AnotherMiddleware::class);
+});

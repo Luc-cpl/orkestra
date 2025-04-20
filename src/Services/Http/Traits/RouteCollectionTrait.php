@@ -3,10 +3,15 @@
 namespace Orkestra\Services\Http\Traits;
 
 use Orkestra\Services\Http\Route;
+use Psr\Http\Server\RequestHandlerInterface;
 
 trait RouteCollectionTrait
 {
-    abstract public function map(string $method, string $path, $handler): Route;
+    abstract public function map(
+        string|array $method,
+        string $path,
+        callable|array|string|RequestHandlerInterface $handler
+    ): Route;
 
     /**
      * @param string   $path

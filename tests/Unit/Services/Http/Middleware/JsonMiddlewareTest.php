@@ -3,6 +3,7 @@
 use Orkestra\Services\Http\Middleware\JsonMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use League\Route\Http\Exception\BadRequestException;
 
@@ -11,17 +12,15 @@ test('can process request with JSON content type', function () {
 
     // Setup request with JSON content type
     $request = Mockery::mock(ServerRequestInterface::class);
+    $body = Mockery::mock(StreamInterface::class);
+    $body->shouldReceive('getContents')->andReturn('{"test": "value"}');
+
     $request->shouldReceive('getHeaderLine')
         ->with('Content-Type')
         ->andReturn('application/json');
 
     $request->shouldReceive('getBody')
-        ->andReturn(new class () {
-            public function getContents(): string
-            {
-                return '{"test": "value"}';
-            }
-        });
+        ->andReturn($body);
 
     $parsedRequest = Mockery::mock(ServerRequestInterface::class);
     $request->shouldReceive('withParsedBody')
@@ -44,17 +43,15 @@ test('can process request with JSON content type including charset', function ()
 
     // Setup request with JSON content type and charset
     $request = Mockery::mock(ServerRequestInterface::class);
+    $body = Mockery::mock(StreamInterface::class);
+    $body->shouldReceive('getContents')->andReturn('{"test": "value"}');
+
     $request->shouldReceive('getHeaderLine')
         ->with('Content-Type')
         ->andReturn('application/json; charset=utf-8');
 
     $request->shouldReceive('getBody')
-        ->andReturn(new class () {
-            public function getContents(): string
-            {
-                return '{"test": "value"}';
-            }
-        });
+        ->andReturn($body);
 
     $parsedRequest = Mockery::mock(ServerRequestInterface::class);
     $request->shouldReceive('withParsedBody')
@@ -81,13 +78,11 @@ test('can process request with invalid JSON body', function () {
         ->with('Content-Type')
         ->andReturn('application/json');
 
+    $body = Mockery::mock(StreamInterface::class);
+    $body->shouldReceive('getContents')->andReturn('{invalid json}');
+
     $request->shouldReceive('getBody')
-        ->andReturn(new class () {
-            public function getContents(): string
-            {
-                return '{invalid json}';
-            }
-        });
+        ->andReturn($body);
 
     // Should not call withParsedBody for invalid JSON
     $request->shouldNotReceive('withParsedBody');
