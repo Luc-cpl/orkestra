@@ -3,7 +3,6 @@
 namespace Orkestra\Services\Http\Interfaces\Partials;
 
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
-use InvalidArgumentException;
 
 interface RouteDefinitionInterface
 {
