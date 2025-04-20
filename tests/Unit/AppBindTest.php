@@ -38,12 +38,12 @@ test('can not create a bind with non existent class', function () {
 })->throws(Exception::class);
 
 test('can set constructor params', function () {
-    $mockedService = $this->createMock(CreateDefinitionHelper::class);
-    $mockedService->expects($this->once())
-        ->method('constructor')
+    $mockedService = Mockery::mock(CreateDefinitionHelper::class);
+    $mockedService->shouldReceive('constructor')
+        ->once()
         ->with(
-            $this->equalTo('testValue1'),
-            $this->equalTo('testValue2')
+            'testValue1',
+            'testValue2'
         );
 
     $bind = new AppBind('test', $mockedService);
@@ -56,12 +56,12 @@ test('can not set constructor params with non class service', function () {
 })->throws(Exception::class);
 
 test('can set service property', function () {
-    $mockedService = $this->createMock(CreateDefinitionHelper::class);
-    $mockedService->expects($this->once())
-        ->method('property')
+    $mockedService = Mockery::mock(CreateDefinitionHelper::class);
+    $mockedService->shouldReceive('property')
+        ->once()
         ->with(
-            $this->equalTo('testProperty'),
-            $this->equalTo('testValue')
+            'testProperty',
+            'testValue'
         );
 
     $bind = new AppBind('test', $mockedService);
@@ -74,13 +74,13 @@ test('can not set service property with non class service', function () {
 })->throws(Exception::class);
 
 test('can inject method parameters into service', function () {
-    $mockedService = $this->createMock(CreateDefinitionHelper::class);
-    $mockedService->expects($this->once())
-        ->method('method')
+    $mockedService = Mockery::mock(CreateDefinitionHelper::class);
+    $mockedService->shouldReceive('method')
+        ->once()
         ->with(
-            $this->equalTo('testMethod'),
-            $this->equalTo('testValue1'),
-            $this->equalTo('testValue2')
+            'testMethod',
+            'testValue1',
+            'testValue2'
         );
 
     $bind = new AppBind('test', $mockedService);
