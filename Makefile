@@ -25,11 +25,11 @@ tag-current:
 	@echo "Pulling latest changes..."
 	@git pull
 	@echo "Retagging current version $(CURRENT_VERSION)..."
-	@git tag -d $(CURRENT_VERSION) 2>/dev/null || true
+	@git tag -d v$(CURRENT_VERSION) 2>/dev/null || true
 	@git push origin :refs/tags/v$(CURRENT_VERSION) 2>/dev/null || true
-	@git tag -a $(CURRENT_VERSION) -m "Version $(CURRENT_VERSION)"
+	@git tag -a v$(CURRENT_VERSION) -m "Version $(CURRENT_VERSION)"
 	@git push --tags
-	@echo "Version $(CURRENT_VERSION) retagged and pushed to GitHub"
+	@echo "Version v$(CURRENT_VERSION) retagged and pushed to GitHub"
 
 .PHONY: tag-patch
 tag-patch:
@@ -44,9 +44,9 @@ tag-patch:
 	@sed -i 's/"version": *"[^"]*"/"version": "v$(NEW_VERSION)"/' composer.json
 	@git add composer.json
 	@git commit -m "Bump version to $(NEW_VERSION)"
-	@git tag -a $(NEW_VERSION) -m "Version $(NEW_VERSION)"
+	@git tag -a v$(NEW_VERSION) -m "Version $(NEW_VERSION)"
 	@git push && git push --tags
-	@echo "Patch version $(NEW_VERSION) created and pushed to GitHub"
+	@echo "Patch version v$(NEW_VERSION) created and pushed to GitHub"
 
 .PHONY: tag-minor
 tag-minor:
@@ -61,9 +61,9 @@ tag-minor:
 	@sed -i 's/"version": *"[^"]*"/"version": "v$(NEW_VERSION)"/' composer.json
 	@git add composer.json
 	@git commit -m "Bump version to $(NEW_VERSION)"
-	@git tag -a $(NEW_VERSION) -m "Version $(NEW_VERSION)"
+	@git tag -a v$(NEW_VERSION) -m "Version $(NEW_VERSION)"
 	@git push && git push --tags
-	@echo "Minor version $(NEW_VERSION) created and pushed to GitHub"
+	@echo "Minor version v$(NEW_VERSION) created and pushed to GitHub"
 
 .PHONY: tag-major
 tag-major:
@@ -78,6 +78,6 @@ tag-major:
 	@sed -i 's/"version": *"[^"]*"/"version": "v$(NEW_VERSION)"/' composer.json
 	@git add composer.json
 	@git commit -m "Bump version to $(NEW_VERSION)"
-	@git tag -a $(NEW_VERSION) -m "Version $(NEW_VERSION)"
+	@git tag -a v$(NEW_VERSION) -m "Version $(NEW_VERSION)"
 	@git push && git push --tags
-	@echo "Major version $(NEW_VERSION) created and pushed to GitHub"
+	@echo "Major version v$(NEW_VERSION) created and pushed to GitHub"
