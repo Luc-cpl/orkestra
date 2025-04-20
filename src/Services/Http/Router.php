@@ -10,6 +10,7 @@ use League\Route\Router as LeagueRouter;
 use FastRoute\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * Extends the League Router class.
@@ -44,10 +45,14 @@ class Router extends LeagueRouter implements RouterInterface
 
     /**
      * {@inheritdoc}
-     * @param callable $handler
+     * @param array<string>|string $method
+     * @param callable|array<string>|class-string|RequestHandlerInterface $handler
      */
-    public function map(array|string $method, string $path, $handler): Route
-    {
+    public function map(
+        string|array $method,
+        string $path,
+        callable|array|string|RequestHandlerInterface $handler
+    ): Route {
         $path  = sprintf('/%s', ltrim($path, '/'));
         $route = $this->app->make(Route::class, [
             'method'  => $method,

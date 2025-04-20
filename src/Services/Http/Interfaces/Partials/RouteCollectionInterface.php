@@ -3,6 +3,7 @@
 namespace Orkestra\Services\Http\Interfaces\Partials;
 
 use Orkestra\Services\Http\Interfaces\RouteInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 interface RouteCollectionInterface
 {
@@ -22,9 +23,14 @@ interface RouteCollectionInterface
     public function head(string $path, $handler): RouteInterface;
 
     /**
-     * @param class-string|callable $handler
+     * @param string|array<string> $method
+     * @param callable|array<string>|class-string|RequestHandlerInterface $handler
      */
-    public function map(string $method, string $path, $handler): RouteInterface;
+    public function map(
+        string|array $method,
+        string $path,
+        callable|array|string|RequestHandlerInterface $handler
+    ): RouteInterface;
 
     /**
      * @param class-string|callable $handler

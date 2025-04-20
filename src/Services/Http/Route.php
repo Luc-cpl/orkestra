@@ -18,6 +18,10 @@ class Route extends LeagueRoute implements RouteInterface
     use RouteStrategyTrait;
     use RouteDefinitionTrait;
 
+    /**
+     * {@inheritDoc}
+     * @param callable|array<string>|class-string|RequestHandlerInterface $handler
+     */
     public function __construct(
         protected App $app,
         string|array $method,
