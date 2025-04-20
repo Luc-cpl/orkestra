@@ -3,6 +3,7 @@
 namespace Orkestra\Services\Http\Interfaces\Partials;
 
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
+use InvalidArgumentException;
 
 interface RouteDefinitionInterface
 {
@@ -24,7 +25,7 @@ interface RouteDefinitionInterface
      * @param array<string, mixed> $constructorParams
      * @return $this
      */
-    public function setDefinition(string|array $definition, array $constructorParams = []): self;
+    public function setDefinition(string|array $definition, array $constructorParams = []): RouteDefinitionInterface;
 
     public function getDefinition(): RouteDefinitionFacade;
 }

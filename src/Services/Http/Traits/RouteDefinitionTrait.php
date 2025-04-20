@@ -6,6 +6,7 @@ use Orkestra\App;
 use DI\Attribute\Inject;
 use Orkestra\Services\Http\Factories\ParamDefinitionFactory;
 use Orkestra\Services\Http\Facades\RouteDefinitionFacade;
+use Orkestra\Services\Http\Interfaces\Partials\RouteDefinitionInterface;
 use Orkestra\Services\Http\Interfaces\DefinitionInterface;
 use Orkestra\Services\Http\Interfaces\RouteAwareInterface;
 use Orkestra\Services\Http\Interfaces\RouteInterface;
@@ -47,8 +48,10 @@ trait RouteDefinitionTrait
      * 	}>,
      * } $definition
      * @param array<string, mixed> $constructorParams
+     * @return $this
+     * @throws InvalidArgumentException
      */
-    public function setDefinition(string|array $definition, array $constructorParams = []): self
+    public function setDefinition(string|array $definition, array $constructorParams = []): RouteDefinitionInterface
     {
         if (!is_string($definition)) {
             $this->definition = $definition;

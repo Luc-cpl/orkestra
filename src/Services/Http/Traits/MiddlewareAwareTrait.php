@@ -14,6 +14,9 @@ trait MiddlewareAwareTrait
         return $this->middleware;
     }
 
+    /**
+     * @return $this
+     */
     public function middleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self
     {
         if (!empty($constructor)) {
@@ -23,6 +26,9 @@ trait MiddlewareAwareTrait
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function middlewareStack(array $middlewareStack): self
     {
         foreach ($middlewareStack as $middleware) {
@@ -36,6 +42,9 @@ trait MiddlewareAwareTrait
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function prependMiddleware(MiddlewareInterface|string|array $middleware, array $constructor = []): self
     {
         if (!empty($constructor)) {
