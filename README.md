@@ -4,7 +4,6 @@
 [![Packagist Version](https://img.shields.io/packagist/v/luccpl/orkestra)](https://packagist.org/packages/luccpl/orkestra)
 [![Packagist License](https://img.shields.io/packagist/l/luccpl/orkestra)](https://github.com/Luc-cpl/orkestra/blob/main/LICENSE)
 ![PHPStan badge](https://img.shields.io/badge/PHPStan-level%209-brightgreen)
-[![Coverage Status](https://coveralls.io/repos/github/Luc-cpl/orkestra/badge.svg)](https://coveralls.io/github/Luc-cpl/orkestra)
 <!-- badges area end -->
 
 Orkestra is a lightweight and highly extensible PHP framework designed to provide a flexible foundation for web development. With a focus on ease of service provider addition, extensibility, and maintaining high code quality, Orkestra empowers developers to build robust and scalable applications.
@@ -38,10 +37,10 @@ php maestro app:serve
 Congratulations! Your Orkestra project is now up and running. Access it by navigating to the specified address in your web browser.
 
 ### Documentation
-For more detailed information on using Orkestra, refer to the [official documentation](https://github.com/Luc-cpl/orkestra/wiki).
+For more detailed information on using Orkestra, refer to the [official documentation](https://orkestra.lucascarvalho.site).
 
 ### Contributing
-We welcome contributions! Please see our [contribution guidelines](https://github.com/Luc-cpl/orkestra/wiki/1.1-%E2%80%90-Contribution-Guidelines) for details on how to get started.
+We welcome contributions! Please see our [contribution guidelines](https://orkestra.lucascarvalho.site/docs/contributing/guidelines) for details on how to get started.
 
 ### License
-This project is licensed under the [MIT License](https://github.com/Luc-cpl/orkestra/wiki/1.2-%E2%80%90-License).
+This project is licensed under the [MIT License](https://orkestra.lucascarvalho.site/docs/license).
